@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 2,
+  "id": "unearthed-2025",
+  "name": { "ru": "UNEARTHED", "en": "UNEARTHED", "kk": "UNEARTHED" },
+  "years": "2025–2026",
+  "status": "archived",
+  "edition": "founders",
+  "platform": "spike",
+  "todo": "TODO: миссии, зоны старта и запретные зоны внести через редактор (/fll/editor) по официальному Robot Game Rulebook сезона.",
+  "field": { "widthMm": 2362, "heightMm": 1143, "todo": "TODO: сверить с официальным Robot Game Rulebook сезона" },
+  "launchAreas": [],
+  "forbiddenZones": [],
+  "missions": []
+}

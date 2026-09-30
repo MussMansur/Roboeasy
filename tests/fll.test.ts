@@ -5,27 +5,37 @@ import { programToPython, checkPython } from '../lib/dsl/compile-python'
 import { parseProgram } from '../lib/dsl/schema'
 import { DEFAULT_ROBOT, type RobotProfile, type Step } from '../lib/dsl/types'
 import { CALIBRATION, applyCalibration, distanceTestProgram, turnTestProgram } from '../lib/fll/calibration'
-import { PathBuilder, approachPoint, headingTo, normalizeDeg } from '../lib/fll/path'
+import { PathBuilder, approachPoint, headingTo, missionHeading, normalizeDeg } from '../lib/fll/path'
 import { fallbackPlan, parsePlan, planJsonSchema } from '../lib/fll/plan'
 import { buildRun } from '../lib/fll/run'
-import { type Season, parseSeason } from '../lib/fll/season'
-import { SEASONS } from '../lib/fll/seasons'
+import { type Season, type SeasonInput, parseSeason, safeParseSeason } from '../lib/fll/season'
 import { expectLinked, spriteBlocks, validateSb3 } from './helpers'
 
-const season: Season = parseSeason({
+const rect = (width: number, height: number) => ({ kind: 'rect' as const, width, height })
+const zone = (dx: number) => ({ dx, dy: 0, shape: rect(150, 150) })
+
+const TEST_SEASON: SeasonInput = {
+  schemaVersion: 2,
   id: 'test',
   name: { ru: 'Тест', en: 'Test' },
+  years: '2000–2001',
+  status: 'current',
+  edition: 'founders',
+  platform: 'spike',
   field: { widthMm: 2000, heightMm: 1000 },
   launchAreas: [
-    { id: 'left', name: { ru: 'Л', en: 'L' }, x: 0, y: 0, width: 300, height: 300, start: { x: 100, y: 100, headingDeg: 0 } },
-    { id: 'right', name: { ru: 'П', en: 'R' }, x: 1700, y: 0, width: 300, height: 300, start: { x: 1900, y: 100, headingDeg: 180 } },
+    { id: 'left', name: { ru: 'Л', en: 'L' }, x: 150, y: 150, shape: rect(300, 300), start: { x: 100, y: 100, headingDeg: 0 } },
+    { id: 'right', name: { ru: 'П', en: 'R' }, x: 1850, y: 150, shape: rect(300, 300), start: { x: 1900, y: 100, headingDeg: 180 } },
   ],
+  forbiddenZones: [],
   missions: [
-    { id: 'A', name: { ru: 'А', en: 'A' }, x: 600, y: 100, headingDeg: 0, points: 20, action: 'push', approachMm: 100, actionMm: 50 },
-    { id: 'B', name: { ru: 'Б', en: 'B' }, x: 500, y: 700, headingDeg: 90, points: 30, action: 'lift', approachMm: 100 },
-    { id: 'C', name: { ru: 'В', en: 'C' }, x: 1500, y: 500, headingDeg: 0, points: 10, action: 'deliver', approachMm: 100, actionMm: 40 },
+    { id: 'A', number: 1, name: { ru: 'А', en: 'A' }, x: 600, y: 100, outline: rect(120, 120), actionZone: zone(-100), points: 20, action: 'push', plan: { actionMm: 50 } },
+    { id: 'B', number: 2, name: { ru: 'Б', en: 'B' }, x: 500, y: 700, rotationDeg: 90, outline: rect(120, 120), actionZone: zone(-100), points: 30, action: 'lift' },
+    { id: 'C', number: 3, name: { ru: 'В', en: 'C' }, x: 1500, y: 500, outline: rect(120, 120), actionZone: zone(-100), points: 10, action: 'deliver', plan: { actionMm: 40 } },
   ],
-})
+}
+
+const season: Season = parseSeason(TEST_SEASON)
 
 const armRobot: RobotProfile = { ...DEFAULT_ROBOT, attachments: [{ port: 'C', kind: 'lift', name: 'Arm' }] }
 
@@ -35,7 +45,12 @@ describe('geometry', () => {
     expect(normalizeDeg(-180)).toBe(180)
     expect(normalizeDeg(540)).toBe(180)
     expect(headingTo({ x: 0, y: 0 }, { x: 0, y: 10 })).toBe(90)
-    expect(approachPoint(season.missions[1])).toEqual({ x: 500, y: 600 })
+    const b = approachPoint(season.missions[1])
+    expect(b.x).toBeCloseTo(500)
+    expect(b.y).toBeCloseTo(600)
+    // Without a hint the robot faces the model from its action zone.
+    expect(missionHeading(season.missions[1])).toBeCloseTo(90)
+    expect(missionHeading({ ...season.missions[1], plan: { ...season.missions[1].plan, headingDeg: -45 } })).toBe(-45)
   })
 
   it('turns the short way and tracks the pose with rounded commands', () => {
@@ -100,6 +115,20 @@ describe('buildRun', () => {
       { kind: 'unknown_mission', missionId: 'Z' },
     ])
   })
+
+  it('warns when the route crosses a forbidden zone', () => {
+    const blocked = parseSeason({ ...TEST_SEASON, forbiddenZones: [{ id: 'wall', x: 300, y: 100, shape: rect(40, 400) }] })
+    const run = buildRun(blocked, { name: 'x', launchAreaId: 'left', missions: [{ id: 'A' }], explanation: '' }, DEFAULT_ROBOT, 'ru')
+    expect(run.warnings).toEqual([{ kind: 'forbidden_zone', zoneId: 'wall' }])
+    expect(buildRun(season, { name: 'x', launchAreaId: 'left', missions: [{ id: 'A' }], explanation: '' }, DEFAULT_ROBOT, 'ru').warnings).toEqual([])
+  })
+
+  it('still builds a run when the season has no launch areas yet', () => {
+    const bare = parseSeason({ ...TEST_SEASON, launchAreas: [] })
+    const run = buildRun(bare, { name: 'x', launchAreaId: 'left', missions: [{ id: 'A' }], explanation: '' }, DEFAULT_ROBOT, 'ru')
+    expect(run.warnings).toEqual([{ kind: 'unknown_launch_area', launchAreaId: 'left' }])
+    expect(run.program.steps.length).toBeGreaterThan(2)
+  })
 })
 
 describe('calibration', () => {
@@ -148,16 +177,32 @@ describe('plan', () => {
   })
 })
 
-describe('season data', () => {
-  it('the template season parses and every example mission is marked TODO', () => {
-    const template = SEASONS.template
-    expect(template.field).toEqual({ widthMm: 2362, heightMm: 1143 })
-    expect(template.missions.length).toBeGreaterThanOrEqual(2)
-    expect(template.missions.every((m) => m.todo)).toBe(true)
-  })
-
-  it('rejects duplicate mission ids', () => {
+describe('season schema', () => {
+  it('rejects duplicate ids and unknown platforms', () => {
     const dup = { ...season, missions: [season.missions[0], season.missions[0]] }
     expect(() => parseSeason(dup)).toThrow(/duplicate mission id A/)
+    expect(safeParseSeason({ ...TEST_SEASON, platform: 'ev3' }).ok).toBe(false)
+    expect(safeParseSeason({ ...TEST_SEASON, schemaVersion: 3 }).ok).toBe(false)
+    expect(safeParseSeason([]).ok).toBe(false)
+  })
+
+  it('migrates v1 season files with the same geometry', () => {
+    const v1 = {
+      id: 'old',
+      name: { ru: 'Старый', en: 'Old' },
+      field: { widthMm: 2000, heightMm: 1000 },
+      launchAreas: [{ id: 'left', name: { ru: 'Л', en: 'L' }, x: 0, y: 0, width: 300, height: 300, start: { x: 100, y: 100, headingDeg: 0 } }],
+      missions: [{ id: 'B', name: { ru: 'Б', en: 'B' }, x: 500, y: 700, headingDeg: 90, points: 30, action: 'lift', approachMm: 100, attachmentDeg: 120 }],
+    }
+    const r = safeParseSeason(v1)
+    if (!r.ok) throw new Error(r.error)
+    expect(r.migrated).toBe(true)
+    expect(r.season.schemaVersion).toBe(2)
+    expect(r.season.launchAreas[0]).toMatchObject({ x: 150, y: 150, shape: { kind: 'rect', width: 300, height: 300 } })
+    const m = r.season.missions[0]
+    expect(approachPoint(m).x).toBeCloseTo(500)
+    expect(approachPoint(m).y).toBeCloseTo(600)
+    expect(missionHeading(m)).toBe(90)
+    expect(m.plan.attachmentDeg).toBe(120)
   })
 })

@@ -8,6 +8,7 @@
  */
 
 import type { Port, Step } from '../dsl/types'
+import { actionZoneFrame } from './geometry'
 import type { Mission, Point, Pose } from './season'
 
 /** Moves shorter than this are skipped; turns are rounded to whole degrees. */
@@ -78,10 +79,18 @@ export class PathBuilder {
   }
 }
 
-/** Where the robot's center stops before a mission: `approachMm` in front of the model. */
+/** Where the robot's center stops before a mission: the center of its action zone. */
 export function approachPoint(mission: Mission): Point {
-  const rad = (mission.headingDeg * Math.PI) / 180
-  return { x: mission.x - Math.cos(rad) * mission.approachMm, y: mission.y - Math.sin(rad) * mission.approachMm }
+  const { x, y } = actionZoneFrame(mission)
+  return { x, y }
+}
+
+/** Heading during the action: the season's hint, or facing the model from the action zone. */
+export function missionHeading(mission: Mission): number {
+  if (mission.plan.headingDeg !== undefined) return mission.plan.headingDeg
+  const from = approachPoint(mission)
+  if (Math.hypot(mission.x - from.x, mission.y - from.y) < 1) return mission.rotationDeg
+  return headingTo(from, mission)
 }
 
 /** Actions that need an attachment motor. */
@@ -92,19 +101,20 @@ export const NEEDS_ATTACHMENT: ReadonlySet<Mission['action']> = new Set(['pull',
  * "down" = clockwise, "up" = counterclockwise on the attachment motor.
  */
 export function actionSteps(path: PathBuilder, mission: Mission, attachment: Port | null) {
+  const { actionMm, attachmentDeg } = mission.plan
   const arm = (dir: 'clockwise' | 'counterclockwise'): Step[] =>
-    attachment ? [{ op: 'motor_run', port: attachment, direction: dir, value: mission.attachmentDeg, unit: 'degrees' }] : []
+    attachment ? [{ op: 'motor_run', port: attachment, direction: dir, value: attachmentDeg, unit: 'degrees' }] : []
   const down = () => path.add(...arm('clockwise'))
   const up = () => path.add(...arm('counterclockwise'))
 
   switch (mission.action) {
     case 'push':
-      path.drive(mission.actionMm)
-      path.drive(mission.actionMm, 'back')
+      path.drive(actionMm)
+      path.drive(actionMm, 'back')
       break
     case 'pull':
       down()
-      path.drive(mission.actionMm, 'back')
+      path.drive(actionMm, 'back')
       up()
       break
     case 'lift':
@@ -113,16 +123,16 @@ export function actionSteps(path: PathBuilder, mission: Mission, attachment: Por
       up()
       break
     case 'deliver':
-      path.drive(mission.actionMm)
+      path.drive(actionMm)
       up()
-      path.drive(mission.actionMm, 'back')
+      path.drive(actionMm, 'back')
       down()
       break
     case 'collect':
       down()
-      path.drive(mission.actionMm)
+      path.drive(actionMm)
       up()
-      path.drive(mission.actionMm, 'back')
+      path.drive(actionMm, 'back')
       break
     case 'flip':
       down()

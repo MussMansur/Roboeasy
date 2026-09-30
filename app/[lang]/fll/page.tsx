@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { FllPlanner } from '@/components/fll/planner'
 import { SiteHeader } from '@/components/site-header'
-import { DEFAULT_SEASON_ID, getSeason } from '@/lib/fll/seasons'
+import { DEFAULT_SEASON_ID, SEASON_LIST } from '@/lib/fll/seasons'
 import { getDictionary, isLocale } from '@/lib/i18n'
 
 type Params = { params: Promise<{ lang: string }> }
@@ -19,15 +19,14 @@ export default async function FllPage({ params }: Params) {
   const { lang } = await params
   if (!isLocale(lang)) notFound()
   const t = getDictionary(lang)
-  const season = getSeason(DEFAULT_SEASON_ID)
-  if (!season) notFound()
   return (
     <>
       <SiteHeader lang={lang} t={t.nav} variant="studio" />
       <main id="main">
         <FllPlanner
           lang={lang}
-          season={season}
+          seasons={SEASON_LIST}
+          defaultSeasonId={DEFAULT_SEASON_ID}
           t={t.fll}
           robotT={t.studio.robot}
           labels={t.blocks}

@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
   const known = new Set(season?.missions.map((m) => m.id))
   const missionIds = Array.isArray(body.missionIds) ? [...new Set(body.missionIds.filter((id): id is string => typeof id === 'string' && known.has(id)))] : []
   if (!season || !missionIds.length || missionIds.length > MAX_SELECTED) return reply({ ok: false, error: 'bad_request' }, 400)
+  if (!season.launchAreas.length) return reply({ ok: false, error: 'season_incomplete' }, 422)
   const robot = parseRobot(body.robot)
 
   const limit = rateLimit(`fll:${clientKey(req.headers)}`, RATE_LIMIT.requests, RATE_LIMIT.windowMs)

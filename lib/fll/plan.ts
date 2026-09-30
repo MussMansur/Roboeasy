@@ -19,7 +19,7 @@ export type PlanNotice = 'not_configured' | 'ai_busy' | 'ai_failed'
 
 export type PlanResponse =
   | { ok: true; plan: FllPlan; source: 'ai' | 'fallback'; notice?: PlanNotice }
-  | { ok: false; error: 'bad_request' | 'rate_limited'; retryAfter?: number }
+  | { ok: false; error: 'bad_request' | 'rate_limited' | 'season_incomplete'; retryAfter?: number }
 
 const LANG_NAME: Record<Lang, string> = { ru: 'Russian', kk: 'Kazakh', en: 'English' }
 export const MAX_SELECTED = 30
@@ -105,12 +105,26 @@ Use every selected mission exactly once. Answer with JSON only.`
 }
 
 export function planUserMessage(season: Season, missionIds: string[], robot: RobotProfile, lang: Lang): string {
+  const round = (n: number) => Math.round(n)
   const data = {
-    field: season.field,
+    field: { widthMm: season.field.widthMm, heightMm: season.field.heightMm },
     launchAreas: season.launchAreas.map((a) => ({ id: a.id, name: localize(a.name, lang), start: a.start })),
+    forbiddenZones: season.forbiddenZones.map((z) => ({ id: z.id, name: localize(z.name, lang), center: { x: z.x, y: z.y } })),
     missions: season.missions
       .filter((m) => missionIds.includes(m.id))
-      .map((m) => ({ id: m.id, name: localize(m.name, lang), x: m.x, y: m.y, headingDeg: m.headingDeg, points: m.points, action: m.action, notes: localize(m.notes, lang) })),
+      .map((m) => {
+        const approach = approachPoint(m)
+        return {
+          id: m.id,
+          number: m.number,
+          name: localize(m.name, lang),
+          model: { x: round(m.x), y: round(m.y) },
+          robotStandsAt: { x: round(approach.x), y: round(approach.y) },
+          points: m.points,
+          action: m.action,
+          notes: localize(m.notes, lang),
+        }
+      }),
     robot: { attachments: robot.attachments, driveMotors: [robot.leftMotor, robot.rightMotor] },
   }
   return `Coordinates are in mm from the bottom-left corner of the mat.\n${JSON.stringify(data)}`

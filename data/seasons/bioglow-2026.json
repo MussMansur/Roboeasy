@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 2,
+  "id": "bioglow-2026",
+  "name": { "ru": "BIOGLOW", "en": "BIOGLOW", "kk": "BIOGLOW" },
+  "years": "2026–2027",
+  "status": "current",
+  "edition": "founders",
+  "platform": "spike",
+  "todo": "TODO: миссии, зоны старта и запретные зоны внести через редактор (/fll/editor) по официальному Robot Game Rulebook сезона.",
+  "field": { "widthMm": 2362, "heightMm": 1143, "todo": "TODO: сверить с официальным Robot Game Rulebook сезона" },
+  "launchAreas": [],
+  "forbiddenZones": [],
+  "missions": []
+}

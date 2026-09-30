@@ -12,7 +12,7 @@ npm run dev                  # http://localhost:3000 → /ru, /kk or /en
 
 | Command | What it does |
 |---|---|
-| `npm test` | vitest: DSL validation, both compilers, .llsp3 packing, FLL geometry and planning, Python snapshots |
+| `npm test` | vitest: DSL validation, both compilers, .llsp3 packing, FLL geometry and planning, season files and migration, editor model, perspective correction, Python snapshots |
 | `npm run typecheck` | TypeScript strict |
 | `npm run build` | production build |
 | `npm run reference` | compares our blocks with SPIKE App exports in `reference/` (see `reference/README.md`) |
@@ -30,12 +30,18 @@ The AI only writes commands of a small DSL. Valid word blocks and Python are pro
 - `lib/spike/llsp3.ts` — packs `.llsp3` exactly like the SPIKE App; `lib/spike/prompts.ts` — system prompts.
 - `lib/gemini.ts` — Gemini client: JSON schema, model fallbacks, timeouts.
 - `app/api/generate` — modes `blocks`, `python` (both DSL) and `python-free` (the AI writes Python).
-- `lib/fll/*`, `data/seasons/*.json`, `app/api/fll/plan`, `app/[lang]/fll` — FLL helper: season data, route geometry (`path.ts`), runs (`run.ts`), calibration, AI planning with a deterministic fallback.
-- `app/[lang]/` — landing, studio, FLL page; `lib/i18n/` — dictionaries (`ru` defines the shape); `proxy.ts` — language redirect.
+- `lib/fll/*`, `data/seasons/*.json`, `app/api/fll/plan`, `app/[lang]/fll` — FLL helper: season schema (`season.ts`), shape geometry (`geometry.ts`), route geometry (`path.ts`), runs (`run.ts`), calibration, AI planning with a deterministic fallback.
+- `app/[lang]/fll/editor` — field editor (missions, launch areas, forbidden zones; undo/redo, JSON import/export, draft autosave in IndexedDB).
+- `lib/compilers/index.ts` — code generators by robot platform (`spike` only for now; other platforms can still plan routes).
+- `app/[lang]/` — landing, studio, FLL pages; `lib/i18n/` — dictionaries (`ru` defines the shape); `proxy.ts` — language redirect.
 
 ## FLL season data
 
-`data/seasons/template.json` is a template: only the mat size (2362 × 1143 mm) is real. Replace the example launch areas and missions (marked `todo`) with the season's field map: millimetres from the bottom-left corner, headings in degrees (0 = right, counterclockwise). `via` points let routes drive around models.
+One schema for every season (`lib/fll/season.ts`, `schemaVersion: 2`; v1 files are migrated on load). `data/seasons/index.json` lists the seasons; the one with `status: "current"` is selected by default.
+
+`bioglow-2026.json` (current) and `unearthed-2025.json` (archive) are skeletons: metadata and the mat size only, marked TODO. Missions, launch areas and forbidden zones are entered from the official Robot Game Rulebook in the field editor (`/ru/fll/editor`), exported as JSON and saved over the season file. Coordinates are millimetres from the bottom-left corner of the mat; angles are degrees, 0 = right, counterclockwise. Mission outlines and action zones are stored in the model's own frame, so rotating a model rotates them too.
+
+The official field artwork belongs to FIRST/LEGO and is not in this repository. Teams can use their own photo, scan or PDF of the mat as a background: it is stored only in the browser (IndexedDB) and straightened by marking the four mat corners.
 
 ## Notes
 

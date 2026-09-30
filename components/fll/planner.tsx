@@ -1,11 +1,13 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { AlertTriangle, Check, Compass, FileDown, Info, Lightbulb, Loader2, Plus, Ruler, Trash2 } from 'lucide-react'
+import { AlertTriangle, Check, Compass, FileDown, Info, Lightbulb, Loader2, PencilRuler, Plus, Ruler, Trash2 } from 'lucide-react'
 
 import { BlockStack } from '@/components/block-stack'
+import { BackgroundControls, useFieldBackground } from '@/components/fll/background'
 import { Field, RUN_COLORS } from '@/components/fll/field'
-import { programToPython } from '@/lib/dsl/compile-python'
+import { SeasonSelect, useSeasonChoice } from '@/components/fll/season-select'
+import { type CodeFormat, compilerFor } from '@/lib/compilers'
 import { ATTACHMENT_KINDS, type AttachmentKind, DEFAULT_ROBOT, PORTS, type Port, type Program, type RobotProfile } from '@/lib/dsl/types'
 import { CALIBRATION, applyCalibration, distanceTestProgram, turnTestProgram } from '@/lib/fll/calibration'
 import type { PlanResponse } from '@/lib/fll/plan'
@@ -16,11 +18,11 @@ import type { Dictionary } from '@/lib/i18n/ru'
 import { loadRobot, saveRobot } from '@/lib/studio-state'
 
 type OkPlan = Extract<PlanResponse, { ok: true }>
-type FileFormat = 'blocks' | 'python'
 
 interface PlannerProps {
   lang: Locale
-  season: Season
+  seasons: Season[]
+  defaultSeasonId: string
   t: Dictionary['fll']
   robotT: Dictionary['studio']['robot']
   labels: Dictionary['blocks']
@@ -42,10 +44,14 @@ function saveFile(blob: Blob, filename: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
-export function FllPlanner({ lang, season, t, robotT, labels, formatT }: PlannerProps) {
+export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, formatT }: PlannerProps) {
+  const [seasonId, chooseSeason] = useSeasonChoice(seasons, defaultSeasonId)
+  const season = seasons.find((s) => s.id === seasonId) ?? seasons[0]
+  const compiler = compilerFor(season.platform)
+  const bg = useFieldBackground(season.id)
   const [robot, setRobot] = useState<RobotProfile>(DEFAULT_ROBOT)
   const [selected, setSelected] = useState<Set<string>>(new Set())
-  const [format, setFormat] = useState<FileFormat>('blocks')
+  const [format, setFormat] = useState<CodeFormat>('blocks')
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [response, setResponse] = useState<OkPlan | null>(null)
   const [error, setError] = useState('')
@@ -57,6 +63,15 @@ export function FllPlanner({ lang, season, t, robotT, labels, formatT }: Planner
     const saved = loadRobot()
     if (saved) setRobot(saved)
   }, [])
+
+  // A different season: start over.
+  useEffect(() => {
+    setSelected(new Set())
+    setResponse(null)
+    setOpenRuns(new Set())
+    setError('')
+    setStatus('idle')
+  }, [season.id])
 
   useEffect(() => {
     if (!toast) return
@@ -112,13 +127,13 @@ export function FllPlanner({ lang, season, t, robotT, labels, formatT }: Planner
   }
 
   async function download(program: Program) {
+    if (!compiler) {
+      setError(t.unsupportedPlatform)
+      return
+    }
     try {
-      const { createLlsp3 } = await import('@/lib/spike/llsp3')
-      const blob = await createLlsp3(
-        program.title,
-        format === 'blocks' ? { format: 'blocks', program, robot } : { format: 'python', code: programToPython(program, robot) },
-      )
-      saveFile(blob, `${fileName(program.title)}.llsp3`)
+      const blob = await compiler.pack(program.title, program, robot, compiler.formats.includes(format) ? format : compiler.formats[0])
+      saveFile(blob, `${fileName(program.title)}${compiler.fileExtension}`)
     } catch {
       setError(t.errors.file)
     }
@@ -160,10 +175,25 @@ export function FllPlanner({ lang, season, t, robotT, labels, formatT }: Planner
         <p className="eyebrow">{t.eyebrow}</p>
         <h1>{t.title}</h1>
         <p className="lead">{t.lead}</p>
+        <div className="fll-season-row">
+          <SeasonSelect seasons={seasons} value={season.id} onChange={chooseSeason} lang={lang} t={t} />
+          <span className="format-badge">{t.editions[season.edition]}</span>
+          <span className="format-badge">{t.platforms[season.platform]}</span>
+          <a className="btn btn-sm" href={`/${lang}/fll/editor${season.id === defaultSeasonId ? '' : `?season=${season.id}`}`}>
+            <PencilRuler size={16} aria-hidden="true" />
+            {t.openEditor}
+          </a>
+        </div>
         {season.todo && (
           <p className="alert alert-warn" role="note">
             <Info size={18} aria-hidden="true" />
-            <span>{t.templateNotice}</span>
+            <span>{t.seasonTodo}</span>
+          </p>
+        )}
+        {!compiler && (
+          <p className="alert alert-warn" role="note">
+            <Info size={18} aria-hidden="true" />
+            <span>{t.unsupportedPlatform}</span>
           </p>
         )}
       </header>
@@ -175,17 +205,34 @@ export function FllPlanner({ lang, season, t, robotT, labels, formatT }: Planner
             {t.fieldTitle}
           </h2>
           <p className="tab-note">{t.fieldHint}</p>
-          <Field season={season} lang={lang} selected={selected} onToggle={toggle} routes={runs.map((r) => r.trace)} label={t.fieldTitle} />
+          <Field
+            season={season}
+            lang={lang}
+            selected={selected}
+            onToggle={toggle}
+            routes={runs.map((r) => r.trace)}
+            background={bg.url}
+            backgroundOpacity={bg.opacity}
+            label={t.fieldTitle}
+          />
+          <BackgroundControls state={bg} field={season.field} t={t.background} />
 
           <h3 className="fll-subtitle">{t.missionsTitle}</h3>
-          <p className="fll-selected">{fill(t.selected, { n: selected.size, p: selectedPoints })}</p>
+          {season.missions.length === 0 || season.launchAreas.length === 0 ? (
+            <p className="alert alert-warn" role="note">
+              <Info size={18} aria-hidden="true" />
+              <span>{season.missions.length === 0 ? t.noMissions : t.errors.season_incomplete}</span>
+            </p>
+          ) : (
+            <p className="fll-selected">{fill(t.selected, { n: selected.size, p: selectedPoints })}</p>
+          )}
           <ul className="fll-missions">
             {season.missions.map((m) => (
               <li key={m.id}>
                 <label>
                   <input type="checkbox" checked={selected.has(m.id)} onChange={() => toggle(m.id)} />
-                  <span className="fll-id">{m.id}</span>
-                  <span className="fll-mname">{localize(m.name, lang)}</span>
+                  <span className="fll-id">{m.number}</span>
+                  <span className="fll-mname">{localize(m.name, lang) || m.id}</span>
                   <span className="fll-meta">
                     {t.actions[m.action]} · {fill(t.points, { p: m.points })}
                   </span>
@@ -293,7 +340,7 @@ export function FllPlanner({ lang, season, t, robotT, labels, formatT }: Planner
               <li>
                 <p>{fill(t.calibDistance, { d: CALIBRATION.distanceCm })}</p>
                 <div className="fll-calib-row">
-                  <button type="button" className="btn btn-sm" onClick={() => void download(distanceTestProgram(`Test ${CALIBRATION.distanceCm} cm`))}>
+                  <button type="button" className="btn btn-sm" disabled={!compiler} onClick={() => void download(distanceTestProgram(`Test ${CALIBRATION.distanceCm} cm`))}>
                     <FileDown size={16} aria-hidden="true" />
                     {t.downloadTest}
                   </button>
@@ -312,7 +359,7 @@ export function FllPlanner({ lang, season, t, robotT, labels, formatT }: Planner
               <li>
                 <p>{fill(t.calibTurn, { t: CALIBRATION.turnDeg })}</p>
                 <div className="fll-calib-row">
-                  <button type="button" className="btn btn-sm" onClick={() => void download(turnTestProgram(`Test ${CALIBRATION.turnDeg}`))}>
+                  <button type="button" className="btn btn-sm" disabled={!compiler} onClick={() => void download(turnTestProgram(`Test ${CALIBRATION.turnDeg}`))}>
                     <FileDown size={16} aria-hidden="true" />
                     {t.downloadTest}
                   </button>
@@ -350,16 +397,18 @@ export function FllPlanner({ lang, season, t, robotT, labels, formatT }: Planner
           <h2 id="fll-plan-title" className="panel-title">
             {t.planTitle}
           </h2>
-          <div className="tabs" role="group" aria-label={t.format} style={{ margin: 0 }}>
-            {(['blocks', 'python'] as const).map((f) => (
-              <button key={f} type="button" aria-pressed={format === f} onClick={() => setFormat(f)}>
-                {formatT[f]}
-              </button>
-            ))}
-          </div>
+          {compiler && compiler.formats.length > 1 && (
+            <div className="tabs" role="group" aria-label={t.format} style={{ margin: 0 }}>
+              {compiler.formats.map((f) => (
+                <button key={f} type="button" aria-pressed={format === f} onClick={() => setFormat(f)}>
+                  {formatT[f]}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        <button type="button" className="btn btn-primary btn-lg" onClick={() => void plan()} disabled={status === 'loading'}>
+        <button type="button" className="btn btn-primary btn-lg" onClick={() => void plan()} disabled={status === 'loading' || season.missions.length === 0 || season.launchAreas.length === 0}>
           {status === 'loading' ? <Loader2 size={18} className="spin" aria-hidden="true" /> : <Lightbulb size={18} aria-hidden="true" />}
           {status === 'loading' ? t.planning : t.planButton}
         </button>
@@ -407,14 +456,16 @@ export function FllPlanner({ lang, season, t, robotT, labels, formatT }: Planner
                     {built?.warnings.map((w, j) => (
                       <p key={j} className="alert alert-warn" role="note">
                         <AlertTriangle size={16} aria-hidden="true" />
-                        <span>{fill(t.warnings[w.kind], { id: w.kind === 'unknown_launch_area' ? w.launchAreaId : w.missionId })}</span>
+                        <span>{fill(t.warnings[w.kind], { id: w.kind === 'unknown_launch_area' ? w.launchAreaId : w.kind === 'forbidden_zone' ? w.zoneId : w.missionId })}</span>
                       </p>
                     ))}
                     <div className="toolbar">
-                      <button type="button" className="btn btn-primary btn-sm" onClick={() => built && void download(built.program)}>
-                        <FileDown size={16} aria-hidden="true" />
-                        {t.download}
-                      </button>
+                      {compiler && (
+                        <button type="button" className="btn btn-primary btn-sm" onClick={() => built && void download(built.program)}>
+                          <FileDown size={16} aria-hidden="true" />
+                          {fill(t.download, { ext: compiler.fileExtension })}
+                        </button>
+                      )}
                       <button
                         type="button"
                         className="btn btn-sm"
