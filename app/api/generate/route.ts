@@ -3,13 +3,15 @@ import type { NextRequest } from 'next/server'
 
 import { type Format, type GenerateErrorCode, type GenerateResponse, PROMPT_MAX } from '@/lib/api-types'
 import { clientKey, rateLimit } from '@/lib/rate-limit'
-import { type Program, type RobotConfig, sanitizeProgram, sanitizeRobot } from '@/lib/spike/program'
+import type { RobotConfig } from '@/lib/spike/program'
 import { type Lang, blocksSystemPrompt, pythonSystemPrompt, userMessage } from '@/lib/spike/prompts'
 import { checkPython, cleanPython, programToPython } from '@/lib/spike/python'
+import { PROGRAM_JSON_SCHEMA, PYTHON_JSON_SCHEMA, parseProgram, parsePythonAnswer, parseRobot } from '@/lib/spike/schema'
 
 export const maxDuration = 60
 
-const MODELS = [...new Set([process.env.GEMINI_MODEL?.trim() || 'gemini-3.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash'])]
+/** GEMINI_MODEL is tried first; the others are fallbacks for overload (503) or quota (429). */
+const MODELS = [...new Set([process.env.GEMINI_MODEL?.trim() || 'gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest'])]
 const ATTEMPT_TIMEOUT_MS = 40_000
 /** Stay under maxDuration so the client gets a proper error instead of a platform timeout. */
 const TOTAL_TIMEOUT_MS = 55_000
@@ -41,13 +43,13 @@ function parseRequest(body: unknown): ParsedRequest | { error: GenerateErrorCode
   if (prompt.length > PROMPT_MAX) return { error: 'prompt_too_long' }
   const format: Format = b.format === 'python' ? 'python' : 'blocks'
   const lang = LANGS.includes(b.lang as Lang) ? (b.lang as Lang) : 'ru'
-  const robot = sanitizeRobot(b.robot)
+  const robot = parseRobot(b.robot)
 
   let previous: ParsedRequest['previous']
   const prev = typeof b.previous === 'object' && b.previous !== null ? (b.previous as Record<string, unknown>) : null
   if (prev && format === 'blocks' && prev.program) {
-    const program = sanitizeProgram(prev.program, robot)
-    if (program.steps.length) previous = { kind: 'program', value: JSON.stringify(program) }
+    const program = parseProgram(prev.program, robot)
+    if (program.ok) previous = { kind: 'program', value: JSON.stringify(program.value) }
   } else if (prev && format === 'python' && typeof prev.code === 'string' && prev.code.trim()) {
     previous = { kind: 'code', value: prev.code.slice(0, 12_000) }
   }
@@ -61,7 +63,13 @@ class GenerationError extends Error {
 }
 
 /** Asks Gemini for a JSON object, falling back to the next model when one is unavailable. */
-async function askGemini(ai: GoogleGenAI, system: string, contents: string, signal: AbortSignal): Promise<Record<string, unknown>> {
+async function askGemini(
+  ai: GoogleGenAI,
+  system: string,
+  contents: string,
+  schema: Record<string, unknown>,
+  signal: AbortSignal,
+): Promise<Record<string, unknown>> {
   let busy = false
   for (const model of MODELS) {
     try {
@@ -72,6 +80,7 @@ async function askGemini(ai: GoogleGenAI, system: string, contents: string, sign
           systemInstruction: system,
           temperature: 0.2,
           responseMimeType: 'application/json',
+          responseJsonSchema: schema,
           abortSignal: AbortSignal.any([signal, AbortSignal.timeout(ATTEMPT_TIMEOUT_MS)]),
         },
       })
@@ -91,23 +100,35 @@ async function askGemini(ai: GoogleGenAI, system: string, contents: string, sign
 
 function parseJsonObject(text: string): Record<string, unknown> | null {
   try {
-    const parsed: unknown = JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/g, '').trim())
+    const parsed: unknown = JSON.parse(text)
     return typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : null
   } catch {
     return null
   }
 }
 
+/** Asks the model again once, with the validation error, if the first answer is invalid. */
+function retryMessage(message: string, problems: string): string {
+  return `${message}
+
+Your previous answer was rejected:
+${problems}
+Return the complete corrected JSON object.`
+}
+
 async function generateBlocks(ai: GoogleGenAI, req: ParsedRequest, signal: AbortSignal): Promise<GenerateResponse> {
   const system = blocksSystemPrompt(req.robot, req.lang)
-  let message = userMessage(req.prompt, req.previous)
-  let program: Program | null = null
-  for (let attempt = 0; attempt < 2 && !program?.steps.length; attempt++) {
-    const raw = await askGemini(ai, system, message, signal)
-    program = sanitizeProgram(raw, req.robot)
-    message = `${message}\n\nYour previous answer had no valid steps. Use only the step types from the instructions.`
+  const message = userMessage(req.prompt, req.previous)
+  let parsed = parseProgram(await askGemini(ai, system, message, PROGRAM_JSON_SCHEMA, signal), req.robot)
+  if (!parsed.ok) {
+    console.warn('[generate] invalid program, retrying:', parsed.error)
+    parsed = parseProgram(await askGemini(ai, system, retryMessage(message, parsed.error), PROGRAM_JSON_SCHEMA, signal), req.robot)
   }
-  if (!program?.steps.length) throw new GenerationError('empty_program')
+  if (!parsed.ok) {
+    console.error('[generate] invalid program after retry:', parsed.error)
+    throw new GenerationError('empty_program')
+  }
+  const program = parsed.value
   return {
     ok: true,
     format: 'blocks',
@@ -122,29 +143,25 @@ async function generateBlocks(ai: GoogleGenAI, req: ParsedRequest, signal: Abort
 async function generatePython(ai: GoogleGenAI, req: ParsedRequest, signal: AbortSignal): Promise<GenerateResponse> {
   const system = pythonSystemPrompt(req.robot, req.lang)
   const message = userMessage(req.prompt, req.previous)
-  const first = await askGemini(ai, system, message, signal)
-  let best = { raw: first, code: cleanPython(String(first.code ?? '')) }
-  let issues = checkPython(best.code)
 
-  if (issues.length) {
-    const retry = await askGemini(ai, system, `${message}\n\nYour previous code had these problems: ${issues.join('; ')}. Fix them and return the full JSON again.`, signal)
-    const code = cleanPython(String(retry.code ?? ''))
-    const retryIssues = checkPython(code)
-    if (retryIssues.length < issues.length) {
-      best = { raw: retry, code }
-      issues = retryIssues
-    }
+  const attempt = async (text: string) => {
+    const parsed = parsePythonAnswer(await askGemini(ai, system, text, PYTHON_JSON_SCHEMA, signal))
+    if (!parsed.ok) return { answer: null, problems: parsed.error, issues: [] as string[] }
+    const answer = { ...parsed.value, code: cleanPython(parsed.value.code) }
+    const issues = checkPython(answer.code)
+    return { answer, problems: issues.join('; '), issues }
   }
-  if (best.code.trim().length < 10) throw new GenerationError('empty_program')
-  const text = (v: unknown, max: number) => (typeof v === 'string' ? v.replace(/\s+/g, ' ').trim().slice(0, max) : '')
-  return {
-    ok: true,
-    format: 'python',
-    title: text(best.raw.title, 60) || 'RoboEasy',
-    description: text(best.raw.description, 400),
-    code: best.code,
-    warnings: issues,
+
+  let best = await attempt(message)
+  if (!best.answer || best.issues.length) {
+    const retry = await attempt(retryMessage(message, best.problems))
+    if (retry.answer && (!best.answer || retry.issues.length < best.issues.length)) best = retry
   }
+  if (!best.answer) {
+    console.error('[generate] invalid Python answer after retry:', best.problems)
+    throw new GenerationError('empty_program')
+  }
+  return { ok: true, format: 'python', ...best.answer, warnings: best.issues }
 }
 
 /** Lets the UI show whether the AI is configured without exposing anything else. */

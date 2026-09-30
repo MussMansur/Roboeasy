@@ -4,7 +4,8 @@ import { describe, it } from 'node:test'
 
 import { matchLocale } from '../lib/i18n/config'
 import { rateLimit } from '../lib/rate-limit'
-import { type Step, type StepOp, sanitizeProgram } from '../lib/spike/program'
+import type { Step, StepOp } from '../lib/spike/program'
+import { parseProgram } from '../lib/spike/schema'
 import { checkPython, programToPython } from '../lib/spike/python'
 import { buildProject } from '../lib/spike/scratch'
 
@@ -52,9 +53,11 @@ const ALL_OPS: StepOp[] = [
 ]
 
 describe('every step type', () => {
-  const program = sanitizeProgram({ title: 'All', steps: EVERY_STEP })
+  const parsed = parseProgram({ title: 'All', description: 'Every step type', steps: EVERY_STEP })
+  if (!parsed.ok) throw new Error(parsed.error)
+  const program = parsed.value
 
-  it('survives sanitizing unchanged', () => {
+  it('survives validation unchanged', () => {
     assert.deepEqual(program.steps, EVERY_STEP)
     assert.deepEqual([...new Set(EVERY_STEP.map((s) => s.op))].sort(), [...ALL_OPS].sort())
   })

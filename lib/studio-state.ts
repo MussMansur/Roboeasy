@@ -4,7 +4,8 @@
  */
 
 import type { Format } from './api-types'
-import { type Program, type RobotConfig, sanitizeProgram, sanitizeRobot } from './spike/program'
+import type { Program, RobotConfig } from './spike/program'
+import { parseProgram, parseRobot } from './spike/schema'
 import { programToPython } from './spike/python'
 
 export type StudioResult =
@@ -49,9 +50,10 @@ export function reviveResult(raw: unknown): StudioResult | null {
     return { format: 'python', title: text(r.title, 60) || 'RoboEasy', description: text(r.description, 400), code: r.code.slice(0, 20_000), warnings: [] }
   }
   if (r.format === 'blocks') {
-    const robot = sanitizeRobot(r.robot)
-    const program = sanitizeProgram(r.program, robot)
-    if (!program.steps.length) return null
+    const robot = parseRobot(r.robot)
+    const parsed = parseProgram(r.program, robot)
+    if (!parsed.ok) return null
+    const program = parsed.value
     return { format: 'blocks', title: program.title, description: program.description, program, python: programToPython(program, robot), robot, warnings: [] }
   }
   return null
@@ -89,7 +91,7 @@ export function addToHistory(items: HistoryItem[], prompt: string, result: Studi
 
 export const loadRobot = (): RobotConfig | null => {
   const raw = read<unknown>(ROBOT_KEY)
-  return raw ? sanitizeRobot(raw) : null
+  return raw ? parseRobot(raw) : null
 }
 export const saveRobot = (robot: RobotConfig) => write(ROBOT_KEY, robot)
 export const loadFormat = (): Format | null => {

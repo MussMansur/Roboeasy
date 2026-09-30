@@ -3,10 +3,17 @@ import { createRequire } from 'node:module'
 import { describe, it } from 'node:test'
 import JSZip from 'jszip'
 
-import { DEFAULT_ROBOT, type Program, sanitizeProgram, sanitizeRobot, toMatrixText } from '../lib/spike/program'
+import { DEFAULT_ROBOT, type Program, type Step, toMatrixText } from '../lib/spike/program'
+import { PROGRAM_JSON_SCHEMA, PYTHON_JSON_SCHEMA, parseProgram, parseRobot } from '../lib/spike/schema'
 import { buildProject, type ScratchBlock } from '../lib/spike/scratch'
 import { checkPython, cleanPython, programToPython } from '../lib/spike/python'
 import { SPIKE_PROJECT_VERSION, createLlsp3 } from '../lib/spike/llsp3'
+
+const EVERY_OP: Step['op'][] = [
+  'move', 'turn', 'steer', 'start_move', 'start_steer', 'stop_move', 'set_speed', 'motor_run', 'motor_start', 'motor_stop',
+  'motor_speed', 'show_image', 'write', 'clear_display', 'beep', 'button_light', 'wait', 'wait_until', 'repeat', 'forever',
+  'repeat_until', 'if',
+]
 
 const require = createRequire(import.meta.url)
 // The same validator the SPIKE App runs on scratch.sb3 when a project is opened.
@@ -71,74 +78,114 @@ function assertLinked(blocks: Record<string, ScratchBlock>) {
   assert.equal(tops[0].opcode, 'flipperevents_whenProgramStarts')
 }
 
-describe('sanitizeProgram', () => {
+/** Parses a program that must be valid and returns it. */
+function valid(raw: unknown, robot = DEFAULT_ROBOT): Program {
+  const r = parseProgram(raw, robot)
+  if (!r.ok) assert.fail(r.error)
+  return r.value
+}
+
+function invalid(raw: unknown): string {
+  const r = parseProgram(raw)
+  assert.equal(r.ok, false, 'expected a validation error')
+  return r.ok ? '' : r.error
+}
+
+describe('parseProgram', () => {
   it('keeps valid steps and fills sensor ports from the robot config', () => {
-    const p = sanitizeProgram(sample, DEFAULT_ROBOT)
+    const p = valid(sample)
     assert.equal(p.steps.length, 7)
     const forever = p.steps[6]
     assert.equal(forever.op, 'forever')
     if (forever.op !== 'forever') return
-    const wait = forever.steps[1]
-    assert.deepEqual(wait, { op: 'wait_until', condition: { sensor: 'distance', port: 'C', comparator: '<', value: 10, unit: 'cm' } })
+    assert.deepEqual(forever.steps[1], { op: 'wait_until', condition: { sensor: 'distance', port: 'C', comparator: '<', value: 10, unit: 'cm' } })
+    const custom = valid(sample, { ...DEFAULT_ROBOT, distanceSensor: 'F' }).steps[6]
+    assert.ok(
+      custom.op === 'forever' &&
+        custom.steps[1].op === 'wait_until' &&
+        custom.steps[1].condition.sensor === 'distance' &&
+        custom.steps[1].condition.port === 'F',
+    )
   })
 
-  it('drops unknown ops, clamps numbers and normalizes enums', () => {
-    const p = sanitizeProgram({
+  it('clamps numbers into safe ranges instead of failing', () => {
+    const p = valid({
       title: '  x  ',
+      description: '',
       steps: [
-        { op: 'launch_rocket' },
-        { op: 'move', direction: 'backward', value: 99999, unit: 'cm' },
-        { op: 'set_speed', speed: '250' },
-        { op: 'motor_run', port: 'z', direction: 'sideways', value: -3, unit: 'parsecs' },
-        { op: 'show_image', image: 'Arrow Up' },
-        { op: 'show_image', image: '9-9-9-9-9-0-0-0-0-0-9-9-9-9-9-0-0-0-0-0-9-9-9-9-9' },
-        { op: 'wait_until', condition: { sensor: 'lidar' } },
+        { op: 'move', direction: 'back', value: 99999, unit: 'cm' },
+        { op: 'move', direction: 'forward', value: 99999, unit: 'seconds' },
+        { op: 'set_speed', speed: 250 },
+        { op: 'motor_run', port: 'C', direction: 'clockwise', value: -3, unit: 'rotations' },
+        { op: 'beep', note: 10, seconds: 0.01234 },
       ],
     })
     assert.deepEqual(p.steps, [
       { op: 'move', direction: 'back', value: 500, unit: 'cm' },
+      { op: 'move', direction: 'forward', value: 60, unit: 'seconds' },
       { op: 'set_speed', speed: 100 },
       { op: 'motor_run', port: 'C', direction: 'clockwise', value: 0.05, unit: 'rotations' },
-      { op: 'show_image', image: 'arrow_up' },
-      { op: 'show_image', image: '9999900000999990000099999' },
+      { op: 'beep', note: 36, seconds: 0.05 },
     ])
     assert.equal(p.title, 'x')
   })
 
+  it('rejects wrong structure with a readable error for the retry prompt', () => {
+    const one = (step: unknown) => invalid({ title: 't', description: '', steps: [step] })
+    assert.match(one({ op: 'launch_rocket' }), /steps\[0\]\.op/)
+    assert.match(one({ op: 'move', direction: 'backward', value: 1, unit: 'cm' }), /"forward"\|"back"/)
+    assert.match(one({ op: 'set_speed', speed: '50' }), /speed/)
+    assert.match(one({ op: 'wait_until', condition: { sensor: 'lidar' } }), /condition/)
+    assert.match(one({ op: 'show_image', image: 'Arrow Up' }), /image/)
+    assert.match(invalid({ title: 't', description: '', steps: [] }), /at least one step/)
+    invalid({ steps: [{ op: 'stop_move' }] })
+  })
+
   it('limits nesting depth and total size', () => {
     let deep: unknown = { op: 'beep', note: 60, seconds: 0.1 }
-    for (let i = 0; i < 10; i++) deep = { op: 'forever', steps: [deep] }
-    const p = sanitizeProgram({ steps: [deep] })
-    const depth = (steps: Program['steps']): number =>
-      Math.max(0, ...steps.map((s) => 1 + ('steps' in s ? depth(s.steps) : 0)))
-    assert.ok(depth(p.steps) <= 4)
-
-    const many = sanitizeProgram({ steps: Array.from({ length: 500 }, () => ({ op: 'stop_move' })) })
-    assert.equal(many.steps.length, 60)
+    for (let i = 0; i < 3; i++) deep = { op: 'forever', steps: [deep] }
+    valid({ title: 't', description: '', steps: [deep] })
+    invalid({ title: 't', description: '', steps: [{ op: 'forever', steps: [deep] }] })
+    const many = Array.from({ length: 61 }, () => ({ op: 'stop_move' }))
+    assert.match(invalid({ title: 't', description: '', steps: many }), /too many steps/)
   })
 
   it('drops steps after "forever" (a cap block in Scratch)', () => {
-    const p = sanitizeProgram({ steps: [{ op: 'forever', steps: [{ op: 'beep' }] }, { op: 'stop_move' }] })
-    assert.deepEqual(p.steps.map((s) => s.op), ['forever'])
+    const p = valid({ title: 't', description: '', steps: [{ op: 'forever', steps: [{ op: 'stop_move' }] }, { op: 'stop_move' }] })
+    assert.deepEqual(
+      p.steps.map((s) => s.op),
+      ['forever'],
+    )
   })
 
   it('transliterates display text for the 5x5 matrix', () => {
-    assert.equal(toMatrixText('Привет, Қазақстан!'), 'Privet, Qazaqstan!')
-    assert.equal(toMatrixText('Hi 🤖'), 'Hi')
+    assert.equal(toMatrixText('\u041f\u0440\u0438\u0432\u0435\u0442, \u049a\u0430\u0437\u0430\u049b\u0441\u0442\u0430\u043d!'), 'Privet, Qazaqstan!')
+    assert.equal(toMatrixText('Hi \u{1F916}'), 'Hi')
+    assert.match(invalid({ title: 't', description: '', steps: [{ op: 'write', text: '\u{1F916}' }] }), /Latin/)
   })
 
-  it('sanitizes robot config', () => {
-    assert.deepEqual(sanitizeRobot({ leftMotor: 'e', rightMotor: 'F', wheelDiameter: 999, trackWidth: 'x' }), {
+  it('parses robot config leniently', () => {
+    assert.deepEqual(parseRobot({ leftMotor: 'e', rightMotor: 'F', wheelDiameter: 999, trackWidth: 'x' }), {
       ...DEFAULT_ROBOT,
       leftMotor: 'E',
       rightMotor: 'F',
       wheelDiameter: 20,
     })
+    assert.deepEqual(parseRobot('junk'), DEFAULT_ROBOT)
+  })
+})
+
+describe('Gemini response schemas', () => {
+  it('list every step op and stay compact', () => {
+    const step = (PROGRAM_JSON_SCHEMA.$defs as Record<string, { properties: { op: { enum: string[] } } }>).Step
+    assert.deepEqual([...step.properties.op.enum].sort(), [...EVERY_OP].sort())
+    assert.ok(JSON.stringify(PROGRAM_JSON_SCHEMA).length < 4000)
+    assert.deepEqual(PYTHON_JSON_SCHEMA.required, ['title', 'description', 'code'])
   })
 })
 
 describe('buildProject (SPIKE word blocks)', () => {
-  const program = sanitizeProgram(sample, DEFAULT_ROBOT)
+  const program = valid(sample)
   const project = buildProject(program, DEFAULT_ROBOT)
   const sprite = project.targets[1] as { blocks: Record<string, ScratchBlock>; sounds: unknown[] }
 
@@ -181,7 +228,7 @@ describe('buildProject (SPIKE word blocks)', () => {
 
   it('validates an empty program and a program without movement', async () => {
     await validateSb3(buildProject({ title: 'e', description: '', steps: [] }))
-    const noDrive = buildProject(sanitizeProgram({ steps: [{ op: 'write', text: 'Hi' }] }))
+    const noDrive = buildProject(valid({ title: 'w', description: '', steps: [{ op: 'write', text: 'Hi' }] }))
     await validateSb3(noDrive)
     const ops = Object.values((noDrive.targets[1] as { blocks: Record<string, ScratchBlock> }).blocks).map((b) => b.opcode)
     assert.ok(!ops.includes('flippermove_setMovementPair'))
@@ -190,7 +237,7 @@ describe('buildProject (SPIKE word blocks)', () => {
 
 describe('createLlsp3', () => {
   it('packs word blocks like the SPIKE App does', async () => {
-    const blob = await createLlsp3('Моя программа', { format: 'blocks', program: sanitizeProgram(sample) })
+    const blob = await createLlsp3('Моя программа', { format: 'blocks', program: valid(sample) })
     const zip = await JSZip.loadAsync(await blob.arrayBuffer())
     assert.deepEqual(Object.keys(zip.files).sort(), ['icon.svg', 'manifest.json', 'scratch.sb3'])
     const manifest = JSON.parse(await zip.file('manifest.json')!.async('string'))
@@ -218,7 +265,7 @@ describe('createLlsp3', () => {
 
 describe('Python', () => {
   it('translates block programs to valid-looking SPIKE 3 Python', () => {
-    const code = programToPython(sanitizeProgram(sample))
+    const code = programToPython(valid(sample))
     assert.deepEqual(checkPython(code), [])
     assert.match(code, /motor_pair\.pair\(motor_pair\.PAIR_1, port\.A, port\.B\)/)
     assert.match(code, /await motor_pair\.move_for_degrees\(motor_pair\.PAIR_1, 411, 0, velocity=speed\)/)
