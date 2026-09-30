@@ -1,0 +1,118 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`compile-python > matches the snapshot for a line follower 1`] = `
+"# Test
+# Snapshot
+# RoboEasy AI · LEGO SPIKE App 3 (Python)
+
+from hub import port
+import runloop, motor_pair, color_sensor
+
+
+async def main():
+    motor_pair.pair(motor_pair.PAIR_1, port.A, port.B)
+    speed = 300  # 30%, degrees per second
+    while True:
+        if color_sensor.reflection(port.D) < 50:
+            motor_pair.move(motor_pair.PAIR_1, -30, velocity=speed)
+        else:
+            motor_pair.move(motor_pair.PAIR_1, 30, velocity=speed)
+        await runloop.sleep_ms(10)
+
+
+runloop.run(main())
+"
+`;
+
+exports[`compile-python > matches the snapshot for a square with gyro turns and a calibrated robot 1`] = `
+"# Test
+# Snapshot
+# RoboEasy AI · LEGO SPIKE App 3 (Python)
+
+from hub import port, sound, motion_sensor
+import runloop, motor_pair
+
+
+TURN_FACTOR = 0.98  # calibration: commanded / measured angle
+
+
+async def turn(degrees, velocity):
+    # Spin in place using the hub gyro (yaw): + turns right, - turns left.
+    direction = 1 if degrees > 0 else -1
+    remaining = abs(degrees) * TURN_FACTOR
+    while remaining > 0.5:
+        target = min(remaining, 90)  # yaw wraps at +-180 degrees
+        motion_sensor.reset_yaw(0)
+        await runloop.sleep_ms(10)
+        while True:
+            turned = abs(motion_sensor.tilt_angles()[0]) / 10  # decidegrees -> degrees
+            left = target - turned
+            if left <= 0.5:
+                break
+            v = int(max(80, min(abs(velocity), left * 10)))  # slow down near the target
+            motor_pair.move_tank(motor_pair.PAIR_1, direction * v, -direction * v)
+            await runloop.sleep_ms(5)
+        motor_pair.stop(motor_pair.PAIR_1)
+        remaining -= target
+
+
+async def main():
+    motor_pair.pair(motor_pair.PAIR_1, port.A, port.B)
+    speed = 500  # 50%, degrees per second
+    for _ in range(4):
+        await motor_pair.move_for_degrees(motor_pair.PAIR_1, 643, 0, velocity=speed)
+        await turn(90, speed)
+    await sound.beep(523, 300, 100)
+
+
+runloop.run(main())
+"
+`;
+
+exports[`compile-python > matches the snapshot for an arm attachment with sensors 1`] = `
+"# Test
+# Snapshot
+# RoboEasy AI · LEGO SPIKE App 3 (Python)
+
+from hub import port, light_matrix
+import runloop, motor_pair, motor, distance_sensor
+
+
+def distance_mm(p):
+    d = distance_sensor.distance(p)
+    return 2000 if d < 0 else d  # -1 = nothing in sight
+
+def distance_cm(p):
+    return distance_mm(p) / 10
+
+def distance_inches(p):
+    return distance_mm(p) / 25.4
+
+def distance_percent(p):
+    return min(100, distance_mm(p) / 20)
+
+
+async def main():
+    motor_pair.pair(motor_pair.PAIR_1, port.A, port.B)
+    speed = 500  # 50%, degrees per second
+    motor_speed = {'E': 750}  # 75%
+    motor_pair.move(motor_pair.PAIR_1, 0, velocity=speed)
+    await runloop.until(lambda: distance_cm(port.C) < 12)
+    motor_pair.stop(motor_pair.PAIR_1)
+    await motor.run_to_absolute_position(port.E, 0, motor_speed['E'], direction=motor.SHORTEST_PATH)
+    await motor.run_for_degrees(port.E, 90, motor_speed['E'])
+    # yes
+    light_matrix.show([
+        0, 0, 0, 0, 0,
+        0, 0, 0, 0, 100,
+        0, 0, 0, 100, 0,
+        100, 0, 100, 0, 0,
+        0, 100, 0, 0, 0,
+    ])
+    await runloop.sleep_ms(1000)
+    light_matrix.clear()
+
+
+runloop.run(main())
+"
+`;
