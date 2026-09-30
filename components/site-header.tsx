@@ -105,6 +105,9 @@ export function SiteHeader({ lang, t, variant = 'landing' }: SiteHeaderProps) {
               <Sun size={18} className="theme-icon-sun" aria-hidden="true" />
               <Moon size={18} className="theme-icon-moon" aria-hidden="true" />
             </button>
+            <Link className="btn btn-ghost btn-sm header-fll" href={`${home}/fll`}>
+              {t.fll}
+            </Link>
             {variant === 'landing' ? (
               <>
                 <Link className="btn btn-primary btn-sm header-cta" href={`${home}/workspace`}>
@@ -136,6 +139,9 @@ export function SiteHeader({ lang, t, variant = 'landing' }: SiteHeaderProps) {
                 {l.label}
               </a>
             ))}
+            <Link href={`${home}/fll`} onClick={() => setOpen(false)}>
+              {t.fll}
+            </Link>
             <Link className="btn btn-primary btn-block" href={`${home}/workspace`} onClick={() => setOpen(false)}>
               {t.open}
             </Link>

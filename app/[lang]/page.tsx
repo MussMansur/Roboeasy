@@ -225,6 +225,9 @@ export default async function LandingPage({ params }: { params: Promise<{ lang: 
                     {t.teachers.cta}
                     <ArrowRight size={18} aria-hidden="true" />
                   </Link>
+                  <Link className="btn" href={`/${lang}/fll`}>
+                    {t.nav.fll}
+                  </Link>
                 </div>
               </div>
               <ul className="checklist">

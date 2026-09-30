@@ -1909,6 +1909,249 @@ a {
   }
 }
 
+/* ───────────────────────── FLL helper ───────────────────────── */
+
+.tabs button[aria-pressed='true'] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+.fll {
+  display: grid;
+  gap: 20px;
+  padding-block: 24px 64px;
+}
+.fll-head h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+}
+.fll-head .alert {
+  max-width: 80ch;
+}
+.fll-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.fll-side {
+  display: grid;
+  gap: 20px;
+}
+.fll-subtitle {
+  margin: 20px 0 8px;
+  font-size: 1rem;
+}
+.fll-selected {
+  margin: 0 0 10px;
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.fll-field {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: var(--text);
+  user-select: none;
+}
+.fll-mat {
+  fill: var(--bg-soft);
+  stroke: var(--border-strong);
+  stroke-width: 6;
+}
+.fll-area rect {
+  fill: color-mix(in srgb, var(--azure) 14%, transparent);
+  stroke: var(--azure);
+  stroke-width: 5;
+  stroke-dasharray: 18 12;
+}
+.fll-area text {
+  fill: var(--azure-ink);
+  font: 700 38px var(--font-body), sans-serif;
+}
+.fll-route {
+  fill: none;
+  stroke-width: 12;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+.fll-mission {
+  cursor: pointer;
+  outline: none;
+}
+.fll-mission circle {
+  fill: var(--surface);
+  stroke: var(--text-3);
+  stroke-width: 6;
+  transition: fill 0.2s ease;
+}
+.fll-mission line {
+  stroke: var(--text-3);
+  stroke-width: 7;
+}
+.fll-mission text {
+  fill: var(--text);
+  font: 800 34px var(--font-body), sans-serif;
+  pointer-events: none;
+}
+.fll-mission[data-selected='true'] circle {
+  fill: var(--yellow);
+  stroke: var(--on-yellow);
+}
+.fll-mission[data-selected='true'] text {
+  fill: var(--on-yellow);
+}
+.fll-mission:focus-visible circle {
+  stroke: var(--azure);
+  stroke-width: 12;
+}
+
+.fll-missions {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fll-missions label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-2);
+  cursor: pointer;
+}
+.fll-missions input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--azure);
+}
+.fll-id {
+  font: 700 0.875rem/1 var(--font-code), monospace;
+}
+.fll-mname {
+  font-weight: 600;
+}
+.fll-meta {
+  color: var(--text-3);
+  font-size: 0.875rem;
+}
+.fll-robot {
+  padding: 0;
+}
+.fll-attachments {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+.fll-attachments li {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 72px 44px;
+  gap: 8px;
+  align-items: center;
+}
+.fll-calib {
+  display: grid;
+  gap: 14px;
+  margin: 0 0 14px;
+  padding-left: 20px;
+}
+.fll-calib p {
+  margin: 0 0 8px;
+  color: var(--text-2);
+}
+.fll-calib-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+.fll-calib-row label {
+  display: grid;
+  gap: 6px;
+  width: 140px;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.fll-calib-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-2);
+  font-size: 0.875rem;
+}
+.fll-result {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+.fll-result > .format-badge {
+  justify-self: start;
+  margin: 0;
+}
+.fll-runs {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fll-run {
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-left: 6px solid var(--run);
+  border-radius: 14px;
+  background: var(--surface-2);
+}
+.fll-run p {
+  margin: 6px 0 0;
+}
+.fll-run .toolbar {
+  margin-top: 12px;
+}
+.fll-run-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.fll-run-head h3 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+.fll-commands {
+  margin-top: 12px;
+}
+.fll-tips .tips {
+  max-width: none;
+  margin: 0;
+}
+
+@media (max-width: 1023px) {
+  .fll-grid {
+    grid-template-columns: 1fr;
+  }
+  .header-fll {
+    display: none;
+  }
+}
+@media (max-width: 479px) {
+  .fll-attachments li {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 /* ───────────────────────── Motion ───────────────────────── */
 
 @keyframes pulse {
