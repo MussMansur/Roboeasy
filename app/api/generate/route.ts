@@ -1,18 +1,16 @@
-import { ApiError, GoogleGenAI } from '@google/genai'
+import type { GoogleGenAI } from '@google/genai'
 import type { NextRequest } from 'next/server'
 
 import { type Format, type GenerateErrorCode, type GenerateResponse, PROMPT_MAX } from '@/lib/api-types'
-import { clientKey, rateLimit } from '@/lib/rate-limit'
-import type { RobotProfile } from '@/lib/dsl/types'
-import { type Lang, dslSystemPrompt, freePythonSystemPrompt, userMessage } from '@/lib/spike/prompts'
 import { checkPython, cleanPython, programToPython } from '@/lib/dsl/compile-python'
 import { PROGRAM_JSON_SCHEMA, PYTHON_JSON_SCHEMA, parseProgram, parsePythonAnswer, parseRobot } from '@/lib/dsl/schema'
+import type { RobotProfile } from '@/lib/dsl/types'
+import { GeminiError, askGemini, createGemini, geminiConfigured, retryMessage } from '@/lib/gemini'
+import { clientKey, rateLimit } from '@/lib/rate-limit'
+import { type Lang, dslSystemPrompt, freePythonSystemPrompt, userMessage } from '@/lib/spike/prompts'
 
 export const maxDuration = 60
 
-/** GEMINI_MODEL is tried first; the others are fallbacks for overload (503) or quota (429). */
-const MODELS = [...new Set([process.env.GEMINI_MODEL?.trim() || 'gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest'])]
-const ATTEMPT_TIMEOUT_MS = 40_000
 /** Stay under maxDuration so the client gets a proper error instead of a platform timeout. */
 const TOTAL_TIMEOUT_MS = 55_000
 const MAX_BODY_BYTES = 64_000
@@ -25,6 +23,12 @@ interface ParsedRequest {
   lang: Lang
   robot: RobotProfile
   previous?: { kind: 'program' | 'code'; value: string }
+}
+
+class GenerationError extends Error {
+  constructor(readonly code: GenerateErrorCode) {
+    super(code)
+  }
 }
 
 function reply(body: GenerateResponse, status = 200, headers?: HeadersInit) {
@@ -54,66 +58,6 @@ function parseRequest(body: unknown): ParsedRequest | { error: GenerateErrorCode
     previous = { kind: 'code', value: prev.code.slice(0, 12_000) }
   }
   return { prompt, format, lang, robot, previous }
-}
-
-class GenerationError extends Error {
-  constructor(readonly code: GenerateErrorCode) {
-    super(code)
-  }
-}
-
-/** Asks Gemini for a JSON object, falling back to the next model when one is unavailable. */
-async function askGemini(
-  ai: GoogleGenAI,
-  system: string,
-  contents: string,
-  schema: Record<string, unknown>,
-  signal: AbortSignal,
-): Promise<Record<string, unknown>> {
-  let busy = false
-  for (const model of MODELS) {
-    try {
-      const res = await ai.models.generateContent({
-        model,
-        contents,
-        config: {
-          systemInstruction: system,
-          temperature: 0.2,
-          responseMimeType: 'application/json',
-          responseJsonSchema: schema,
-          abortSignal: AbortSignal.any([signal, AbortSignal.timeout(ATTEMPT_TIMEOUT_MS)]),
-        },
-      })
-      const parsed = parseJsonObject(res.text ?? '')
-      if (parsed) return parsed
-      console.error(`[generate] ${model} returned invalid JSON`)
-    } catch (error) {
-      if (signal.aborted) throw error
-      console.error(`[generate] ${model} failed:`, error instanceof Error ? error.message : error)
-      // Invalid requests fail the same way on every model.
-      if (error instanceof ApiError && error.status === 400) break
-      busy ||= !(error instanceof ApiError) || [429, 500, 503, 504].includes(error.status)
-    }
-  }
-  throw new GenerationError(busy ? 'ai_busy' : 'ai_failed')
-}
-
-function parseJsonObject(text: string): Record<string, unknown> | null {
-  try {
-    const parsed: unknown = JSON.parse(text)
-    return typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : null
-  } catch {
-    return null
-  }
-}
-
-/** Asks the model again once, with the validation error, if the first answer is invalid. */
-function retryMessage(message: string, problems: string): string {
-  return `${message}
-
-Your previous answer was rejected:
-${problems}
-Return the complete corrected JSON object.`
 }
 
 /** DSL modes: the AI writes commands, our compilers produce blocks and Python. */
@@ -162,8 +106,7 @@ async function generateFreePython(ai: GoogleGenAI, req: ParsedRequest, signal: A
 
 /** Lets the UI show whether the AI is configured without exposing anything else. */
 export function GET() {
-  const key = process.env.GEMINI_API_KEY
-  return Response.json({ configured: Boolean(key && key !== 'YOUR_API_KEY_HERE') })
+  return Response.json({ configured: geminiConfigured() })
 }
 
 export async function POST(req: NextRequest) {
@@ -180,17 +123,17 @@ export async function POST(req: NextRequest) {
   const limit = rateLimit(clientKey(req.headers), RATE_LIMIT.requests, RATE_LIMIT.windowMs)
   if (!limit.ok) return fail('rate_limited', 429, limit.retryAfterSeconds)
 
-  const apiKey = process.env.GEMINI_API_KEY
-  if (!apiKey || apiKey === 'YOUR_API_KEY_HERE') return fail('not_configured', 503)
+  const ai = createGemini()
+  if (!ai) return fail('not_configured', 503)
 
-  const ai = new GoogleGenAI({ apiKey })
   const deadline = AbortSignal.timeout(TOTAL_TIMEOUT_MS)
   const signal = AbortSignal.any([req.signal, deadline])
   try {
     const result = parsed.format === 'python-free' ? await generateFreePython(ai, parsed, signal) : await generateProgram(ai, parsed, signal)
     return reply(result)
   } catch (error) {
-    if (error instanceof GenerationError) return fail(error.code, error.code === 'ai_busy' ? 503 : 502)
+    if (error instanceof GenerationError) return fail(error.code, 502)
+    if (error instanceof GeminiError) return fail(error.kind === 'busy' ? 'ai_busy' : 'ai_failed', error.kind === 'busy' ? 503 : 502)
     if (deadline.aborted) return fail('ai_busy', 504)
     if (req.signal.aborted) return fail('ai_failed', 499)
     console.error('[generate] unexpected error:', error)
