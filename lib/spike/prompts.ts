@@ -1,25 +1,37 @@
 /**
- * System prompts for Gemini. Both modes return JSON only; the server
- * validates everything (see program.ts / python.ts), so the prompts focus on
- * steering the model toward programs that behave well on a real robot.
+ * System prompts for Gemini. The model answers with JSON only and the server
+ * validates everything (lib/dsl/schema.ts), so the prompts focus on steering
+ * the model toward programs that behave well on a real robot.
+ *
+ * - DSL prompt: the model writes RoboEasy commands; our compilers turn them
+ *   into word blocks or Python.
+ * - Free Python prompt: the model writes SPIKE 3 Python itself, for tasks the
+ *   DSL cannot express.
  */
 
-import { type RobotConfig, IMAGES, SENSOR_COLORS, spinTurnDegrees, effectiveCmPerRotation } from '../dsl/types'
+import { type RobotProfile, IMAGES, SENSOR_COLORS, effectiveCmPerRotation } from '../dsl/types'
+import { ALLOWED_PYTHON_MODULES } from '../dsl/compile-python'
 
 export type Lang = 'ru' | 'kk' | 'en'
 
 const LANG_NAME: Record<Lang, string> = { ru: 'Russian', kk: 'Kazakh', en: 'English' }
 
-function robotDescription(r: RobotConfig): string {
+function robotDescription(r: RobotProfile): string {
+  const attachments = r.attachments.length
+    ? `- Attachments: ${r.attachments.map((a) => `${a.name || a.kind} (${a.kind}) on port ${a.port}`).join('; ')}.`
+    : `- Any other free port can hold an extra motor (arm, gripper, flag…).`
   return [
-    `- Drive base: left motor on port ${r.leftMotor}, right motor on port ${r.rightMotor}; wheel diameter ${r.wheelDiameter} cm; distance between wheels ${r.trackWidth} cm.`,
+    `- Drive base: left motor on port ${r.leftMotor}, right motor on port ${r.rightMotor}; wheel diameter ${r.wheelDiameterMm} mm; distance between wheels ${r.trackWidthMm} mm.`,
     `- Distance sensor: port ${r.distanceSensor}. Color sensor (facing down): port ${r.colorSensor}. Force sensor (button): port ${r.forceSensor}.`,
-    `- Any other free port can hold an extra motor (arm, gripper, flag…). If the user names a port, use it.`,
+    attachments,
+    `- If the user names a port, use it. The hub lies flat, so its gyro (yaw) measures turns.`,
   ].join('\n')
 }
 
-export function blocksSystemPrompt(robot: RobotConfig, lang: Lang): string {
-  return `You turn a request from a child or a teacher into a program for a LEGO SPIKE Prime robot (SPIKE App 3, word blocks).
+/** Prompt for the RoboEasy DSL; the same commands compile to word blocks and to Python. */
+export function dslSystemPrompt(robot: RobotProfile, lang: Lang): string {
+  return `You turn a request from a child, a teacher or a robotics team into a program for a LEGO SPIKE Prime robot (SPIKE App 3).
+You write RoboEasy commands; RoboEasy compiles them into SPIKE word blocks or Python.
 
 ROBOT
 ${robotDescription(robot)}
@@ -31,7 +43,9 @@ The program starts automatically ("when program starts"); never add a start step
 
 STEP TYPES (use only these, exactly as written):
 {"op":"move","direction":"forward"|"back","value":number,"unit":"cm"|"rotations"|"degrees"|"seconds"}  drive straight
-{"op":"turn","direction":"left"|"right","degrees":number}  spin in place by an angle (90 = quarter turn)
+{"op":"turn","direction":"left"|"right","degrees":number}  spin in place by an exact angle using the gyro (90 = quarter turn)
+{"op":"reset_yaw"}  set the gyro angle to 0
+{"op":"set_movement_motors","left":"A".."F","right":"A".."F"}  only if the drive motors differ from the robot config
 {"op":"steer","steering":-100..100,"value":number,"unit":"cm"|"rotations"|"degrees"|"seconds"}  drive along a curve (negative = left)
 {"op":"start_move","direction":"forward"|"back"|"left"|"right"}  start driving and keep going (left/right = spin)
 {"op":"start_steer","steering":-100..100}  start driving along a curve and keep going (negative = left)
@@ -41,6 +55,7 @@ STEP TYPES (use only these, exactly as written):
 {"op":"motor_start","port":"A".."F","direction":"clockwise"|"counterclockwise"}
 {"op":"motor_stop","port":"A".."F"}
 {"op":"motor_speed","port":"A".."F","speed":5..100}
+{"op":"motor_to_position","port":"A".."F","position":0..359,"direction":"shortest"|"clockwise"|"counterclockwise"}  single motor to an absolute angle
 {"op":"show_image","image":IMAGE,"seconds":number (optional; omit to keep it on)}
 {"op":"write","text":string}  scroll short text on the 5x5 light matrix (Latin letters and digits only)
 {"op":"clear_display"}
@@ -64,8 +79,9 @@ CONDITION (the sensor port defaults to the robot config above; add "port" only i
 
 GOOD PRACTICE
 - Keep it simple and readable for a beginner: prefer the fewest steps that do the job (usually 2-15, never more than 40).
-- "turn" is for turning in place; with this robot 90° ≈ ${spinTurnDegrees(90, robot)} motor degrees, you do not need to calculate it.
+- "turn" is for turning in place by an angle; the gyro makes it exact, you do not need to calculate motor degrees.
 - 1 wheel rotation ≈ ${effectiveCmPerRotation(robot)} cm.
+- Attachments are single motors: raise/lower with motor_run in degrees, or motor_to_position for a fixed position.
 - Behaviours that react to sensors "all the time" (line following, avoiding obstacles, patrolling) use "forever" with "if"/"wait_until" inside.
 - To stop in front of an obstacle: start_move → wait_until distance "<" N cm → stop_move.
 - Line following with one color sensor: set_speed 25-35, then forever { if reflection "<" 50 then start_steer -30 else start_steer 30 }.
@@ -84,10 +100,12 @@ Request: "Drive in a square"
 {"title":"Square","description":"The robot drives along a square with 30 cm sides.","steps":[{"op":"repeat","times":4,"steps":[{"op":"move","direction":"forward","value":30,"unit":"cm"},{"op":"turn","direction":"right","degrees":90}]}]}`
 }
 
-export function pythonSystemPrompt(robot: RobotConfig, lang: Lang): string {
+/** Prompt for free Python: the model writes SPIKE 3 MicroPython directly. */
+export function freePythonSystemPrompt(robot: RobotProfile, lang: Lang): string {
   const cm = effectiveCmPerRotation(robot)
   return `You write MicroPython for a LEGO SPIKE Prime hub running the SPIKE App 3 firmware. Only the SPIKE 3 API below exists.
 NEVER use the SPIKE 2 / MINDSTORMS APIs (\`from spike import …\`, \`PrimeHub()\`, \`MotorPair()\`, \`hub.port.A\`), \`time.sleep\` or \`input()\`.
+Import only these modules: ${ALLOWED_PYTHON_MODULES.join(', ')}.
 
 ROBOT
 ${robotDescription(robot)}
@@ -132,7 +150,7 @@ SPIKE 3 API (exact signatures)
 UNITS
 - velocity is in degrees per second, -1000..1000 (500 ≈ 50%). steering -100..100: 0 straight, 100 spin right, -100 spin left.
 - Driving N cm: motor degrees = N * 360 / ${cm}.
-- Spinning in place by A degrees: motor degrees = A * ${robot.trackWidth} / ${robot.wheelDiameter} with steering 100 (right) or -100 (left).
+- Turning in place by A degrees: use the gyro. reset_yaw(0), then move_tank(PAIR_1, v, -v) (right) or (-v, v) (left) until abs(tilt_angles()[0]) / 10 >= A, slowing down near the target; for more than 90° turn in steps because yaw wraps at ±180°.
 
 STYLE
 - Beginner-friendly: short, clear names, a comment in ${LANG_NAME[lang]} above each logical part, no classes, no clever tricks.

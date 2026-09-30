@@ -12,7 +12,7 @@
 import {
   type Condition,
   type Program,
-  type RobotConfig,
+  type RobotProfile,
   type Step,
   DEFAULT_ROBOT,
   LIGHT_COLORS,
@@ -21,7 +21,7 @@ import {
   SPIKE_DEFAULT_CM_PER_ROTATION,
   effectiveCmPerRotation,
   imagePixels,
-  spinTurnDegrees,
+  gyroChunks,
   usesOp,
 } from './types'
 
@@ -74,7 +74,7 @@ class Builder {
   blocks: Record<string, ScratchBlock> = {}
   private count = 0
 
-  constructor(private robot: RobotConfig) {}
+  constructor(private robot: RobotProfile) {}
 
   /** Block ids only need to be unique within the project: a counter can never collide. */
   private nextId(): string {
@@ -108,10 +108,13 @@ class Builder {
     let first: string | null = null
     let prev: string | null = null
     for (const step of steps) {
-      const id = this.step(step, prev ?? parent)
-      if (prev) this.blocks[prev].next = id
-      first ??= id
-      prev = id
+      // One DSL step can become several blocks (a gyro turn); link them in order.
+      for (const id of this.step(step, prev ?? parent)) {
+        this.blocks[id].parent = prev ?? parent
+        if (prev) this.blocks[prev].next = id
+        first ??= id
+        prev = id
+      }
     }
     return first
   }
@@ -169,7 +172,7 @@ class Builder {
   }
 
   /** Adds the block for one step (with its inputs and nested stacks) and returns its id. */
-  step(s: Step, parent: string): string {
+  step(s: Step, parent: string): string[] {
     switch (s.op) {
       case 'move': {
         const id = this.add('flippermove_move', parent)
@@ -177,16 +180,16 @@ class Builder {
         b.inputs.DIRECTION = this.shadow(id, 'flippermove_custom-icon-direction', s.direction)
         b.inputs.VALUE = [1, [NUMBER, numStr(s.value)]]
         b.fields.UNIT = [s.unit, null]
-        return id
+        return [id]
       }
-      case 'turn': {
-        // Spin in place: steering ±100 for the wheel rotation that turns the robot by `degrees`.
-        const id = this.add('flippermove_steer', parent)
-        const b = this.blocks[id]
-        b.inputs.STEERING = this.shadow(id, 'flippermove_rotation-wheel', s.direction === 'right' ? '100' : '-100')
-        b.inputs.VALUE = [1, [NUMBER, numStr(spinTurnDegrees(s.degrees, this.robot))]]
-        b.fields.UNIT = ['degrees', null]
-        return id
+      case 'turn':
+        return this.gyroTurn(s.direction, s.degrees, parent)
+      case 'reset_yaw':
+        return [this.add('flippersensors_resetYaw', parent)]
+      case 'set_movement_motors': {
+        const id = this.add('flippermove_setMovementPair', parent)
+        this.blocks[id].inputs.PAIR = this.shadow(id, 'flippermove_movement-port-selector', `${s.left}${s.right}`)
+        return [id]
       }
       case 'steer': {
         const id = this.add('flippermove_steer', parent)
@@ -194,29 +197,29 @@ class Builder {
         b.inputs.STEERING = this.shadow(id, 'flippermove_rotation-wheel', numStr(s.steering))
         b.inputs.VALUE = [1, [NUMBER, numStr(s.value)]]
         b.fields.UNIT = [s.unit, null]
-        return id
+        return [id]
       }
       case 'start_move': {
         if (s.direction === 'forward' || s.direction === 'back') {
           const id = this.add('flippermove_startMove', parent)
           this.blocks[id].inputs.DIRECTION = this.shadow(id, 'flippermove_custom-icon-direction', s.direction)
-          return id
+          return [id]
         }
         const id = this.add('flippermove_startSteer', parent)
         this.blocks[id].inputs.STEERING = this.shadow(id, 'flippermove_rotation-wheel', s.direction === 'right' ? '100' : '-100')
-        return id
+        return [id]
       }
       case 'start_steer': {
         const id = this.add('flippermove_startSteer', parent)
         this.blocks[id].inputs.STEERING = this.shadow(id, 'flippermove_rotation-wheel', numStr(s.steering))
-        return id
+        return [id]
       }
       case 'stop_move':
-        return this.add('flippermove_stopMove', parent)
+        return [this.add('flippermove_stopMove', parent)]
       case 'set_speed': {
         const id = this.add('flippermove_movementSpeed', parent)
         this.blocks[id].inputs.SPEED = [1, [NUMBER, numStr(s.speed)]]
-        return id
+        return [id]
       }
       case 'motor_run': {
         const id = this.add('flippermotor_motorTurnForDirection', parent)
@@ -225,26 +228,34 @@ class Builder {
         b.inputs.DIRECTION = this.shadow(id, 'flippermotor_custom-icon-direction', s.direction)
         b.inputs.VALUE = [1, [NUMBER, numStr(s.value)]]
         b.fields.UNIT = [s.unit, null]
-        return id
+        return [id]
       }
       case 'motor_start': {
         const id = this.add('flippermotor_motorStartDirection', parent)
         const b = this.blocks[id]
         b.inputs.PORT = this.shadow(id, 'flippermotor_multiple-port-selector', s.port)
         b.inputs.DIRECTION = this.shadow(id, 'flippermotor_custom-icon-direction', s.direction)
-        return id
+        return [id]
       }
       case 'motor_stop': {
         const id = this.add('flippermotor_motorStop', parent)
         this.blocks[id].inputs.PORT = this.shadow(id, 'flippermotor_multiple-port-selector', s.port)
-        return id
+        return [id]
+      }
+      case 'motor_to_position': {
+        const id = this.add('flippermotor_motorGoDirectionToPosition', parent)
+        const b = this.blocks[id]
+        b.inputs.PORT = this.shadow(id, 'flippermotor_multiple-port-selector', s.port)
+        b.inputs.POSITION = this.shadow(id, 'flippermotor_custom-angle', numStr(s.position))
+        b.fields.DIRECTION = [s.direction, null]
+        return [id]
       }
       case 'motor_speed': {
         const id = this.add('flippermotor_motorSetSpeed', parent)
         const b = this.blocks[id]
         b.inputs.PORT = this.shadow(id, 'flippermotor_multiple-port-selector', s.port)
         b.inputs.SPEED = [1, [NUMBER, numStr(s.speed)]]
-        return id
+        return [id]
       }
       case 'show_image': {
         const timed = s.seconds !== undefined
@@ -252,64 +263,94 @@ class Builder {
         const b = this.blocks[id]
         b.inputs.MATRIX = this.shadow(id, 'flipperlight_matrix-5x5-brightness-image', imagePixels(s.image))
         if (timed) b.inputs.VALUE = [1, [NUMBER, numStr(s.seconds ?? 2)]]
-        return id
+        return [id]
       }
       case 'write': {
         const id = this.add('flipperlight_lightDisplayText', parent)
         this.blocks[id].inputs.TEXT = [1, [TEXT, s.text]]
-        return id
+        return [id]
       }
       case 'clear_display':
-        return this.add('flipperlight_lightDisplayOff', parent)
+        return [this.add('flipperlight_lightDisplayOff', parent)]
       case 'beep': {
         const id = this.add('flippersound_beepForTime', parent)
         const b = this.blocks[id]
         b.inputs.NOTE = this.shadow(id, 'flippersound_custom-piano', numStr(s.note))
         b.inputs.DURATION = [1, [NUMBER, numStr(s.seconds)]]
-        return id
+        return [id]
       }
       case 'button_light': {
         const id = this.add('flipperlight_centerButtonLight', parent)
         this.blocks[id].inputs.COLOR = this.shadow(id, 'flipperlight_color-selector-vertical', LIGHT_COLORS[s.color])
-        return id
+        return [id]
       }
       case 'wait': {
         const id = this.add('control_wait', parent)
         this.blocks[id].inputs.DURATION = [1, [POSITIVE_NUMBER, numStr(s.seconds)]]
-        return id
+        return [id]
       }
       case 'wait_until': {
         const id = this.add('control_wait_until', parent)
         this.condition(id, s.condition)
-        return id
+        return [id]
       }
       case 'repeat': {
         const id = this.add('control_repeat', parent)
         this.blocks[id].inputs.TIMES = [1, [WHOLE_NUMBER, numStr(s.times)]]
         this.substack(id, 'SUBSTACK', s.steps)
-        return id
+        return [id]
       }
       case 'forever': {
         const id = this.add('control_forever', parent)
         this.substack(id, 'SUBSTACK', s.steps)
-        return id
+        return [id]
       }
       case 'repeat_until': {
         const id = this.add('control_repeat_until', parent)
         this.condition(id, s.condition)
         this.substack(id, 'SUBSTACK', s.steps)
-        return id
+        return [id]
       }
       case 'if': {
         const id = this.add(s.else?.length ? 'control_if_else' : 'control_if', parent)
         this.condition(id, s.condition)
         this.substack(id, 'SUBSTACK', s.then)
         if (s.else?.length) this.substack(id, 'SUBSTACK2', s.else)
-        return id
+        return [id]
       }
     }
   }
 
+  /**
+   * Spin in place until the hub's yaw says the robot turned far enough:
+   * reset yaw → start turning → wait until |yaw| > angle → stop, repeated in
+   * steps of at most GYRO_CHUNK degrees because yaw wraps at ±180°.
+   */
+  gyroTurn(direction: 'left' | 'right', degrees: number, parent: string): string[] {
+    const ids: string[] = []
+    for (const chunk of gyroChunks(degrees, this.robot)) {
+      ids.push(this.add('flippersensors_resetYaw', parent))
+
+      const start = this.add('flippermove_startSteer', parent)
+      this.blocks[start].inputs.STEERING = this.shadow(start, 'flippermove_rotation-wheel', direction === 'right' ? '100' : '-100')
+      ids.push(start)
+
+      const wait = this.add('control_wait_until', parent)
+      const gt = this.add('operator_gt', wait)
+      const abs = this.add('operator_mathop', gt)
+      const yaw = this.add('flippersensors_orientationAxis', abs)
+      this.blocks[yaw].fields.AXIS = ['yaw', null]
+      this.blocks[abs].inputs.NUM = [3, yaw, [NUMBER, '']]
+      this.blocks[abs].fields.OPERATOR = ['abs', null]
+      this.blocks[gt].inputs.OPERAND1 = [3, abs, [TEXT, '']]
+      this.blocks[gt].inputs.OPERAND2 = [1, [TEXT, numStr(chunk)]]
+      this.blocks[wait].inputs.CONDITION = [2, gt]
+      ids.push(wait)
+
+      ids.push(this.add('flippermove_stopMove', parent))
+    }
+    return ids
+  }
 }
 
 /** Prefix of an opcode = the Scratch extension that defines it. */
@@ -323,7 +364,7 @@ export function extensionsOf(blocks: Record<string, ScratchBlock>): string[] {
   return [...ids].sort()
 }
 
-export function buildProject(program: Program, robot: RobotConfig = DEFAULT_ROBOT): ScratchProject {
+export function buildProject(program: Program, robot: RobotProfile = DEFAULT_ROBOT): ScratchProject {
   const b = new Builder(robot)
   const hat = b.add('flipperevents_whenProgramStarts', null, { topLevel: true, x: -130, y: 120 })
 

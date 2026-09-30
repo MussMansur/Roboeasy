@@ -3,8 +3,8 @@ import type { NextRequest } from 'next/server'
 
 import { type Format, type GenerateErrorCode, type GenerateResponse, PROMPT_MAX } from '@/lib/api-types'
 import { clientKey, rateLimit } from '@/lib/rate-limit'
-import type { RobotConfig } from '@/lib/dsl/types'
-import { type Lang, blocksSystemPrompt, pythonSystemPrompt, userMessage } from '@/lib/spike/prompts'
+import type { RobotProfile } from '@/lib/dsl/types'
+import { type Lang, dslSystemPrompt, freePythonSystemPrompt, userMessage } from '@/lib/spike/prompts'
 import { checkPython, cleanPython, programToPython } from '@/lib/dsl/compile-python'
 import { PROGRAM_JSON_SCHEMA, PYTHON_JSON_SCHEMA, parseProgram, parsePythonAnswer, parseRobot } from '@/lib/dsl/schema'
 
@@ -23,7 +23,7 @@ interface ParsedRequest {
   prompt: string
   format: Format
   lang: Lang
-  robot: RobotConfig
+  robot: RobotProfile
   previous?: { kind: 'program' | 'code'; value: string }
 }
 
@@ -41,16 +41,16 @@ function parseRequest(body: unknown): ParsedRequest | { error: GenerateErrorCode
   const prompt = typeof b.prompt === 'string' ? b.prompt.trim() : ''
   if (prompt.length < 2) return { error: 'bad_request' }
   if (prompt.length > PROMPT_MAX) return { error: 'prompt_too_long' }
-  const format: Format = b.format === 'python' ? 'python' : 'blocks'
+  const format: Format = b.format === 'python' || b.format === 'python-free' ? b.format : 'blocks'
   const lang = LANGS.includes(b.lang as Lang) ? (b.lang as Lang) : 'ru'
   const robot = parseRobot(b.robot)
 
   let previous: ParsedRequest['previous']
   const prev = typeof b.previous === 'object' && b.previous !== null ? (b.previous as Record<string, unknown>) : null
-  if (prev && format === 'blocks' && prev.program) {
+  if (prev && format !== 'python-free' && prev.program) {
     const program = parseProgram(prev.program, robot)
     if (program.ok) previous = { kind: 'program', value: JSON.stringify(program.value) }
-  } else if (prev && format === 'python' && typeof prev.code === 'string' && prev.code.trim()) {
+  } else if (prev && format === 'python-free' && typeof prev.code === 'string' && prev.code.trim()) {
     previous = { kind: 'code', value: prev.code.slice(0, 12_000) }
   }
   return { prompt, format, lang, robot, previous }
@@ -116,8 +116,9 @@ ${problems}
 Return the complete corrected JSON object.`
 }
 
-async function generateBlocks(ai: GoogleGenAI, req: ParsedRequest, signal: AbortSignal): Promise<GenerateResponse> {
-  const system = blocksSystemPrompt(req.robot, req.lang)
+/** DSL modes: the AI writes commands, our compilers produce blocks and Python. */
+async function generateProgram(ai: GoogleGenAI, req: ParsedRequest, signal: AbortSignal): Promise<GenerateResponse> {
+  const system = dslSystemPrompt(req.robot, req.lang)
   const message = userMessage(req.prompt, req.previous)
   let parsed = parseProgram(await askGemini(ai, system, message, PROGRAM_JSON_SCHEMA, signal), req.robot)
   if (!parsed.ok) {
@@ -129,19 +130,14 @@ async function generateBlocks(ai: GoogleGenAI, req: ParsedRequest, signal: Abort
     throw new GenerationError('empty_program')
   }
   const program = parsed.value
-  return {
-    ok: true,
-    format: 'blocks',
-    title: program.title,
-    description: program.description,
-    program,
-    python: programToPython(program, req.robot),
-    warnings: [],
-  }
+  const python = programToPython(program, req.robot)
+  const common = { ok: true as const, title: program.title, description: program.description, program, warnings: [] }
+  return req.format === 'python' ? { ...common, format: 'python', code: python } : { ...common, format: 'blocks', python }
 }
 
-async function generatePython(ai: GoogleGenAI, req: ParsedRequest, signal: AbortSignal): Promise<GenerateResponse> {
-  const system = pythonSystemPrompt(req.robot, req.lang)
+/** Free Python mode: the AI writes the code, we validate it. */
+async function generateFreePython(ai: GoogleGenAI, req: ParsedRequest, signal: AbortSignal): Promise<GenerateResponse> {
+  const system = freePythonSystemPrompt(req.robot, req.lang)
   const message = userMessage(req.prompt, req.previous)
 
   const attempt = async (text: string) => {
@@ -191,7 +187,7 @@ export async function POST(req: NextRequest) {
   const deadline = AbortSignal.timeout(TOTAL_TIMEOUT_MS)
   const signal = AbortSignal.any([req.signal, deadline])
   try {
-    const result = parsed.format === 'python' ? await generatePython(ai, parsed, signal) : await generateBlocks(ai, parsed, signal)
+    const result = parsed.format === 'python-free' ? await generateFreePython(ai, parsed, signal) : await generateProgram(ai, parsed, signal)
     return reply(result)
   } catch (error) {
     if (error instanceof GenerationError) return fail(error.code, error.code === 'ai_busy' ? 503 : 502)

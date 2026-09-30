@@ -17,10 +17,12 @@
 import { z } from 'zod'
 
 import {
+  type Attachment,
   type Condition,
   type Program,
-  type RobotConfig,
+  type RobotProfile,
   type Step,
+  ATTACHMENT_KINDS,
   DEFAULT_ROBOT,
   IMAGES,
   LIGHT_COLORS,
@@ -40,6 +42,7 @@ const moveDirection = z.enum(['forward', 'back'])
 const turnDirection = z.enum(['left', 'right'])
 const startDirection = z.enum(['forward', 'back', 'left', 'right'])
 const motorDirection = z.enum(['clockwise', 'counterclockwise'])
+const positionDirection = z.enum(['shortest', 'clockwise', 'counterclockwise'])
 const moveUnit = z.enum(['cm', 'inches', 'rotations', 'degrees', 'seconds'])
 const motorUnit = z.enum(['rotations', 'degrees', 'seconds'])
 const distanceUnit = z.enum(['cm', 'inches', '%'])
@@ -64,7 +67,7 @@ const clampTo = (v: number, [min, max]: readonly [number, number]) => Math.min(m
 const cleanText = (max: number) =>
   z.string().transform((s) => s.replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max))
 
-function conditionSchema(robot: RobotConfig): z.ZodType<Condition> {
+function conditionSchema(robot: RobotProfile): z.ZodType<Condition> {
   return z.discriminatedUnion('sensor', [
     z.object({ sensor: z.literal('distance'), port: port.default(robot.distanceSensor), comparator, value: num(0, 200, 1), unit: distanceUnit }),
     z.object({ sensor: z.literal('color'), port: port.default(robot.colorSensor), color: sensorColor }),
@@ -80,6 +83,10 @@ function stepSchema(depth: number, condition: z.ZodType<Condition>): z.ZodType<S
     z.object({ op: z.literal('move'), direction: moveDirection, value: z.number(), unit: moveUnit })
       .transform((s) => ({ ...s, value: clampTo(s.value, MOVE_RANGE[s.unit]) })),
     z.object({ op: z.literal('turn'), direction: turnDirection, degrees: num(1, 3600, 0) }),
+    z.object({ op: z.literal('reset_yaw') }),
+    z.object({ op: z.literal('set_movement_motors'), left: port, right: port }).refine((s) => s.left !== s.right, {
+      message: 'left and right drive motors must be on different ports',
+    }),
     z.object({ op: z.literal('steer'), steering: num(-100, 100, 0), value: z.number(), unit: moveUnit })
       .transform((s) => ({ ...s, value: clampTo(s.value, MOVE_RANGE[s.unit]) })),
     z.object({ op: z.literal('start_move'), direction: startDirection }),
@@ -91,6 +98,7 @@ function stepSchema(depth: number, condition: z.ZodType<Condition>): z.ZodType<S
     z.object({ op: z.literal('motor_start'), port, direction: motorDirection }),
     z.object({ op: z.literal('motor_stop'), port }),
     z.object({ op: z.literal('motor_speed'), port, speed: num(5, 100, 0) }),
+    z.object({ op: z.literal('motor_to_position'), port, position: num(0, 359, 0), direction: positionDirection }),
     z.object({
       op: z.literal('show_image'),
       image: z.union([imageName, z.string().regex(/^[0-9]{25}$/, 'image must be a known name or 25 digits 0-9')]),
@@ -142,7 +150,7 @@ function truncateAfterForever(steps: Step[]): Step[] {
   })
 }
 
-function programSchema(robot: RobotConfig): z.ZodType<Program> {
+function programSchema(robot: RobotProfile): z.ZodType<Program> {
   return z
     .object({
       title: cleanText(LIMITS.maxTitle).transform((t) => t || 'RoboEasy'),
@@ -163,7 +171,7 @@ function toResult<T>(parsed: z.ZodSafeParseResult<T>): ParseResult<T> {
 }
 
 /** Validates a block program (from the AI or the client). Sensor ports default to the robot config. */
-export function parseProgram(raw: unknown, robot: RobotConfig = DEFAULT_ROBOT): ParseResult<Program> {
+export function parseProgram(raw: unknown, robot: RobotProfile = DEFAULT_ROBOT): ParseResult<Program> {
   return toResult(programSchema(robot).safeParse(raw))
 }
 
@@ -193,22 +201,57 @@ export function parsePythonAnswer(raw: unknown): ParseResult<PythonAnswer> {
 
 const portOr = (fallback: (typeof PORTS)[number]) =>
   z.preprocess((v) => (typeof v === 'string' ? v.trim().toUpperCase() : v), port).catch(fallback)
-const numOr = (fallback: number, min: number, max: number) =>
-  z.number().transform((v) => Math.min(max, Math.max(min, Math.round(v * 10) / 10))).catch(fallback)
+const numOr = (fallback: number, min: number, max: number, decimals = 1) => {
+  const f = 10 ** decimals
+  return z
+    .number()
+    .transform((v) => Math.min(max, Math.max(min, Math.round(v * f) / f)))
+    .catch(fallback)
+}
 
-const robotSchema: z.ZodType<RobotConfig> = z
-  .object({
-    leftMotor: portOr(DEFAULT_ROBOT.leftMotor),
-    rightMotor: portOr(DEFAULT_ROBOT.rightMotor),
-    distanceSensor: portOr(DEFAULT_ROBOT.distanceSensor),
-    colorSensor: portOr(DEFAULT_ROBOT.colorSensor),
-    forceSensor: portOr(DEFAULT_ROBOT.forceSensor),
-    wheelDiameter: numOr(DEFAULT_ROBOT.wheelDiameter, 2, 20),
-    trackWidth: numOr(DEFAULT_ROBOT.trackWidth, 4, 40),
-  })
+const attachmentSchema: z.ZodType<Attachment> = z.object({
+  port: z.preprocess((v) => (typeof v === 'string' ? v.trim().toUpperCase() : v), port),
+  kind: z.enum(ATTACHMENT_KINDS).catch('other'),
+  name: cleanText(30),
+})
+
+/** Profiles saved before v2 stored wheel sizes in cm (`wheelDiameter`, `trackWidth`). */
+function migrateLegacyRobot(raw: unknown): unknown {
+  if (typeof raw !== 'object' || raw === null) return raw
+  const r = raw as Record<string, unknown>
+  const cmToMm = (v: unknown) => (typeof v === 'number' ? v * 10 : v)
+  return {
+    ...r,
+    wheelDiameterMm: r.wheelDiameterMm ?? cmToMm(r.wheelDiameter),
+    trackWidthMm: r.trackWidthMm ?? cmToMm(r.trackWidth),
+  }
+}
+
+const robotSchema: z.ZodType<RobotProfile> = z
+  .preprocess(
+    migrateLegacyRobot,
+    z.object({
+      leftMotor: portOr(DEFAULT_ROBOT.leftMotor),
+      rightMotor: portOr(DEFAULT_ROBOT.rightMotor),
+      distanceSensor: portOr(DEFAULT_ROBOT.distanceSensor),
+      colorSensor: portOr(DEFAULT_ROBOT.colorSensor),
+      forceSensor: portOr(DEFAULT_ROBOT.forceSensor),
+      wheelDiameterMm: numOr(DEFAULT_ROBOT.wheelDiameterMm, 20, 200),
+      trackWidthMm: numOr(DEFAULT_ROBOT.trackWidthMm, 40, 400),
+      distanceFactor: numOr(1, 0.5, 2, 3),
+      turnFactor: numOr(1, 0.5, 2, 3),
+      attachments: z
+        .array(z.unknown())
+        .transform((list) => list.slice(0, 6).flatMap((a) => {
+          const parsed = attachmentSchema.safeParse(a)
+          return parsed.success ? [parsed.data] : []
+        }))
+        .catch([]),
+    }),
+  )
   .catch(DEFAULT_ROBOT)
 
-export function parseRobot(raw: unknown): RobotConfig {
+export function parseRobot(raw: unknown): RobotProfile {
   return robotSchema.parse(raw ?? {})
 }
 
@@ -223,10 +266,10 @@ const enumOf = (...schemas: { options: readonly string[] }[]): JsonSchema => ({
   enum: [...new Set(schemas.flatMap((s) => s.options))],
 })
 const range = (minimum: number, maximum: number): JsonSchema => ({ type: 'number', minimum, maximum })
-const STEP_OPS = [
-  'move', 'turn', 'steer', 'start_move', 'start_steer', 'stop_move', 'set_speed', 'motor_run', 'motor_start', 'motor_stop',
-  'motor_speed', 'show_image', 'write', 'clear_display', 'beep', 'button_light', 'wait', 'wait_until', 'repeat', 'forever',
-  'repeat_until', 'if',
+export const STEP_OPS = [
+  'move', 'turn', 'reset_yaw', 'set_movement_motors', 'steer', 'start_move', 'start_steer', 'stop_move', 'set_speed',
+  'motor_run', 'motor_start', 'motor_stop', 'motor_speed', 'motor_to_position', 'show_image', 'write', 'clear_display',
+  'beep', 'button_light', 'wait', 'wait_until', 'repeat', 'forever', 'repeat_until', 'if',
 ] as const satisfies readonly Step['op'][]
 const stepList: JsonSchema = { type: 'array', items: { $ref: '#/$defs/Step' } }
 
@@ -262,13 +305,16 @@ export const PROGRAM_JSON_SCHEMA: JsonSchema = {
       type: 'object',
       properties: {
         op: { type: 'string', enum: [...STEP_OPS] },
-        direction: enumOf(startDirection, motorDirection),
+        direction: enumOf(startDirection, positionDirection),
         value: { type: 'number' },
         unit: enumOf(moveUnit),
         degrees: range(1, 3600),
         steering: range(-100, 100),
         speed: range(5, 100),
         port: enumOf(port),
+        left: enumOf(port),
+        right: enumOf(port),
+        position: range(0, 359),
         text: { type: 'string' },
         image: { type: 'string' },
         seconds: { type: 'number' },

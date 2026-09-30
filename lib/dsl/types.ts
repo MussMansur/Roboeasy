@@ -1,7 +1,8 @@
 /**
- * RoboEasy block program: the small, validated vocabulary the AI is allowed
- * to produce in "blocks" mode. Every step maps 1:1 to a LEGO SPIKE App 3
- * word block (see ./scratch.ts) and to SPIKE 3 MicroPython (see ./python.ts).
+ * RoboEasy DSL: the small, validated command language the AI produces.
+ * The AI never writes Scratch JSON or (by default) Python itself: our
+ * deterministic compilers turn these commands into LEGO SPIKE App 3 word
+ * blocks (./compile-blocks.ts) and SPIKE 3 MicroPython (./compile-python.ts).
  *
  * The AI output is untrusted: `parseProgram` in ./schema.ts validates it
  * (strict structure, clamped numbers), so whatever reaches the file
@@ -15,6 +16,7 @@ export type MoveUnit = 'cm' | 'inches' | 'rotations' | 'degrees' | 'seconds'
 export type MotorUnit = 'rotations' | 'degrees' | 'seconds'
 export type Comparator = '<' | '>' | '='
 export type MotorDirection = 'clockwise' | 'counterclockwise'
+export type PositionDirection = 'shortest' | 'clockwise' | 'counterclockwise'
 
 /** Colors the SPIKE color sensor reports, with their SPIKE App field values. */
 export const SENSOR_COLORS = {
@@ -71,7 +73,10 @@ export type Condition =
 
 export type Step =
   | { op: 'move'; direction: 'forward' | 'back'; value: number; unit: MoveUnit }
+  /** Spin in place by an angle, controlled by the hub's gyro (yaw). */
   | { op: 'turn'; direction: 'left' | 'right'; degrees: number }
+  | { op: 'reset_yaw' }
+  | { op: 'set_movement_motors'; left: Port; right: Port }
   | { op: 'steer'; steering: number; value: number; unit: MoveUnit }
   | { op: 'start_move'; direction: 'forward' | 'back' | 'left' | 'right' }
   | { op: 'start_steer'; steering: number }
@@ -81,6 +86,8 @@ export type Step =
   | { op: 'motor_start'; port: Port; direction: MotorDirection }
   | { op: 'motor_stop'; port: Port }
   | { op: 'motor_speed'; port: Port; speed: number }
+  /** Single motor to an absolute position (0-359°). */
+  | { op: 'motor_to_position'; port: Port; position: number; direction: PositionDirection }
   | { op: 'show_image'; image: string; seconds?: number }
   | { op: 'write'; text: string }
   | { op: 'clear_display' }
@@ -101,26 +108,45 @@ export interface Program {
   steps: Step[]
 }
 
-export interface RobotConfig {
+export const ATTACHMENT_KINDS = ['arm', 'lift', 'gripper', 'pusher', 'other'] as const
+export type AttachmentKind = (typeof ATTACHMENT_KINDS)[number]
+
+/** A motorized attachment (FLL tool) on one port. */
+export interface Attachment {
+  port: Port
+  kind: AttachmentKind
+  name: string
+}
+
+/** The robot the programs are compiled for. Stored in localStorage (see lib/studio-state.ts). */
+export interface RobotProfile {
   leftMotor: Port
   rightMotor: Port
   distanceSensor: Port
   colorSensor: Port
   forceSensor: Port
-  /** Wheel diameter in cm (SPIKE Prime standard wheel: 5.6). */
-  wheelDiameter: number
-  /** Distance between the two drive wheels in cm. */
-  trackWidth: number
+  /** Wheel diameter in mm (SPIKE Prime standard wheel: 56). */
+  wheelDiameterMm: number
+  /** Distance between the two drive wheels in mm. */
+  trackWidthMm: number
+  /** Calibration: commanded ÷ measured distance (1 = drives exactly). */
+  distanceFactor: number
+  /** Calibration: commanded ÷ measured turn angle (1 = turns exactly). */
+  turnFactor: number
+  attachments: Attachment[]
 }
 
-export const DEFAULT_ROBOT: RobotConfig = {
+export const DEFAULT_ROBOT: RobotProfile = {
   leftMotor: 'A',
   rightMotor: 'B',
   distanceSensor: 'C',
   colorSensor: 'D',
   forceSensor: 'E',
-  wheelDiameter: 5.6,
-  trackWidth: 11.2,
+  wheelDiameterMm: 56,
+  trackWidthMm: 112,
+  distanceFactor: 1,
+  turnFactor: 1,
+  attachments: [],
 }
 
 /** SPIKE's own default for "set 1 motor rotation to … cm moved". */
@@ -136,29 +162,49 @@ export const LIMITS = {
 
 
 /** Ops that run the drive base; used to decide whether to emit the motor-pair setup. */
-export const MOVEMENT_OPS: ReadonlySet<StepOp> = new Set(['move', 'turn', 'steer', 'start_move', 'start_steer', 'stop_move', 'set_speed'])
+export const MOVEMENT_OPS: ReadonlySet<StepOp> = new Set([
+  'move',
+  'turn',
+  'steer',
+  'start_move',
+  'start_steer',
+  'stop_move',
+  'set_speed',
+  'set_movement_motors',
+])
+
+/** Largest angle turned in one gyro step: the yaw reading wraps at ±180°. */
+export const GYRO_CHUNK = 90
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-export function cmPerRotation(robot: RobotConfig): number {
-  return Math.round(Math.PI * robot.wheelDiameter * 10) / 10
+export function cmPerRotation(robot: RobotProfile): number {
+  return Math.round(((Math.PI * robot.wheelDiameterMm) / 10) * 10) / 10
 }
 
 /**
- * Distance per wheel rotation the program actually uses: SPIKE's default
- * (17.5 cm) unless the wheel is noticeably different, in which case the
- * block program sets it explicitly. Python uses the same value.
+ * Distance per wheel rotation the program actually uses, calibration
+ * included: SPIKE's default (17.5 cm) unless the wheel or the calibration is
+ * noticeably different, in which case the block program sets it explicitly.
+ * Python uses the same value.
  */
-export function effectiveCmPerRotation(robot: RobotConfig): number {
-  const cm = cmPerRotation(robot)
+export function effectiveCmPerRotation(robot: RobotProfile): number {
+  const cm = Math.round((cmPerRotation(robot) / robot.distanceFactor) * 10) / 10
   return Math.abs(cm - SPIKE_DEFAULT_CM_PER_ROTATION) < 0.2 ? SPIKE_DEFAULT_CM_PER_ROTATION : cm
 }
 
-/** Motor degrees each wheel must turn for the robot to spin `angle` degrees in place. */
-export function spinTurnDegrees(angle: number, robot: RobotConfig): number {
-  return Math.max(1, Math.round((angle * robot.trackWidth) / robot.wheelDiameter))
+/** Gyro targets for one turn: calibrated angle split into steps of at most GYRO_CHUNK degrees. */
+export function gyroChunks(degrees: number, robot: RobotProfile): number[] {
+  let left = Math.round(degrees * robot.turnFactor * 10) / 10
+  const chunks: number[] = []
+  while (left > 0.05) {
+    const chunk = Math.min(GYRO_CHUNK, left)
+    chunks.push(Math.round(chunk * 10) / 10)
+    left -= chunk
+  }
+  return chunks
 }
 
 export function imagePixels(image: string): string {

@@ -8,14 +8,14 @@
  */
 
 import JSZip from 'jszip'
-import type { Program, RobotConfig } from '../dsl/types'
+import type { Program, RobotProfile } from '../dsl/types'
 import { DEFAULT_ROBOT } from '../dsl/types'
 import { EMPTY_SVG_ASSET, buildProject, randomId } from '../dsl/compile-blocks'
 
 /** Project/block format version of SPIKE App 3 (`currentProjectVersion`). */
 export const SPIKE_PROJECT_VERSION = 38
 
-export type ProjectSource = { format: 'blocks'; program: Program; robot?: RobotConfig } | { format: 'python'; code: string }
+export type ProjectSource = { format: 'blocks'; program: Program; robot?: RobotProfile } | { format: 'python'; code: string }
 
 const ICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60">
   <rect width="60" height="60" rx="12" fill="#12151A"/>

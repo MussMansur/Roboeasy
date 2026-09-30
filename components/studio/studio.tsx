@@ -26,7 +26,7 @@ import { CodeView } from '@/components/code-view'
 import { type Format, type GenerateErrorCode, type GenerateResponse, PROMPT_MAX } from '@/lib/api-types'
 import { type Locale, fill } from '@/lib/i18n/config'
 import type { Dictionary } from '@/lib/i18n/ru'
-import { DEFAULT_ROBOT, PORTS, type Port, type RobotConfig, countSteps } from '@/lib/dsl/types'
+import { DEFAULT_ROBOT, PORTS, type Port, type RobotProfile, countSteps } from '@/lib/dsl/types'
 import { parseRobot } from '@/lib/dsl/schema'
 import {
   type HistoryItem,
@@ -69,7 +69,7 @@ function saveFile(blob: Blob, filename: string) {
 export function Studio({ lang, t, labels }: StudioProps) {
   const [format, setFormat] = useState<Format>('blocks')
   const [prompt, setPrompt] = useState('')
-  const [robot, setRobot] = useState<RobotConfig>(DEFAULT_ROBOT)
+  const [robot, setRobot] = useState<RobotProfile>(DEFAULT_ROBOT)
   const [status, setStatus] = useState<Status>('idle')
   const [error, setError] = useState<ErrorState | null>(null)
   const [result, setResult] = useState<StudioResult | null>(null)
@@ -98,7 +98,7 @@ export function Studio({ lang, t, labels }: StudioProps) {
   const openResult = useCallback((r: StudioResult) => {
     setResult(r)
     setProjectName(r.title)
-    setView('blocks')
+    setView(r.format === 'blocks' ? 'blocks' : 'python')
     setStatus('done')
     setError(null)
   }, [])
@@ -115,15 +115,15 @@ export function Studio({ lang, t, labels }: StudioProps) {
     const qp = params.get('prompt')
     if (qp) setPrompt(qp.slice(0, PROMPT_MAX))
     const qf = params.get('format')
-    if (qf === 'blocks' || qf === 'python') setFormat(qf)
+    if (qf === 'blocks' || qf === 'python' || qf === 'python-free') setFormat(qf)
 
     const token = new URLSearchParams(window.location.hash.slice(1)).get('r')
     if (token) {
       void decodeShare(token).then((shared) => {
         if (!shared) return
         openResult(shared)
-        if (shared.format === 'blocks') setRobot(shared.robot)
-        setFormat(shared.format)
+        if (shared.format === 'blocks' || shared.robot) setRobot(shared.robot ?? DEFAULT_ROBOT)
+        setFormat(shared.format === 'python' && !shared.program ? 'python-free' : shared.format)
         showToast(t.sharedResult)
       })
     }
@@ -151,7 +151,7 @@ export function Studio({ lang, t, labels }: StudioProps) {
     saveFormat(f)
   }
 
-  const updateRobot = (patch: Partial<RobotConfig>) => {
+  const updateRobot = (patch: Partial<RobotProfile>) => {
     setRobot((prev) => {
       const next = parseRobot({ ...prev, ...patch })
       saveRobot(next)
@@ -171,9 +171,9 @@ export function Studio({ lang, t, labels }: StudioProps) {
     abortRef.current?.abort()
     const controller = new AbortController()
     abortRef.current = controller
-    const requestFormat: Format = mode === 'refine' && result ? result.format : format
-    const previous =
-      mode === 'refine' && result ? (result.format === 'blocks' ? { program: result.program } : { code: result.code }) : undefined
+    const requestFormat: Format =
+      mode === 'refine' && result ? (result.format === 'blocks' ? 'blocks' : result.program ? 'python' : 'python-free') : format
+    const previous = mode === 'refine' && result ? (result.format === 'blocks' || result.program ? { program: result.program } : { code: result.code }) : undefined
 
     setStatus('loading')
     setPendingFormat(requestFormat)
@@ -198,7 +198,7 @@ export function Studio({ lang, t, labels }: StudioProps) {
       const next: StudioResult =
         data.format === 'blocks'
           ? { format: 'blocks', title: data.title, description: data.description, program: data.program, python: data.python, robot, warnings: data.warnings }
-          : { format: 'python', title: data.title, description: data.description, code: data.code, warnings: data.warnings }
+          : { format: 'python', title: data.title, description: data.description, code: data.code, program: data.program, robot: data.program ? robot : undefined, warnings: data.warnings }
       openResult(next)
       setAnnounce(next.title)
       const fullPrompt = mode === 'refine' ? `${lastPrompt} → ${text}` : text
@@ -279,9 +279,9 @@ export function Studio({ lang, t, labels }: StudioProps) {
   const errorText = error
     ? fill(t.errors[error.code], { max: PROMPT_MAX, s: error.retryAfter ?? 30 })
     : ''
-  const loadingSteps = pendingFormat === 'python' ? t.loadingPython : t.loadingBlocks
+  const loadingSteps = pendingFormat === 'blocks' ? t.loadingBlocks : t.loadingPython
   const promptOver = prompt.length > PROMPT_MAX
-  const examples = format === 'python' ? t.examplesPython : t.examplesBlocks
+  const examples = format === 'python-free' ? t.examplesPython : t.examplesBlocks
   const robotSummary = fill(t.robot.summary, {
     L: robot.leftMotor,
     R: robot.rightMotor,
@@ -328,7 +328,7 @@ export function Studio({ lang, t, labels }: StudioProps) {
               </strong>
               <span>{t.blocksHint}</span>
             </button>
-            <button type="button" aria-pressed={format === 'python'} onClick={() => chooseFormat('python')}>
+            <button type="button" aria-pressed={format !== 'blocks'} onClick={() => chooseFormat(format === 'python-free' ? 'python-free' : 'python')}>
               <strong>
                 <Code2 size={17} aria-hidden="true" />
                 {t.python}
@@ -336,6 +336,19 @@ export function Studio({ lang, t, labels }: StudioProps) {
               <span>{t.pythonHint}</span>
             </button>
           </div>
+          {format !== 'blocks' && (
+            <label className="check-row">
+              <input
+                type="checkbox"
+                checked={format === 'python-free'}
+                onChange={(e) => chooseFormat(e.target.checked ? 'python-free' : 'python')}
+              />
+              <span>
+                <strong>{t.freePython}</strong>
+                <small>{t.freePythonHint}</small>
+              </span>
+            </label>
+          )}
 
           <label className="field-label" htmlFor="prompt">
             {t.promptLabel}
@@ -402,11 +415,11 @@ export function Studio({ lang, t, labels }: StudioProps) {
                   className="input"
                   type="number"
                   inputMode="decimal"
-                  min={2}
-                  max={20}
-                  step={0.1}
-                  value={robot.wheelDiameter}
-                  onChange={(e) => updateRobot({ wheelDiameter: Number(e.target.value) })}
+                  min={20}
+                  max={200}
+                  step={1}
+                  value={robot.wheelDiameterMm}
+                  onChange={(e) => updateRobot({ wheelDiameterMm: Number(e.target.value) })}
                 />
               </label>
               <label>
@@ -415,11 +428,37 @@ export function Studio({ lang, t, labels }: StudioProps) {
                   className="input"
                   type="number"
                   inputMode="decimal"
-                  min={4}
-                  max={40}
-                  step={0.1}
-                  value={robot.trackWidth}
-                  onChange={(e) => updateRobot({ trackWidth: Number(e.target.value) })}
+                  min={40}
+                  max={400}
+                  step={1}
+                  value={robot.trackWidthMm}
+                  onChange={(e) => updateRobot({ trackWidthMm: Number(e.target.value) })}
+                />
+              </label>
+              <label>
+                {t.robot.distanceFactor}
+                <input
+                  className="input"
+                  type="number"
+                  inputMode="decimal"
+                  min={0.5}
+                  max={2}
+                  step={0.001}
+                  value={robot.distanceFactor}
+                  onChange={(e) => updateRobot({ distanceFactor: Number(e.target.value) })}
+                />
+              </label>
+              <label>
+                {t.robot.turnFactor}
+                <input
+                  className="input"
+                  type="number"
+                  inputMode="decimal"
+                  min={0.5}
+                  max={2}
+                  step={0.001}
+                  value={robot.turnFactor}
+                  onChange={(e) => updateRobot({ turnFactor: Number(e.target.value) })}
                 />
               </label>
               <div className="robot-foot">
@@ -479,7 +518,7 @@ export function Studio({ lang, t, labels }: StudioProps) {
                     onClick={() => {
                       openResult(item.result)
                       setLastPrompt(item.prompt)
-                      if (item.result.format === 'blocks') setRobot(item.result.robot)
+                      if (item.result.format === 'blocks' || item.result.robot) setRobot(item.result.robot ?? DEFAULT_ROBOT)
                       resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
                     }}
                   >
@@ -608,8 +647,12 @@ interface ResultViewProps {
 function ResultView(p: ResultViewProps) {
   const { result, t } = p
   const isBlocks = result.format === 'blocks'
-  const tab = isBlocks ? p.view : 'python'
+  const program = result.program
+  const hasProgram = program !== undefined
+  const tab = hasProgram ? p.view : 'python'
   const code = result.format === 'blocks' ? result.python : result.code
+  const tabs = (['blocks', 'python'] as const).filter(() => hasProgram)
+  const ordered = isBlocks ? tabs : [...tabs].reverse()
 
   return (
     <div>
@@ -621,9 +664,11 @@ function ResultView(p: ResultViewProps) {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
           <span className="format-badge">
             {isBlocks ? <Blocks size={15} aria-hidden="true" /> : <Code2 size={15} aria-hidden="true" />}
-            {result.format === 'blocks'
-              ? `${countSteps(result.program.steps)} ${pluralForm(p.lang, countSteps(result.program.steps), t.result.blocksCount)}`
-              : t.python}
+            {isBlocks && program
+              ? `${countSteps(program.steps)} ${pluralForm(p.lang, countSteps(program.steps), t.result.blocksCount)}`
+              : hasProgram
+                ? t.python
+                : t.freePython}
           </span>
           <button type="button" className="btn btn-ghost btn-sm" onClick={p.onReset}>
             <RotateCcw size={15} aria-hidden="true" />
@@ -632,14 +677,13 @@ function ResultView(p: ResultViewProps) {
         </div>
       </div>
 
-      {isBlocks && (
+      {hasProgram && (
         <div className="tabs" role="tablist" aria-label={t.formatLabel}>
-          <button type="button" role="tab" id="tab-blocks" aria-controls="panel-blocks" aria-selected={tab === 'blocks'} onClick={() => p.setView('blocks')}>
-            {t.result.blocksTab}
-          </button>
-          <button type="button" role="tab" id="tab-python" aria-controls="panel-python" aria-selected={tab === 'python'} onClick={() => p.setView('python')}>
-            {t.result.pythonTab}
-          </button>
+          {ordered.map((k) => (
+            <button key={k} type="button" role="tab" id={`tab-${k}`} aria-controls={`panel-${k}`} aria-selected={tab === k} onClick={() => p.setView(k)}>
+              {k === 'blocks' ? t.result.blocksTab : t.result.pythonTab}
+            </button>
+          ))}
         </div>
       )}
 
@@ -657,13 +701,16 @@ function ResultView(p: ResultViewProps) {
         </div>
       )}
 
-      <div style={{ marginTop: isBlocks ? 0 : 18 }}>
-        {result.format === 'blocks' && tab === 'blocks' ? (
-          <div className="canvas" role="tabpanel" id="panel-blocks" aria-labelledby="tab-blocks">
-            <BlockStack program={result.program} labels={p.labels} robot={result.robot} animate />
+      <div style={{ marginTop: hasProgram ? 0 : 18 }}>
+        {program && tab === 'blocks' ? (
+          <div role="tabpanel" id="panel-blocks" aria-labelledby="tab-blocks">
+            {!isBlocks && <p className="tab-note">{t.result.blocksOfPython}</p>}
+            <div className="canvas">
+              <BlockStack program={program} labels={p.labels} robot={result.robot} animate />
+            </div>
           </div>
         ) : (
-          <div role={isBlocks ? 'tabpanel' : undefined} id="panel-python" aria-labelledby={isBlocks ? 'tab-python' : undefined}>
+          <div role={hasProgram ? 'tabpanel' : undefined} id="panel-python" aria-labelledby={hasProgram ? 'tab-python' : undefined}>
             {isBlocks && <p className="tab-note">{t.result.pythonOfBlocks}</p>}
             <CodeView code={code} label="Python" />
           </div>

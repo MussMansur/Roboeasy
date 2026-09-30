@@ -1,23 +1,24 @@
 /**
- * SPIKE App 3 MicroPython: a deterministic block-program → Python translator
- * (so every block program also has an exact Python version to learn from)
- * and the checks applied to Python written by the AI.
+ * SPIKE App 3 MicroPython: a deterministic DSL → Python compiler (the same
+ * commands that become word blocks) and the checks applied to Python the AI
+ * writes in "free Python" mode.
  *
- * API reference: SPIKE 3 hub modules — hub, runloop, motor, motor_pair,
+ * API reference: SPIKE 3 hub modules — hub (port, light_matrix, sound,
+ * light, button, motion_sensor), runloop, motor, motor_pair,
  * distance_sensor, color_sensor, force_sensor, color.
  */
 
 import {
   type Condition,
   type Program,
-  type RobotConfig,
+  type RobotProfile,
   type Step,
   DEFAULT_ROBOT,
+  GYRO_CHUNK,
   MOVEMENT_OPS,
   effectiveCmPerRotation,
   conditionsOf,
   imagePixels,
-  spinTurnDegrees,
   usesOp,
 } from './types'
 
@@ -37,6 +38,34 @@ const COLOR_CONST: Record<string, string> = {
 
 const fmt = (n: number) => String(Math.round(n * 100) / 100)
 
+const POSITION_DIRECTION = { shortest: 'SHORTEST_PATH', clockwise: 'CLOCKWISE', counterclockwise: 'COUNTERCLOCKWISE' } as const
+
+/** Gyro turn helper emitted into programs that turn: slows down near the target to avoid overshooting. */
+const TURN_HELPER = (factor: number) => [
+  `TURN_FACTOR = ${fmt(factor)}  # calibration: commanded / measured angle`,
+  '',
+  '',
+  'async def turn(degrees, velocity):',
+  '    # Spin in place using the hub gyro (yaw): + turns right, - turns left.',
+  '    direction = 1 if degrees > 0 else -1',
+  '    remaining = abs(degrees) * TURN_FACTOR',
+  '    while remaining > 0.5:',
+  `        target = min(remaining, ${GYRO_CHUNK})  # yaw wraps at +-180 degrees`,
+  '        motion_sensor.reset_yaw(0)',
+  '        await runloop.sleep_ms(10)',
+  '        while True:',
+  '            turned = abs(motion_sensor.tilt_angles()[0]) / 10  # decidegrees -> degrees',
+  '            left = target - turned',
+  '            if left <= 0.5:',
+  '                break',
+  '            v = int(max(80, min(abs(velocity), left * 10)))  # slow down near the target',
+  '            motor_pair.move_tank(motor_pair.PAIR_1, direction * v, -direction * v)',
+  '            await runloop.sleep_ms(5)',
+  '        motor_pair.stop(motor_pair.PAIR_1)',
+  '        remaining -= target',
+  '',
+]
+
 /** Movement speed in % → velocity in degrees per second (100% ≈ 1000 °/s). */
 const velocity = (percent: number) => Math.round(percent * 10)
 
@@ -50,7 +79,7 @@ function pyString(s: string): string {
 }
 
 interface Ctx {
-  robot: RobotConfig
+  robot: RobotProfile
   cm: number
   lines: string[]
 }
@@ -110,12 +139,16 @@ function emit(steps: Step[], depth: number, ctx: Ctx) {
         else line(`await motor_pair.move_for_degrees(motor_pair.PAIR_1, ${moveDegrees(s.value, s.unit, ctx)}, 0, velocity=${v})`)
         break
       }
-      case 'turn': {
-        const steering = s.direction === 'right' ? 100 : -100
-        line(`# ${s.direction === 'right' ? '↻' : '↺'} ${fmt(s.degrees)}°`)
-        line(`await motor_pair.move_for_degrees(motor_pair.PAIR_1, ${spinTurnDegrees(s.degrees, ctx.robot)}, ${steering}, velocity=speed)`)
+      case 'turn':
+        line(`await turn(${s.direction === 'right' ? '' : '-'}${fmt(s.degrees)}, speed)`)
         break
-      }
+      case 'reset_yaw':
+        line('motion_sensor.reset_yaw(0)')
+        break
+      case 'set_movement_motors':
+        line('motor_pair.unpair(motor_pair.PAIR_1)')
+        line(`motor_pair.pair(motor_pair.PAIR_1, port.${s.left}, port.${s.right})`)
+        break
       case 'steer':
         if (s.unit === 'seconds') line(`await motor_pair.move_for_time(motor_pair.PAIR_1, ${Math.round(s.value * 1000)}, ${fmt(s.steering)}, velocity=speed)`)
         else line(`await motor_pair.move_for_degrees(motor_pair.PAIR_1, ${moveDegrees(s.value, s.unit, ctx)}, ${fmt(s.steering)}, velocity=speed)`)
@@ -148,6 +181,11 @@ function emit(steps: Step[], depth: number, ctx: Ctx) {
         break
       case 'motor_speed':
         line(`motor_speed['${s.port}'] = ${velocity(s.speed)}  # ${fmt(s.speed)}%`)
+        break
+      case 'motor_to_position':
+        line(
+          `await motor.run_to_absolute_position(port.${s.port}, ${fmt(s.position)}, motor_speed['${s.port}'], direction=motor.${POSITION_DIRECTION[s.direction]})`,
+        )
         break
       case 'show_image': {
         const px = imagePixels(s.image)
@@ -206,7 +244,7 @@ function emit(steps: Step[], depth: number, ctx: Ctx) {
 }
 
 /** Translates a block program to SPIKE App 3 MicroPython. */
-export function programToPython(program: Program, robot: RobotConfig = DEFAULT_ROBOT): string {
+export function programToPython(program: Program, robot: RobotProfile = DEFAULT_ROBOT): string {
   const ctx: Ctx = { robot, cm: effectiveCmPerRotation(robot), lines: [] }
   const drive = usesOp(program.steps, (s) => MOVEMENT_OPS.has(s.op))
   const has = (op: Step['op'] | Step['op'][]) => usesOp(program.steps, (s) => (Array.isArray(op) ? op.includes(s.op) : s.op === op))
@@ -214,7 +252,9 @@ export function programToPython(program: Program, robot: RobotConfig = DEFAULT_R
   const motorPorts = new Set<string>()
   const collect = (steps: Step[]) => {
     for (const s of steps) {
-      if (s.op === 'motor_run' || s.op === 'motor_start' || s.op === 'motor_stop' || s.op === 'motor_speed') motorPorts.add(s.port)
+      if (s.op === 'motor_run' || s.op === 'motor_start' || s.op === 'motor_stop' || s.op === 'motor_speed' || s.op === 'motor_to_position') {
+        motorPorts.add(s.port)
+      }
       if (s.op === 'repeat' || s.op === 'forever' || s.op === 'repeat_until') collect(s.steps)
       if (s.op === 'if') {
         collect(s.then)
@@ -229,6 +269,8 @@ export function programToPython(program: Program, robot: RobotConfig = DEFAULT_R
   if (has('beep')) hubImports.push('sound')
   if (has('button_light')) hubImports.push('light')
   if (sensors.has('button')) hubImports.push('button')
+  const gyro = has(['turn', 'reset_yaw'])
+  if (gyro) hubImports.push('motion_sensor')
 
   const modules = ['runloop']
   if (drive) modules.push('motor_pair')
@@ -262,6 +304,11 @@ export function programToPython(program: Program, robot: RobotConfig = DEFAULT_R
     out.push('def distance_percent(p):')
     out.push('    return min(100, distance_mm(p) / 20)')
     out.push('')
+  }
+
+  if (has('turn')) {
+    out.push('')
+    out.push(...TURN_HELPER(robot.turnFactor))
   }
 
   out.push('')
@@ -300,9 +347,30 @@ export function cleanPython(code: string): string {
   return c.replace(/[ \t]+$/gm, '').trim() + '\n'
 }
 
+/** Modules a SPIKE App 3 program may import (hub firmware + MicroPython built-ins). */
+export const ALLOWED_PYTHON_MODULES = [
+  'hub', 'runloop', 'motor', 'motor_pair', 'distance_sensor', 'color_sensor', 'color', 'force_sensor', 'color_matrix',
+  'device', 'orientation', 'math', 'random', 'time',
+] as const
+
+/** Root module names imported by the code (`import a.b as c`, `from x.y import z`). */
+export function importedModules(code: string): string[] {
+  const found = new Set<string>()
+  for (const line of code.split('\n')) {
+    const from = line.match(/^\s*from\s+([\w.]+)\s+import\b/)
+    if (from) found.add(from[1].split('.')[0])
+    const imp = line.match(/^\s*import\s+(.+)$/)
+    if (imp) for (const part of imp[1].split(',')) found.add(part.trim().split(/\s+/)[0].split('.')[0])
+  }
+  return [...found].filter(Boolean)
+}
+
 /** Finds problems that would stop the code from running on a SPIKE App 3 hub. */
 export function checkPython(code: string): string[] {
   const issues: string[] = []
+  const allowed: readonly string[] = ALLOWED_PYTHON_MODULES
+  const unknown = importedModules(code).filter((m) => !allowed.includes(m))
+  if (unknown.length) issues.push(`imports modules that are not available on the hub: ${unknown.join(', ')}`)
   const legacy = [
     [/\bfrom\s+spike\b|\bimport\s+spike\b/, 'uses the SPIKE 2 `spike` module'],
     [/\bfrom\s+mindstorms\b|\bimport\s+mindstorms\b/, 'uses the MINDSTORMS `mindstorms` module'],
@@ -310,7 +378,7 @@ export function checkPython(code: string): string[] {
     [/\bhub\.port\.[A-F]\b/, 'uses the legacy `hub.port.X` API'],
   ] as const
   for (const [re, message] of legacy) if (re.test(code)) issues.push(message)
-  if (!/runloop\.run\s*\(/.test(code)) issues.push('does not start the program with runloop.run(...)')
+  if (!/runloop\.run\s*\(\s*main\s*\(\s*\)\s*\)/.test(code)) issues.push('does not start the program with runloop.run(main())')
   if (!/\basync\s+def\s+\w+\s*\(/.test(code)) issues.push('has no async main function')
   if (/\binput\s*\(/.test(code)) issues.push('uses input(), which is not available on the hub')
   if (/\btime\.sleep\s*\(/.test(code)) issues.push('uses time.sleep, which blocks the hub; use await runloop.sleep_ms')

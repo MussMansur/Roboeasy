@@ -1,13 +1,18 @@
-import type { Program, RobotConfig } from './dsl/types'
+import type { Program, RobotProfile } from './dsl/types'
 import type { Lang } from './spike/prompts'
 
-export type Format = 'blocks' | 'python'
+/**
+ * - blocks: the AI writes DSL commands, compiled to SPIKE word blocks
+ * - python: the AI writes DSL commands, compiled to SPIKE 3 Python
+ * - python-free: the AI writes SPIKE 3 Python itself (tasks the DSL cannot express)
+ */
+export type Format = 'blocks' | 'python' | 'python-free'
 
 export interface GenerateRequest {
   prompt: string
   format: Format
   lang: Lang
-  robot?: Partial<RobotConfig>
+  robot?: Partial<RobotProfile>
   /** The current result, when the user asks to change it. */
   previous?: { program?: Program; code?: string }
 }
@@ -23,7 +28,8 @@ export type GenerateErrorCode =
 
 export type GenerateResponse =
   | { ok: true; format: 'blocks'; title: string; description: string; program: Program; python: string; warnings: string[] }
-  | { ok: true; format: 'python'; title: string; description: string; code: string; warnings: string[] }
+  /** `program` is present when the Python was compiled from DSL commands. */
+  | { ok: true; format: 'python'; title: string; description: string; code: string; program?: Program; warnings: string[] }
   | { ok: false; error: GenerateErrorCode; retryAfter?: number }
 
 export const PROMPT_MAX = 800

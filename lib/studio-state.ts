@@ -1,16 +1,17 @@
 /**
- * Client-side persistence for the studio: recent programs (localStorage)
- * and share links that carry a whole result in the URL hash (no server).
+ * Client-side persistence: the robot profile (versioned), recent programs
+ * (localStorage) and share links that carry a whole result in the URL hash.
  */
 
 import type { Format } from './api-types'
-import type { Program, RobotConfig } from './dsl/types'
+import type { Program, RobotProfile } from './dsl/types'
 import { parseProgram, parseRobot } from './dsl/schema'
 import { programToPython } from './dsl/compile-python'
 
 export type StudioResult =
-  | { format: 'blocks'; title: string; description: string; program: Program; python: string; robot: RobotConfig; warnings: string[] }
-  | { format: 'python'; title: string; description: string; code: string; warnings: string[] }
+  | { format: 'blocks'; title: string; description: string; program: Program; python: string; robot: RobotProfile; warnings: string[] }
+  /** `program`/`robot` are set when the Python was compiled from DSL commands (not free Python). */
+  | { format: 'python'; title: string; description: string; code: string; program?: Program; robot?: RobotProfile; warnings: string[] }
 
 export interface HistoryItem {
   id: string
@@ -20,7 +21,10 @@ export interface HistoryItem {
 }
 
 const HISTORY_KEY = 'roboeasy.history.v1'
-const ROBOT_KEY = 'roboeasy.robot.v1'
+/** Robot profile schema versions: 1 = cm wheel sizes, 2 = mm + calibration + attachments. */
+export const ROBOT_PROFILE_VERSION = 2
+const ROBOT_KEY = 'roboeasy.robot'
+const LEGACY_ROBOT_KEY = 'roboeasy.robot.v1'
 const FORMAT_KEY = 'roboeasy.format.v1'
 const HISTORY_MAX = 12
 
@@ -46,6 +50,13 @@ export function reviveResult(raw: unknown): StudioResult | null {
   if (typeof raw !== 'object' || raw === null) return null
   const r = raw as Record<string, unknown>
   const text = (v: unknown, max: number) => (typeof v === 'string' ? v.slice(0, max) : '')
+  if (r.format === 'python' && r.program) {
+    const robot = parseRobot(r.robot)
+    const parsed = parseProgram(r.program, robot)
+    if (!parsed.ok) return null
+    const program = parsed.value
+    return { format: 'python', title: program.title, description: program.description, code: programToPython(program, robot), program, robot, warnings: [] }
+  }
   if (r.format === 'python' && typeof r.code === 'string' && r.code.trim()) {
     return { format: 'python', title: text(r.title, 60) || 'RoboEasy', description: text(r.description, 400), code: r.code.slice(0, 20_000), warnings: [] }
   }
@@ -78,8 +89,8 @@ export function saveHistory(items: HistoryItem[]) {
     HISTORY_KEY,
     items.slice(0, HISTORY_MAX).map((it) => ({
       ...it,
-      // The Python version of a block program is derived, no need to store it.
-      result: it.result.format === 'blocks' ? { ...it.result, python: '' } : it.result,
+      // Code compiled from DSL commands is derived, no need to store it.
+      result: it.result.format === 'blocks' ? { ...it.result, python: '' } : it.result.program ? { ...it.result, code: '' } : it.result,
     })),
   )
 }
@@ -89,14 +100,25 @@ export function addToHistory(items: HistoryItem[], prompt: string, result: Studi
   return [item, ...items].slice(0, HISTORY_MAX)
 }
 
-export const loadRobot = (): RobotConfig | null => {
-  const raw = read<unknown>(ROBOT_KEY)
-  return raw ? parseRobot(raw) : null
+/** Loads the saved robot profile, migrating older schema versions. */
+export function loadRobot(): RobotProfile | null {
+  const saved = read<{ version?: number; profile?: unknown }>(ROBOT_KEY)
+  if (saved?.version === ROBOT_PROFILE_VERSION) return parseRobot(saved.profile)
+  // v1 stored the bare config with wheel sizes in cm; parseRobot converts it.
+  const legacy = read<unknown>(LEGACY_ROBOT_KEY)
+  if (!legacy) return null
+  const migrated = parseRobot(legacy)
+  saveRobot(migrated)
+  return migrated
 }
-export const saveRobot = (robot: RobotConfig) => write(ROBOT_KEY, robot)
+
+export function saveRobot(robot: RobotProfile) {
+  write(ROBOT_KEY, { version: ROBOT_PROFILE_VERSION, profile: robot })
+}
+
 export const loadFormat = (): Format | null => {
   const f = read<string>(FORMAT_KEY)
-  return f === 'blocks' || f === 'python' ? f : null
+  return f === 'blocks' || f === 'python' || f === 'python-free' ? f : null
 }
 export const saveFormat = (format: Format) => write(FORMAT_KEY, format)
 
@@ -144,8 +166,8 @@ async function pipe(bytes: Uint8Array, stream: CompressionStream | Decompression
 
 export async function encodeShare(result: StudioResult): Promise<string> {
   const payload =
-    result.format === 'blocks'
-      ? { format: 'blocks', program: result.program, robot: result.robot }
+    result.format === 'blocks' || result.program
+      ? { format: result.format, program: result.program, robot: result.robot }
       : { format: 'python', title: result.title, description: result.description, code: result.code }
   const json = new TextEncoder().encode(JSON.stringify(payload))
   if (typeof CompressionStream === 'function') return `z${toBase64Url(await pipe(json, new CompressionStream('deflate-raw')))}`

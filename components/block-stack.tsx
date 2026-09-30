@@ -5,7 +5,7 @@ import type { Dictionary } from '@/lib/i18n'
 import {
   type Condition,
   type Program,
-  type RobotConfig,
+  type RobotProfile,
   type Step,
   DEFAULT_ROBOT,
   MOVEMENT_OPS,
@@ -42,6 +42,7 @@ const DIR_GLYPH: Record<string, string> = {
   right: '↻',
   clockwise: '↻',
   counterclockwise: '↺',
+  shortest: '⇄',
 }
 
 const fmt = (n: number) => String(Math.round(n * 100) / 100)
@@ -163,6 +164,10 @@ function StepView({ s, t }: { s: Step; t: Labels }) {
       return <Block cat="move">{tpl(t.move, { DIR: <Dir d={s.direction} t={t} />, VALUE: V(s.value), UNIT: t.unit[s.unit] })}</Block>
     case 'turn':
       return <Block cat="move">{tpl(t.turn, { DIR: <Dir d={s.direction} t={t} />, VALUE: V(s.degrees) })}</Block>
+    case 'reset_yaw':
+      return <Block cat="move">{tpl(t.reset_yaw, {})}</Block>
+    case 'set_movement_motors':
+      return <Block cat="move">{tpl(t.set_movement_motors, { PAIR: <Pill menu>{`${s.left}+${s.right}`}</Pill> })}</Block>
     case 'steer':
       return <Block cat="move">{tpl(t.steer, { STEER: <Steering value={s.steering} />, VALUE: V(s.value), UNIT: t.unit[s.unit] })}</Block>
     case 'start_move':
@@ -183,6 +188,8 @@ function StepView({ s, t }: { s: Step; t: Labels }) {
       return <Block cat="motor">{tpl(t.motor_start, { PORT: <Port p={s.port} />, DIR: <Dir d={s.direction} t={t} /> })}</Block>
     case 'motor_stop':
       return <Block cat="motor">{tpl(t.motor_stop, { PORT: <Port p={s.port} /> })}</Block>
+    case 'motor_to_position':
+      return <Block cat="motor">{tpl(t.motor_to_position, { PORT: <Port p={s.port} />, VALUE: V(s.position), DIR: <Dir d={s.direction} t={t} /> })}</Block>
     case 'motor_speed':
       return <Block cat="motor">{tpl(t.motor_speed, { PORT: <Port p={s.port} />, VALUE: V(s.speed) })}</Block>
     case 'show_image':
@@ -249,7 +256,7 @@ function Stack({ steps, t }: { steps: Step[]; t: Labels }) {
 interface BlockStackProps {
   program: Pick<Program, 'steps'>
   labels: Labels
-  robot?: RobotConfig
+  robot?: RobotProfile
   /** Show only the first N top-level steps (used by the animated demo). */
   limit?: number
   animate?: boolean
