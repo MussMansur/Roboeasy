@@ -1,0 +1,86 @@
+{
+  "id": "template",
+  "name": {
+    "ru": "Шаблон сезона (TODO: название сезона)",
+    "en": "Season template (TODO: season name)",
+    "kk": "Маусым үлгісі (TODO: маусым атауы)"
+  },
+  "todo": "TODO: replace the example launch areas and missions with the real ones from the season's field map. Coordinates are in mm from the bottom-left corner of the mat; headings in degrees, 0 = right, 90 = away from the team side. Only the mat size (2362 x 1143 mm) is standard.",
+  "field": { "widthMm": 2362, "heightMm": 1143 },
+  "launchAreas": [
+    {
+      "id": "left",
+      "name": { "ru": "Левая зона старта", "en": "Left launch area", "kk": "Сол жақ старт аймағы" },
+      "x": 0,
+      "y": 0,
+      "width": 400,
+      "height": 350,
+      "start": { "x": 200, "y": 160, "headingDeg": 0 },
+      "todo": true
+    },
+    {
+      "id": "right",
+      "name": { "ru": "Правая зона старта", "en": "Right launch area", "kk": "Оң жақ старт аймағы" },
+      "x": 1962,
+      "y": 0,
+      "width": 400,
+      "height": 350,
+      "start": { "x": 2162, "y": 160, "headingDeg": 180 },
+      "todo": true
+    }
+  ],
+  "missions": [
+    {
+      "id": "EX1",
+      "name": { "ru": "Пример: толкнуть рычаг", "en": "Example: push a lever", "kk": "Мысал: тетікті итеру" },
+      "x": 700,
+      "y": 650,
+      "headingDeg": 90,
+      "points": 20,
+      "action": "push",
+      "approachMm": 150,
+      "actionMm": 60,
+      "notes": {
+        "ru": "TODO: пример миссии, замените реальной миссией и координатами со схемы поля.",
+        "en": "TODO: example mission, replace with a real mission and coordinates from the field map.",
+        "kk": "TODO: мысал миссия, оны нағыз миссиямен және алаң сызбасындағы координаттармен ауыстырыңыз."
+      },
+      "todo": true
+    },
+    {
+      "id": "EX2",
+      "name": { "ru": "Пример: поднять модель", "en": "Example: lift a model", "kk": "Мысал: модельді көтеру" },
+      "x": 1250,
+      "y": 900,
+      "headingDeg": 90,
+      "points": 30,
+      "action": "lift",
+      "approachMm": 130,
+      "attachmentDeg": 120,
+      "via": [{ "x": 1100, "y": 450 }],
+      "notes": {
+        "ru": "TODO: пример миссии с промежуточной точкой объезда.",
+        "en": "TODO: example mission with a waypoint to drive around another model.",
+        "kk": "TODO: айналып өтуге арналған аралық нүктесі бар мысал миссия."
+      },
+      "todo": true
+    },
+    {
+      "id": "EX3",
+      "name": { "ru": "Пример: доставить элемент", "en": "Example: deliver an item", "kk": "Мысал: элементті жеткізу" },
+      "x": 1850,
+      "y": 700,
+      "headingDeg": 0,
+      "points": 25,
+      "action": "deliver",
+      "approachMm": 140,
+      "actionMm": 80,
+      "notes": {
+        "ru": "TODO: пример миссии, замените реальной.",
+        "en": "TODO: example mission, replace with a real one.",
+        "kk": "TODO: мысал миссия, нағыз миссиямен ауыстырыңыз."
+      },
+      "todo": true
+    }
+  ]
+}
