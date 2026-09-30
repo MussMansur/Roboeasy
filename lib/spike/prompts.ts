@@ -4,7 +4,7 @@
  * steering the model toward programs that behave well on a real robot.
  */
 
-import { type RobotConfig, IMAGES, SENSOR_COLORS, spinTurnDegrees, effectiveCmPerRotation } from './program'
+import { type RobotConfig, IMAGES, SENSOR_COLORS, spinTurnDegrees, effectiveCmPerRotation } from '../dsl/types'
 
 export type Lang = 'ru' | 'kk' | 'en'
 

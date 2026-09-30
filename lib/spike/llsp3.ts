@@ -8,9 +8,9 @@
  */
 
 import JSZip from 'jszip'
-import type { Program, RobotConfig } from './program'
-import { DEFAULT_ROBOT } from './program'
-import { EMPTY_SVG_ASSET, buildProject, randomId } from './scratch'
+import type { Program, RobotConfig } from '../dsl/types'
+import { DEFAULT_ROBOT } from '../dsl/types'
+import { EMPTY_SVG_ASSET, buildProject, randomId } from '../dsl/compile-blocks'
 
 /** Project/block format version of SPIKE App 3 (`currentProjectVersion`). */
 export const SPIKE_PROJECT_VERSION = 38

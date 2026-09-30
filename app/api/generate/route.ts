@@ -3,10 +3,10 @@ import type { NextRequest } from 'next/server'
 
 import { type Format, type GenerateErrorCode, type GenerateResponse, PROMPT_MAX } from '@/lib/api-types'
 import { clientKey, rateLimit } from '@/lib/rate-limit'
-import type { RobotConfig } from '@/lib/spike/program'
+import type { RobotConfig } from '@/lib/dsl/types'
 import { type Lang, blocksSystemPrompt, pythonSystemPrompt, userMessage } from '@/lib/spike/prompts'
-import { checkPython, cleanPython, programToPython } from '@/lib/spike/python'
-import { PROGRAM_JSON_SCHEMA, PYTHON_JSON_SCHEMA, parseProgram, parsePythonAnswer, parseRobot } from '@/lib/spike/schema'
+import { checkPython, cleanPython, programToPython } from '@/lib/dsl/compile-python'
+import { PROGRAM_JSON_SCHEMA, PYTHON_JSON_SCHEMA, parseProgram, parsePythonAnswer, parseRobot } from '@/lib/dsl/schema'
 
 export const maxDuration = 60
 

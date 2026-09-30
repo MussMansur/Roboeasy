@@ -6,7 +6,7 @@ import { Check, FileDown, Loader2, Sparkles } from 'lucide-react'
 import { BlockStack } from '@/components/block-stack'
 import { CodeView } from '@/components/code-view'
 import type { Dictionary } from '@/lib/i18n/ru'
-import { IMAGES, type Program } from '@/lib/spike/program'
+import { IMAGES, type Program } from '@/lib/dsl/types'
 
 type Phase = 'typing' | 'building' | 'done'
 

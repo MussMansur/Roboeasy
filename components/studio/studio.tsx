@@ -26,8 +26,8 @@ import { CodeView } from '@/components/code-view'
 import { type Format, type GenerateErrorCode, type GenerateResponse, PROMPT_MAX } from '@/lib/api-types'
 import { type Locale, fill } from '@/lib/i18n/config'
 import type { Dictionary } from '@/lib/i18n/ru'
-import { DEFAULT_ROBOT, PORTS, type Port, type RobotConfig, countSteps } from '@/lib/spike/program'
-import { parseRobot } from '@/lib/spike/schema'
+import { DEFAULT_ROBOT, PORTS, type Port, type RobotConfig, countSteps } from '@/lib/dsl/types'
+import { parseRobot } from '@/lib/dsl/schema'
 import {
   type HistoryItem,
   type StudioResult,

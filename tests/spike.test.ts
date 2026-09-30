@@ -3,10 +3,10 @@ import { createRequire } from 'node:module'
 import { describe, it } from 'node:test'
 import JSZip from 'jszip'
 
-import { DEFAULT_ROBOT, type Program, type Step, toMatrixText } from '../lib/spike/program'
-import { PROGRAM_JSON_SCHEMA, PYTHON_JSON_SCHEMA, parseProgram, parseRobot } from '../lib/spike/schema'
-import { buildProject, type ScratchBlock } from '../lib/spike/scratch'
-import { checkPython, cleanPython, programToPython } from '../lib/spike/python'
+import { DEFAULT_ROBOT, type Program, type Step, toMatrixText } from '../lib/dsl/types'
+import { PROGRAM_JSON_SCHEMA, PYTHON_JSON_SCHEMA, parseProgram, parseRobot } from '../lib/dsl/schema'
+import { buildProject, type ScratchBlock } from '../lib/dsl/compile-blocks'
+import { checkPython, cleanPython, programToPython } from '../lib/dsl/compile-python'
 import { SPIKE_PROJECT_VERSION, createLlsp3 } from '../lib/spike/llsp3'
 
 const EVERY_OP: Step['op'][] = [

@@ -23,7 +23,7 @@ import {
   imagePixels,
   spinTurnDegrees,
   usesOp,
-} from './program'
+} from './types'
 
 /** The asset SPIKE writes for its empty costume/backdrop (md5 of an empty file). */
 export const EMPTY_SVG_ASSET = 'd41d8cd98f00b204e9800998ecf8427e'

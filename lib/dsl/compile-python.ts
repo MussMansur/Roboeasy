@@ -19,7 +19,7 @@ import {
   imagePixels,
   spinTurnDegrees,
   usesOp,
-} from './program'
+} from './types'
 
 const COLOR_CONST: Record<string, string> = {
   black: 'BLACK',

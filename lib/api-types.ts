@@ -1,4 +1,4 @@
-import type { Program, RobotConfig } from './spike/program'
+import type { Program, RobotConfig } from './dsl/types'
 import type { Lang } from './spike/prompts'
 
 export type Format = 'blocks' | 'python'

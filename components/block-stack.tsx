@@ -13,7 +13,7 @@ import {
   imagePixels,
   SPIKE_DEFAULT_CM_PER_ROTATION,
   usesOp,
-} from '@/lib/spike/program'
+} from '@/lib/dsl/types'
 
 type Labels = Dictionary['blocks']
 type Category = 'events' | 'move' | 'motor' | 'light' | 'sound' | 'control'

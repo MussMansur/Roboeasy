@@ -4,9 +4,9 @@
  */
 
 import type { Format } from './api-types'
-import type { Program, RobotConfig } from './spike/program'
-import { parseProgram, parseRobot } from './spike/schema'
-import { programToPython } from './spike/python'
+import type { Program, RobotConfig } from './dsl/types'
+import { parseProgram, parseRobot } from './dsl/schema'
+import { programToPython } from './dsl/compile-python'
 
 export type StudioResult =
   | { format: 'blocks'; title: string; description: string; program: Program; python: string; robot: RobotConfig; warnings: string[] }

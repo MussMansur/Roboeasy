@@ -4,10 +4,10 @@ import { describe, it } from 'node:test'
 
 import { matchLocale } from '../lib/i18n/config'
 import { rateLimit } from '../lib/rate-limit'
-import type { Step, StepOp } from '../lib/spike/program'
-import { parseProgram } from '../lib/spike/schema'
-import { checkPython, programToPython } from '../lib/spike/python'
-import { buildProject } from '../lib/spike/scratch'
+import type { Step, StepOp } from '../lib/dsl/types'
+import { parseProgram } from '../lib/dsl/schema'
+import { checkPython, programToPython } from '../lib/dsl/compile-python'
+import { buildProject } from '../lib/dsl/compile-blocks'
 
 const require = createRequire(import.meta.url)
 const scratchParser: (input: string, isSprite: boolean, cb: (err: unknown) => void) => void = require('scratch-parser')

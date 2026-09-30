@@ -8,8 +8,8 @@ import { HeroDemo } from '@/components/hero-demo'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
 import { getDictionary, isLocale } from '@/lib/i18n'
-import type { Program } from '@/lib/spike/program'
-import { programToPython } from '@/lib/spike/python'
+import type { Program } from '@/lib/dsl/types'
+import { programToPython } from '@/lib/dsl/compile-python'
 
 const FEATURE_ICONS = [FileCheck2, Eye, MessageSquareText, SlidersHorizontal, ShieldCheck, Languages]
 const FEATURE_TONES = ['var(--yellow-ink)', 'var(--azure-ink)', 'var(--magenta-ink)', 'var(--azure-ink)', 'var(--success)', 'var(--yellow-ink)']

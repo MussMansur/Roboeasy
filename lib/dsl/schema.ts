@@ -29,7 +29,7 @@ import {
   SENSOR_COLORS,
   countSteps,
   toMatrixText,
-} from './program'
+} from './types'
 
 const keys = <T extends Record<string, unknown>>(o: T) => Object.keys(o) as [keyof T & string, ...(keyof T & string)[]]
 
