@@ -72,18 +72,25 @@ const TEXT = 10
 
 class Builder {
   blocks: Record<string, ScratchBlock> = {}
+  private count = 0
 
   constructor(private robot: RobotConfig) {}
 
+  /** Block ids only need to be unique within the project: a counter can never collide. */
+  private nextId(): string {
+    this.count += 1
+    return `rb${this.count.toString().padStart(4, '0')}`
+  }
+
   add(opcode: string, parent: string | null, extra: Partial<ScratchBlock> = {}): string {
-    const id = randomId()
+    const id = this.nextId()
     this.blocks[id] = { opcode, next: null, parent, inputs: {}, fields: {}, shadow: false, topLevel: false, ...extra }
     return id
   }
 
   /** A custom SPIKE field lives in its own shadow block. */
   shadow(parent: string, opcode: string, value: string): Input {
-    const id = randomId()
+    const id = this.nextId()
     this.blocks[id] = {
       opcode,
       next: null,
