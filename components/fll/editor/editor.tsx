@@ -26,7 +26,7 @@ import {
   validateSeason,
 } from '@/lib/fll/editor-model'
 import { SEASON_SCHEMA_VERSION, type Season, safeParseSeason } from '@/lib/fll/season'
-import { idbDelete, idbGet, idbSet } from '@/lib/idb'
+import { deleteDraft, loadDraft, saveDraft } from '@/lib/fll/drafts'
 import { type Locale, fill } from '@/lib/i18n/config'
 import type { Dictionary } from '@/lib/i18n/ru'
 
@@ -35,11 +35,6 @@ interface EditorProps {
   seasons: Season[]
   defaultSeasonId: string
   t: Dictionary['fll']
-}
-
-interface StoredDraft {
-  season: unknown
-  savedAt: number
 }
 
 const GRIDS = [0, 10, 25, 50, 100] as const
@@ -92,12 +87,8 @@ export default function SeasonEditor({ lang, seasons, defaultSeasonId, t: fllT }
       setDoc({ key: shipped.id, base: season, history: initHistory(season) })
       setDraftInfo({ restored, savedAt, error })
     }
-    idbGet<StoredDraft>('drafts', shipped.id)
-      .then((draft) => {
-        const parsed = draft ? safeParseSeason(draft.season) : null
-        if (draft && parsed?.ok) open(parsed.season, true, null)
-        else open(shipped, false, null)
-      })
+    loadDraft(shipped.id)
+      .then((draft) => (draft ? open(draft.season, true, null) : open(shipped, false, null)))
       .catch(() => open(shipped, false, null, true))
     return () => {
       alive = false
@@ -113,7 +104,7 @@ export default function SeasonEditor({ lang, seasons, defaultSeasonId, t: fllT }
     const season = doc.history.present
     const id = setTimeout(() => {
       const savedAt = Date.now()
-      idbSet('drafts', key, { season, savedAt } satisfies StoredDraft)
+      saveDraft(key, season, savedAt)
         .then(() => setDraftInfo((d) => ({ ...d, savedAt, error: false })))
         .catch(() => setDraftInfo((d) => ({ ...d, error: true })))
     }, 600)
@@ -224,7 +215,7 @@ export default function SeasonEditor({ lang, seasons, defaultSeasonId, t: fllT }
   async function onReset() {
     if (!window.confirm(t.resetConfirm)) return
     try {
-      await idbDelete('drafts', shipped.id)
+      await deleteDraft(shipped.id)
     } catch {
       /* the draft stays only in memory */
     }

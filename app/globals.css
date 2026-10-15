@@ -2276,6 +2276,7 @@ a {
   font-weight: 700;
 }
 .fll-corners-stage {
+  position: relative;
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
@@ -2289,6 +2290,47 @@ a {
   touch-action: none;
   cursor: crosshair;
   user-select: none;
+}
+.fll-loupe {
+  position: absolute;
+  width: clamp(110px, 26%, 200px) !important;
+  height: auto;
+  aspect-ratio: 1;
+  border: 3px solid var(--yellow);
+  border-radius: 50%;
+  background: var(--bg-soft);
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+  cursor: default !important;
+}
+.fll-loupe[data-side^='top'] {
+  top: 10px;
+}
+.fll-loupe[data-side^='bottom'] {
+  bottom: 10px;
+}
+.fll-loupe[data-side$='left'] {
+  left: 10px;
+}
+.fll-loupe[data-side$='right'] {
+  right: 10px;
+}
+.fll-loupe line,
+.fll-loupe circle {
+  fill: none;
+  stroke: var(--magenta);
+}
+.fll-loupe text {
+  fill: var(--yellow);
+  font-weight: 800;
+  font-family: var(--font-body), sans-serif;
+  paint-order: stroke;
+  stroke: #000;
+  stroke-width: 2px;
+}
+.fll-draft {
+  margin: 14px 0 0;
+  max-width: 80ch;
 }
 .fll-corners-quad {
   fill: color-mix(in srgb, var(--azure) 12%, transparent);

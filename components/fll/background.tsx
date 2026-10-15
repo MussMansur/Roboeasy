@@ -192,6 +192,8 @@ interface DialogProps {
 function CornerDialog({ draft, t, busy, onCancel, onApply }: DialogProps) {
   const [corners, setCorners] = useState<Point[]>([...draft.corners])
   const [active, setActive] = useState(0)
+  /** The corner shown in the magnifier: the one being placed or dragged. */
+  const [zoomed, setZoomed] = useState(0)
   const [url, setUrl] = useState<string | null>(null)
   const svg = useRef<SVGSVGElement>(null)
   const dragging = useRef<number | null>(null)
@@ -217,7 +219,10 @@ function CornerDialog({ draft, t, busy, onCancel, onApply }: DialogProps) {
     return { x: Math.min(w, Math.max(0, p.x)), y: Math.min(h, Math.max(0, p.y)) }
   }
 
-  const setCorner = (i: number, p: Point) => setCorners((cs) => cs.map((c, j) => (j === i ? { x: Math.round(p.x), y: Math.round(p.y) } : c)))
+  const setCorner = (i: number, p: Point) => {
+    setZoomed(i)
+    setCorners((cs) => cs.map((c, j) => (j === i ? { x: Math.round(p.x), y: Math.round(p.y) } : c)))
+  }
 
   const onDown = (e: PointerEvent<SVGSVGElement>) => {
     const handle = (e.target as Element).closest('[data-corner]')
@@ -227,6 +232,7 @@ function CornerDialog({ draft, t, busy, onCancel, onApply }: DialogProps) {
     if (handle) {
       dragging.current = Number(handle.getAttribute('data-corner'))
       setActive(dragging.current)
+      setZoomed(dragging.current)
       return
     }
     // Click on the picture: place the active corner and move on to the next one.
@@ -253,6 +259,10 @@ function CornerDialog({ draft, t, busy, onCancel, onApply }: DialogProps) {
 
   const valid = isConvexQuad(corners)
   const r = Math.max(w, h) / 90
+  // Magnifier: ~10x around the corner, placed on the opposite side of the picture.
+  const z = corners[zoomed]
+  const span = Math.max(w, h) / 12
+  const loupeSide = `${z.y > h / 2 ? 'top' : 'bottom'}-${z.x > w / 2 ? 'left' : 'right'}`
 
   return (
     <div className="modal-backdrop" role="presentation" onKeyDown={(e) => e.key === 'Escape' && onCancel()}>
@@ -281,7 +291,10 @@ function CornerDialog({ draft, t, busy, onCancel, onApply }: DialogProps) {
                 tabIndex={0}
                 aria-label={`${i + 1}: ${t.cornerNames[i]} (${c.x}, ${c.y})`}
                 onKeyDown={onKey(i)}
-                onFocus={() => setActive(i)}
+                onFocus={() => {
+                  setActive(i)
+                  setZoomed(i)
+                }}
               >
                 <circle cx={c.x} cy={c.y} r={r} strokeWidth={r / 4} />
                 <text x={c.x} y={c.y} fontSize={r * 1.1} textAnchor="middle" dominantBaseline="central">
@@ -290,6 +303,17 @@ function CornerDialog({ draft, t, busy, onCancel, onApply }: DialogProps) {
               </g>
             ))}
           </svg>
+          {url && (
+            <svg className="fll-loupe" data-side={loupeSide} viewBox={`${z.x - span / 2} ${z.y - span / 2} ${span} ${span}`} aria-hidden="true">
+              <image href={url} x="0" y="0" width={w} height={h} />
+              <line x1={z.x - span} y1={z.y} x2={z.x + span} y2={z.y} strokeWidth={span / 150} />
+              <line x1={z.x} y1={z.y - span} x2={z.x} y2={z.y + span} strokeWidth={span / 150} />
+              <circle cx={z.x} cy={z.y} r={span / 30} strokeWidth={span / 150} />
+              <text x={z.x - span / 2 + span / 20} y={z.y - span / 2 + span / 9} fontSize={span / 10}>
+                {zoomed + 1}
+              </text>
+            </svg>
+          )}
         </div>
         {!valid && (
           <p className="alert alert-warn" role="alert">

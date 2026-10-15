@@ -3,13 +3,16 @@ import type { NextRequest } from 'next/server'
 import { parseRobot } from '@/lib/dsl/schema'
 import { askGemini, createGemini, retryMessage } from '@/lib/gemini'
 import { type Lang, MAX_SELECTED, type PlanNotice, type PlanResponse, fallbackPlan, parsePlan, planJsonSchema, planSystemPrompt, planUserMessage } from '@/lib/fll/plan'
+import { safeParseSeason } from '@/lib/fll/season'
 import { getSeason } from '@/lib/fll/seasons'
 import { clientKey, rateLimit } from '@/lib/rate-limit'
 
 export const maxDuration = 60
 
 const TOTAL_TIMEOUT_MS = 55_000
-const MAX_BODY_BYTES = 32_000
+/** Room for an editor draft of a season sent along with the request. */
+const MAX_BODY_BYTES = 256_000
+const MAX_DRAFT_MISSIONS = 80
 const RATE_LIMIT = { requests: 6, windowMs: 60_000 }
 
 function reply(body: PlanResponse, status = 200) {
@@ -20,14 +23,21 @@ export async function POST(req: NextRequest) {
   if (Number(req.headers.get('content-length') ?? 0) > MAX_BODY_BYTES) return reply({ ok: false, error: 'bad_request' }, 413)
   let body: Record<string, unknown>
   try {
-    const raw: unknown = await req.json()
+    const text = await req.text()
+    if (text.length > MAX_BODY_BYTES) return reply({ ok: false, error: 'bad_request' }, 413)
+    const raw: unknown = JSON.parse(text)
     if (typeof raw !== 'object' || raw === null) throw new Error('not an object')
     body = raw as Record<string, unknown>
   } catch {
     return reply({ ok: false, error: 'bad_request' }, 400)
   }
 
-  const season = typeof body.seasonId === 'string' ? getSeason(body.seasonId) : null
+  // A draft from the field editor (not yet in data/seasons) or a shipped season.
+  let season = typeof body.seasonId === 'string' ? getSeason(body.seasonId) : null
+  if (body.season !== undefined) {
+    const draft = safeParseSeason(body.season)
+    season = draft.ok && draft.season.missions.length <= MAX_DRAFT_MISSIONS ? draft.season : null
+  }
   const lang: Lang = body.lang === 'kk' || body.lang === 'en' ? body.lang : 'ru'
   const known = new Set(season?.missions.map((m) => m.id))
   const missionIds = Array.isArray(body.missionIds) ? [...new Set(body.missionIds.filter((id): id is string => typeof id === 'string' && known.has(id)))] : []

@@ -258,6 +258,8 @@ export const en: Dictionary = {
     seasonTodo: 'This season is not filled in yet. Missions, launch areas and forbidden zones are entered from the official Robot Game Rulebook in the field editor; until then routes are only illustrative.',
     noMissions: 'This season has no missions yet. Place them in the field editor, export the JSON and put the file into data/seasons/.',
     openEditor: 'Field editor',
+    useDraft: 'Use the draft from the field editor',
+    useDraftHint: 'Missions: {n} · saved {time}. The draft exists only in this browser; export the JSON to data/seasons/ to share the season.',
     unsupportedPlatform: 'Code generation for this platform is not supported yet. Planning and routes work, but robot files cannot be downloaded.',
     fieldTitle: 'Field',
     fieldHint: 'Click a mission to select it. The dashed area is where the robot stands during the action; the arrow shows where it faces.',

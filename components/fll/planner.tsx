@@ -10,6 +10,7 @@ import { SeasonSelect, useSeasonChoice } from '@/components/fll/season-select'
 import { type CodeFormat, compilerFor } from '@/lib/compilers'
 import { ATTACHMENT_KINDS, type AttachmentKind, DEFAULT_ROBOT, PORTS, type Port, type Program, type RobotProfile } from '@/lib/dsl/types'
 import { CALIBRATION, applyCalibration, distanceTestProgram, turnTestProgram } from '@/lib/fll/calibration'
+import { loadDraft } from '@/lib/fll/drafts'
 import type { PlanResponse } from '@/lib/fll/plan'
 import { buildRun } from '@/lib/fll/run'
 import { type Season, localize } from '@/lib/fll/season'
@@ -46,9 +47,14 @@ function saveFile(blob: Blob, filename: string) {
 
 export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, formatT }: PlannerProps) {
   const [seasonId, chooseSeason] = useSeasonChoice(seasons, defaultSeasonId)
-  const season = seasons.find((s) => s.id === seasonId) ?? seasons[0]
+  const shipped = seasons.find((s) => s.id === seasonId) ?? seasons[0]
+  // The field editor's draft of this season (this browser only), if there is one.
+  const [draft, setDraft] = useState<{ season: Season; savedAt: number } | null>(null)
+  const [useDraft, setUseDraft] = useState(true)
+  const season = useDraft && draft ? draft.season : shipped
+  const fromDraft = season !== shipped
   const compiler = compilerFor(season.platform)
-  const bg = useFieldBackground(season.id)
+  const bg = useFieldBackground(shipped.id)
   const [robot, setRobot] = useState<RobotProfile>(DEFAULT_ROBOT)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [format, setFormat] = useState<CodeFormat>('blocks')
@@ -64,14 +70,35 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
     if (saved) setRobot(saved)
   }, [])
 
-  // A different season: start over.
+  // Load the draft, and reload it when the user comes back from the editor tab.
+  useEffect(() => {
+    let alive = true
+    const refresh = () =>
+      loadDraft(shipped.id)
+        .then((d) => {
+          if (alive) setDraft((prev) => (prev && d && prev.savedAt === d.savedAt ? prev : d))
+        })
+        .catch(() => undefined)
+    setDraft(null)
+    void refresh()
+    const onVisible = () => document.visibilityState === 'visible' && void refresh()
+    document.addEventListener('visibilitychange', onVisible)
+    window.addEventListener('focus', refresh)
+    return () => {
+      alive = false
+      document.removeEventListener('visibilitychange', onVisible)
+      window.removeEventListener('focus', refresh)
+    }
+  }, [shipped.id])
+
+  // Different season data: start over.
   useEffect(() => {
     setSelected(new Set())
     setResponse(null)
     setOpenRuns(new Set())
     setError('')
     setStatus('idle')
-  }, [season.id])
+  }, [season])
 
   useEffect(() => {
     if (!toast) return
@@ -109,7 +136,7 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
       const res = await fetch('/api/fll/plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ seasonId: season.id, missionIds: [...selected], robot, lang }),
+        body: JSON.stringify({ ...(fromDraft ? { season } : { seasonId: season.id }), missionIds: [...selected], robot, lang }),
       })
       const data = (await res.json()) as PlanResponse
       if (!data.ok) {
@@ -176,15 +203,24 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
         <h1>{t.title}</h1>
         <p className="lead">{t.lead}</p>
         <div className="fll-season-row">
-          <SeasonSelect seasons={seasons} value={season.id} onChange={chooseSeason} lang={lang} t={t} />
+          <SeasonSelect seasons={seasons} value={shipped.id} onChange={chooseSeason} lang={lang} t={t} />
           <span className="format-badge">{t.editions[season.edition]}</span>
           <span className="format-badge">{t.platforms[season.platform]}</span>
-          <a className="btn btn-sm" href={`/${lang}/fll/editor${season.id === defaultSeasonId ? '' : `?season=${season.id}`}`}>
+          <a className="btn btn-sm" href={`/${lang}/fll/editor${shipped.id === defaultSeasonId ? '' : `?season=${shipped.id}`}`}>
             <PencilRuler size={16} aria-hidden="true" />
             {t.openEditor}
           </a>
         </div>
-        {season.todo && (
+        {draft && (
+          <label className="check-row fll-draft">
+            <input type="checkbox" checked={useDraft} onChange={(e) => setUseDraft(e.target.checked)} />
+            <span>
+              <strong>{t.useDraft}</strong>
+              <small>{fill(t.useDraftHint, { n: draft.season.missions.length, time: new Date(draft.savedAt).toLocaleString(lang === 'en' ? 'en-GB' : lang === 'kk' ? 'kk-KZ' : 'ru-RU', { dateStyle: 'short', timeStyle: 'short' }) })}</small>
+            </span>
+          </label>
+        )}
+        {!fromDraft && season.todo && (
           <p className="alert alert-warn" role="note">
             <Info size={18} aria-hidden="true" />
             <span>{t.seasonTodo}</span>
