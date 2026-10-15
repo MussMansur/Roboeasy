@@ -9,7 +9,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "reference": "tsx scripts/extract-reference.ts"
+    "reference": "tsx scripts/extract-reference.ts",
+    "audit:capture": "tsx scripts/audit/capture.ts",
+    "audit:directions": "tsx scripts/audit/directions-shots.mts"
   },
   "dependencies": {
     "@google/genai": "^2.20.0",
@@ -23,6 +25,8 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^24",
     "@types/react": "^19",
