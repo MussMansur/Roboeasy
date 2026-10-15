@@ -1,0 +1,183 @@
+[
+  {
+    "page": "ru-desktop",
+    "perf": 99,
+    "a11y": 97,
+    "bp": 96,
+    "seo": 100,
+    "FCP": "0.4 s",
+    "LCP": "1.0 s",
+    "TBT": "0 ms",
+    "CLS": "0",
+    "issues": [
+      "errors-in-console(0)",
+      "color-contrast(0)",
+      "label-content-name-mismatch(0)",
+      "unused-javascript(Est savings of 129 KiB)",
+      "uses-responsive-images(Est savings of 87 KiB)",
+      "legacy-javascript(Est savings of 13 KiB)",
+      "image-delivery-insight(Est savings of 88 KiB)",
+      "legacy-javascript-insight(Est savings of 13 KiB)",
+      "network-dependency-tree-insight(0)",
+      "render-blocking-insight(0.5)"
+    ]
+  },
+  {
+    "page": "ru-fll-desktop",
+    "perf": 100,
+    "a11y": 100,
+    "bp": 96,
+    "seo": 100,
+    "FCP": "0.2 s",
+    "LCP": "0.8 s",
+    "TBT": "0 ms",
+    "CLS": "0",
+    "issues": [
+      "errors-in-console(0)",
+      "label-content-name-mismatch(0)",
+      "unused-javascript(Est savings of 97 KiB)",
+      "legacy-javascript(Est savings of 13 KiB)",
+      "legacy-javascript-insight(Est savings of 13 KiB)",
+      "network-dependency-tree-insight(0)",
+      "render-blocking-insight(0.5)"
+    ]
+  },
+  {
+    "page": "ru-fll-editor-desktop",
+    "perf": 99,
+    "a11y": 100,
+    "bp": 96,
+    "seo": 63,
+    "FCP": "0.2 s",
+    "LCP": "0.9 s",
+    "TBT": "0 ms",
+    "CLS": "0",
+    "issues": [
+      "errors-in-console(0)",
+      "label-content-name-mismatch(0)",
+      "unused-javascript(Est savings of 112 KiB)",
+      "legacy-javascript(Est savings of 13 KiB)",
+      "is-crawlable(0)",
+      "legacy-javascript-insight(Est savings of 13 KiB)",
+      "network-dependency-tree-insight(0)",
+      "render-blocking-insight(0.5)"
+    ]
+  },
+  {
+    "page": "ru-fll-editor-mobile",
+    "perf": 84,
+    "a11y": 100,
+    "bp": 96,
+    "seo": 63,
+    "FCP": "0.8 s",
+    "LCP": "4.4 s",
+    "TBT": "70 ms",
+    "CLS": "0",
+    "issues": [
+      "largest-contentful-paint(4.4 s)",
+      "errors-in-console(0)",
+      "interactive(4.4 s)",
+      "largest-contentful-paint-element(4,410 ms)",
+      "render-blocking-resources(Est savings of 0 ms)",
+      "unused-javascript(Est savings of 91 KiB)",
+      "legacy-javascript(Est savings of 13 KiB)",
+      "is-crawlable(0)",
+      "legacy-javascript-insight(Est savings of 13 KiB)",
+      "network-dependency-tree-insight(0)",
+      "render-blocking-insight(Est savings of 130 ms)"
+    ]
+  },
+  {
+    "page": "ru-fll-mobile",
+    "perf": 88,
+    "a11y": 100,
+    "bp": 96,
+    "seo": 100,
+    "FCP": "0.8 s",
+    "LCP": "3.9 s",
+    "TBT": "40 ms",
+    "CLS": "0",
+    "issues": [
+      "largest-contentful-paint(3.9 s)",
+      "errors-in-console(0)",
+      "interactive(4.0 s)",
+      "largest-contentful-paint-element(3,920 ms)",
+      "render-blocking-resources(Est savings of 0 ms)",
+      "unused-javascript(Est savings of 97 KiB)",
+      "legacy-javascript(Est savings of 13 KiB)",
+      "forced-reflow-insight(0)",
+      "legacy-javascript-insight(Est savings of 13 KiB)",
+      "network-dependency-tree-insight(0)",
+      "render-blocking-insight(0.5)"
+    ]
+  },
+  {
+    "page": "ru-mobile",
+    "perf": 89,
+    "a11y": 100,
+    "bp": 96,
+    "seo": 100,
+    "FCP": "1.4 s",
+    "LCP": "3.8 s",
+    "TBT": "40 ms",
+    "CLS": "0",
+    "issues": [
+      "largest-contentful-paint(3.8 s)",
+      "errors-in-console(0)",
+      "interactive(4.1 s)",
+      "mainthread-work-breakdown(2.1 s)",
+      "largest-contentful-paint-element(3,780 ms)",
+      "render-blocking-resources(Est savings of 450 ms)",
+      "unused-javascript(Est savings of 109 KiB)",
+      "legacy-javascript(Est savings of 13 KiB)",
+      "legacy-javascript-insight(Est savings of 13 KiB)",
+      "network-dependency-tree-insight(0)",
+      "render-blocking-insight(Est savings of 450 ms)"
+    ]
+  },
+  {
+    "page": "ru-workspace-desktop",
+    "perf": 99,
+    "a11y": 100,
+    "bp": 96,
+    "seo": 100,
+    "FCP": "0.3 s",
+    "LCP": "0.8 s",
+    "TBT": "0 ms",
+    "CLS": "0.005",
+    "issues": [
+      "errors-in-console(0)",
+      "label-content-name-mismatch(0)",
+      "unused-javascript(Est savings of 118 KiB)",
+      "legacy-javascript(Est savings of 13 KiB)",
+      "forced-reflow-insight(0)",
+      "legacy-javascript-insight(Est savings of 13 KiB)",
+      "network-dependency-tree-insight(0)",
+      "render-blocking-insight(0.5)"
+    ]
+  },
+  {
+    "page": "ru-workspace-mobile",
+    "perf": 87,
+    "a11y": 100,
+    "bp": 96,
+    "seo": 100,
+    "FCP": "1.1 s",
+    "LCP": "4.1 s",
+    "TBT": "60 ms",
+    "CLS": "0.019",
+    "issues": [
+      "largest-contentful-paint(4.1 s)",
+      "errors-in-console(0)",
+      "interactive(4.1 s)",
+      "largest-contentful-paint-element(4,080 ms)",
+      "render-blocking-resources(Est savings of 210 ms)",
+      "unused-javascript(Est savings of 97 KiB)",
+      "legacy-javascript(Est savings of 13 KiB)",
+      "forced-reflow-insight(0)",
+      "legacy-javascript-insight(Est savings of 13 KiB)",
+      "network-dependency-tree-insight(0)",
+      "render-blocking-insight(Est savings of 360 ms)"
+    ]
+  }
+]

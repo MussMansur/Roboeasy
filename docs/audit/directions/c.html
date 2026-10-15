@@ -1,0 +1,99 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C · «Лаборатория» — RoboEasy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#ECECEC;color:#111}
+.intro{max-width:1240px;margin:0 auto;padding:32px 24px 8px}.intro h1{font-family:'IBM Plex Sans',sans-serif;margin:0 0 8px;font-size:34px}
+.intro p{max-width:80ch;line-height:1.5}.pal{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.pal h3{margin:0 0 8px;font-size:14px}.sws{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.sw{display:grid;grid-template-columns:28px 1fr;gap:0 8px;align-items:center;font-size:12px}.sw span{grid-row:span 2;width:28px;height:28px;border-radius:6px;border:1px solid #0002}
+.sw code{font-size:11px;opacity:.7}.fonts{display:flex;flex-wrap:wrap;gap:24px;font-size:14px}.fonts b{display:block;font-size:22px}.spec{display:block;font-size:20px;margin-top:4px}
+.screens{max-width:1240px;margin:0 auto;padding:8px 24px 40px;display:grid;gap:24px}
+.screen{--bg:#F2F6FB;--surface:#FFFFFF;--surface2:#E8EFF8;--text:#0B1530;--text2:#3E4C6B;--border:#C9D6E8;--accent:#0A84C6;--on-accent:#FFFFFF;--link:#0A6FA8;--shadow:0 0 0 1px rgba(12,40,80,.06), 0 8px 24px -14px rgba(12,40,80,.35);background:var(--bg);color:var(--text);border-radius:18px;padding:18px 22px 24px;background-image:linear-gradient(color-mix(in srgb,var(--link) 9%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--link) 9%,transparent) 1px,transparent 1px);background-size:24px 24px;}
+.screen.dark{--bg:#0A1328;--surface:#0F1C38;--surface2:#142447;--text:#E6F1FF;--text2:#9FB2D3;--border:#20345E;--accent:#38D9F5;--on-accent:#06101F;--link:#38D9F5;--shadow:0 0 0 1px rgba(56,217,245,.10), 0 10px 30px -12px rgba(0,0,0,.8);}
+.hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.brand{font-family:'IBM Plex Sans',sans-serif;font-weight:700;font-size:20px;display:flex;gap:8px;align-items:center}
+.brand em{font-style:normal;background:var(--accent);color:var(--on-accent);border-radius:6px;padding:1px 6px;font-size:13px}.logo{color:var(--accent);font-size:26px}
+nav{display:flex;gap:18px;align-items:center;font-weight:600;font-size:14px}.pill{font-family:'IBM Plex Mono';font-size:12px;border:1px solid var(--border);border-radius:999px;padding:4px 10px}
+.grid{display:grid;grid-template-columns:0.9fr 1.1fr;gap:18px}.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;box-shadow:var(--shadow)}
+h2{font-family:'IBM Plex Sans',sans-serif;font-weight:800;font-size:20px;margin:0 0 12px}.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--surface2);padding:4px;border-radius:calc(10px - 4px);margin-bottom:12px}
+.seg span{padding:8px;text-align:center;border-radius:calc(10px - 7px);font-weight:700;font-size:14px;color:var(--text2)}.seg .on{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+label{display:block;font-size:13px;font-weight:700;color:var(--text2);margin-bottom:6px}.ta{min-height:76px;border:1px solid var(--border);border-radius:calc(10px - 4px);padding:12px;background:var(--surface2);font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.chips span{border:1px solid var(--border);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600}
+button{font:700 14px 'IBM Plex Sans',sans-serif;border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:calc(10px - 6px);padding:10px 14px;}
+button.primary{background:var(--accent);color:var(--on-accent);border-color:transparent}.card > .primary{width:100%;padding:13px;font-size:16px}
+.kk{font-size:12px;color:var(--text2);margin:12px 0 0}.row{display:flex;justify-content:space-between;align-items:center}.row.gap{justify-content:flex-start;gap:8px;flex-wrap:wrap;margin-top:12px}
+.badge{font-family:'IBM Plex Mono';font-size:12px;background:var(--surface2);border-radius:999px;padding:3px 10px}
+.stack{display:grid;gap:3px;padding:12px;border-radius:calc(10px - 4px);background:var(--surface2)}.blk{background:var(--c);color:#14110A;font-weight:700;font-size:13px;padding:7px 12px;border-radius:4px;width:max-content;}
+.blk i{font-style:normal;background:#fff;border-radius:999px;padding:1px 8px;margin:0 3px}
+.mini{margin-top:12px;position:relative}.mini svg{width:100%;display:block}.mat{fill:var(--surface2);stroke:var(--border);stroke-width:1}
+.route{fill:none;stroke:#FF7A59;stroke-width:4;stroke-linejoin:round;stroke-dasharray:6 4}.bot{fill:var(--accent);stroke:var(--text);stroke-width:2}
+.mono{position:absolute;right:10px;bottom:8px;font:600 11px 'IBM Plex Mono',monospace;color:var(--text2)}
+@media (max-width:700px){.grid{grid-template-columns:1fr}.pal{grid-template-columns:1fr}nav a{display:none}}
+</style></head><body>
+<div class="intro"><h1>C · «Лаборатория»</h1><p>Инженерный «чертёж»: тёмно-синий фон с миллиметровкой, тонкие линии, моноширинные подписи и координаты. Выглядит серьёзно и технологично — сильнее всего на питчах, проекторе и у старших (12–14) и тренеров. Светлая тема — «калька».</p>
+<div class="fonts"><div><b style="font-family:'IBM Plex Sans'">IBM Plex Sans</b>заголовки<span class="spec" style="font-family:'IBM Plex Sans';font-weight:700">Бағдарлама әрекет қосу ұпай өзгерту үйрену һ і · ӘҒҚҢӨҰҮҺІ</span></div><div><b style="font-family:'IBM Plex Sans'">IBM Plex Sans</b>текст<span class="spec" style="font-family:'IBM Plex Sans';font-weight:500">Бағдарлама әрекет қосу ұпай өзгерту үйрену һ і · ӘҒҚҢӨҰҮҺІ</span></div><div><b style="font-family:'IBM Plex Mono'">IBM Plex Mono</b>код, числа<span class="spec" style="font-family:'IBM Plex Mono';font-weight:500">Бағдарлама әрекет қосу ұпай өзгерту үйрену һ і · ӘҒҚҢӨҰҮҺІ</span></div></div>
+<div class="pal"><div><h3>Светлая тема</h3><div class="sws"><div class="sw"><span style="background:#F2F6FB"></span><b>bg</b><code>#F2F6FB</code></div><div class="sw"><span style="background:#FFFFFF"></span><b>surface</b><code>#FFFFFF</code></div><div class="sw"><span style="background:#E8EFF8"></span><b>surface2</b><code>#E8EFF8</code></div><div class="sw"><span style="background:#0B1530"></span><b>text</b><code>#0B1530</code></div><div class="sw"><span style="background:#3E4C6B"></span><b>text2</b><code>#3E4C6B</code></div><div class="sw"><span style="background:#C9D6E8"></span><b>border</b><code>#C9D6E8</code></div><div class="sw"><span style="background:#0A84C6"></span><b>accent</b><code>#0A84C6</code></div><div class="sw"><span style="background:#FFFFFF"></span><b>onAccent</b><code>#FFFFFF</code></div><div class="sw"><span style="background:#0A6FA8"></span><b>link</b><code>#0A6FA8</code></div></div></div><div><h3>Тёмная тема</h3><div class="sws"><div class="sw"><span style="background:#0A1328"></span><b>bg</b><code>#0A1328</code></div><div class="sw"><span style="background:#0F1C38"></span><b>surface</b><code>#0F1C38</code></div><div class="sw"><span style="background:#142447"></span><b>surface2</b><code>#142447</code></div><div class="sw"><span style="background:#E6F1FF"></span><b>text</b><code>#E6F1FF</code></div><div class="sw"><span style="background:#9FB2D3"></span><b>text2</b><code>#9FB2D3</code></div><div class="sw"><span style="background:#20345E"></span><b>border</b><code>#20345E</code></div><div class="sw"><span style="background:#38D9F5"></span><b>accent</b><code>#38D9F5</code></div><div class="sw"><span style="background:#06101F"></span><b>onAccent</b><code>#06101F</code></div><div class="sw"><span style="background:#38D9F5"></span><b>link</b><code>#38D9F5</code></div></div></div></div>
+<h3>Цвета блоков по категориям</h3><div class="sws"><div class="sw"><span style="background:#F5C542"></span><b>events</b><code>#F5C542</code></div><div class="sw"><span style="background:#FF7A59"></span><b>move</b><code>#FF7A59</code></div><div class="sw"><span style="background:#38A7F5"></span><b>motor</b><code>#38A7F5</code></div><div class="sw"><span style="background:#B48CFF"></span><b>control</b><code>#B48CFF</code></div><div class="sw"><span style="background:#5FD38D"></span><b>sensor</b><code>#5FD38D</code></div><div class="sw"><span style="background:#F06FB4"></span><b>sound</b><code>#F06FB4</code></div></div></div>
+<div class="screens">
+<div class="screen light">
+  <header class="hdr"><div class="brand"><span class="logo">▦</span> RoboEasy <em>AI</em></div>
+    <nav><a>Студия</a><a>FLL-тренер</a><span class="pill">RU · KK · EN</span></nav></header>
+  <div class="grid">
+    <section class="card">
+      <h2>Что должен сделать робот?</h2>
+      <div class="seg"><span class="on">Блоки</span><span>Python</span></div>
+      <label>Задача для робота</label>
+      <div class="ta">Проедь квадрат 30 см и пискни в конце</div>
+      <div class="chips"><span>Остановись у стены</span><span>Езжай по линии</span><span>Сердечко на экране</span></div>
+      <button class="primary">✦ Создать программу</button>
+      <p class="kk">Қазақша: әрекет, ғылым, қосу, ұпай, өзгерту, үйрену, һ, іске қосу</p>
+    </section>
+    <section class="card">
+      <div class="row"><h2>Квадрат</h2><span class="badge">5 блоков</span></div>
+      <div class="stack">
+        <div class="blk" style="--c:#F5C542;margin-left:0px">⚑ когда программа запускается</div>
+        <div class="blk" style="--c:#FF7A59;margin-left:0px">скорость движения <i>50</i> %</div>
+        <div class="blk" style="--c:#B48CFF;margin-left:0px">↻ повторить <i>4</i> раз</div>
+        <div class="blk" style="--c:#FF7A59;margin-left:18px">ехать вперёд на <i>30</i> см</div>
+        <div class="blk" style="--c:#FF7A59;margin-left:18px">развернуться вправо на <i>90</i>°</div>
+        <div class="blk" style="--c:#F06FB4;margin-left:0px">♪ сигнал <i>C5</i> <i>0.3</i> с</div>
+      </div>
+      <div class="mini"><svg viewBox="0 0 300 120"><rect class="mat" x="2" y="2" width="296" height="116" rx="6"/>
+        <polyline class="route" points="40,95 120,95 120,30 40,30 40,95"/><circle class="bot" cx="120" cy="95" r="7"/></svg>
+        <span class="mono">x 300 · y 0 мм · 0:04</span></div>
+      <div class="row gap"><button class="primary">Скачать .llsp3</button><button>▶ Симуляция</button><button>Python</button></div>
+    </section>
+  </div>
+</div>
+<div class="screen dark">
+  <header class="hdr"><div class="brand"><span class="logo">▦</span> RoboEasy <em>AI</em></div>
+    <nav><a>Студия</a><a>FLL-тренер</a><span class="pill">RU · KK · EN</span></nav></header>
+  <div class="grid">
+    <section class="card">
+      <h2>Что должен сделать робот?</h2>
+      <div class="seg"><span class="on">Блоки</span><span>Python</span></div>
+      <label>Задача для робота</label>
+      <div class="ta">Проедь квадрат 30 см и пискни в конце</div>
+      <div class="chips"><span>Остановись у стены</span><span>Езжай по линии</span><span>Сердечко на экране</span></div>
+      <button class="primary">✦ Создать программу</button>
+      <p class="kk">Қазақша: әрекет, ғылым, қосу, ұпай, өзгерту, үйрену, һ, іске қосу</p>
+    </section>
+    <section class="card">
+      <div class="row"><h2>Квадрат</h2><span class="badge">5 блоков</span></div>
+      <div class="stack">
+        <div class="blk" style="--c:#F5C542;margin-left:0px">⚑ когда программа запускается</div>
+        <div class="blk" style="--c:#FF7A59;margin-left:0px">скорость движения <i>50</i> %</div>
+        <div class="blk" style="--c:#B48CFF;margin-left:0px">↻ повторить <i>4</i> раз</div>
+        <div class="blk" style="--c:#FF7A59;margin-left:18px">ехать вперёд на <i>30</i> см</div>
+        <div class="blk" style="--c:#FF7A59;margin-left:18px">развернуться вправо на <i>90</i>°</div>
+        <div class="blk" style="--c:#F06FB4;margin-left:0px">♪ сигнал <i>C5</i> <i>0.3</i> с</div>
+      </div>
+      <div class="mini"><svg viewBox="0 0 300 120"><rect class="mat" x="2" y="2" width="296" height="116" rx="6"/>
+        <polyline class="route" points="40,95 120,95 120,30 40,30 40,95"/><circle class="bot" cx="120" cy="95" r="7"/></svg>
+        <span class="mono">x 300 · y 0 мм · 0:04</span></div>
+      <div class="row gap"><button class="primary">Скачать .llsp3</button><button>▶ Симуляция</button><button>Python</button></div>
+    </section>
+  </div>
+</div></div>
+</body></html>

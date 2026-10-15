@@ -1,0 +1,192 @@
+[
+  {
+    "page": "landing-ru",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 1,
+        "targets": [
+          "a[aria-label=\"RoboEasy AI\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "landing-kk",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 1,
+        "targets": [
+          "a[aria-label=\"RoboEasy AI\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "landing-en",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 1,
+        "targets": [
+          "a[aria-label=\"RoboEasy AI\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "workspace",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 1,
+        "targets": [
+          ".brand"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "fll",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 1,
+        "targets": [
+          ".brand"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "fll-editor",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 1,
+        "targets": [
+          ".brand"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "not-found",
+    "theme": "light",
+    "violations": []
+  },
+  {
+    "page": "landing-ru",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 1,
+        "targets": [
+          "a[aria-label=\"RoboEasy AI\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "landing-kk",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 1,
+        "targets": [
+          "a[aria-label=\"RoboEasy AI\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "landing-en",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 1,
+        "targets": [
+          "a[aria-label=\"RoboEasy AI\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "workspace",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 1,
+        "targets": [
+          ".brand"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "fll",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 1,
+        "targets": [
+          ".brand"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "fll-editor",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "label-content-name-mismatch",
+        "impact": "serious",
+        "help": "Elements must have their visible text as part of their accessible name",
+        "nodes": 1,
+        "targets": [
+          ".brand"
+        ]
+      }
+    ]
+  },
+  {
+    "page": "not-found",
+    "theme": "dark",
+    "violations": []
+  }
+]
