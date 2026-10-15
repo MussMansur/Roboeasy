@@ -1,0 +1,1042 @@
+[
+  {
+    "page": "landing-ru",
+    "stops": [
+      {
+        "tag": "a.brand",
+        "text": "RoboEasyAI",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Как это работает",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Примеры",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Учителям",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Вопросы",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "RU",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "KZ",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "EN",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Тема: светлая",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "FLL-тренер",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Открыть студию",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Создать программу",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Посмотреть примеры",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Блоки",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Python",
+        "visible": true
+      },
+      {
+        "tag": "pre.code",
+        "text": "Python · SPIKE 3",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Попробовать",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Попробовать",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Попробовать",
+        "visible": true
+      },
+      {
+        "tag": "a.chip",
+        "text": "Проехать квадрат со стороной 30 см",
+        "visible": true
+      },
+      {
+        "tag": "a.chip",
+        "text": "Показать сердечко и пискнуть",
+        "visible": true
+      },
+      {
+        "tag": "a.chip",
+        "text": "Остановиться, когда нажали датчик силы",
+        "visible": true
+      },
+      {
+        "tag": "a.chip",
+        "text": "Мигнуть подсветкой кнопки 5 раз",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Открыть студию",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "FLL-тренер",
+        "visible": true
+      }
+    ]
+  },
+  {
+    "page": "landing-kk",
+    "stops": [
+      {
+        "tag": "a.brand",
+        "text": "RoboEasyAI",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Қалай жұмыс істейді",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Мысалдар",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Мұғалімдерге",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Сұрақтар",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "RU",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "KZ",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "EN",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Тақырып: ашық",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "FLL-жаттықтырушы",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Студияны ашу",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Бағдарлама жасау",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Мысалдарды көру",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Блоктар",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Python",
+        "visible": true
+      },
+      {
+        "tag": "pre.code",
+        "text": "Python · SPIKE 3",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Байқап көру",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Байқап көру",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Байқап көру",
+        "visible": true
+      },
+      {
+        "tag": "a.chip",
+        "text": "Қабырғасы 30 см шаршы бойымен жүру",
+        "visible": true
+      },
+      {
+        "tag": "a.chip",
+        "text": "Жүрек көрсетіп, дыбыс беру",
+        "visible": true
+      },
+      {
+        "tag": "a.chip",
+        "text": "Күш датчигі басылса, тоқтау",
+        "visible": true
+      },
+      {
+        "tag": "a.chip",
+        "text": "Түйме жарығын 5 рет жыпылықтату",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Студияны ашу",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "FLL-жаттықтырушы",
+        "visible": true
+      }
+    ]
+  },
+  {
+    "page": "landing-en",
+    "stops": [
+      {
+        "tag": "a.brand",
+        "text": "RoboEasyAI",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "How it works",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Examples",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "For teachers",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "FAQ",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "RU",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "KZ",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "EN",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Theme: light",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "FLL coach",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Open the studio",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Create a program",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "See examples",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Blocks",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Python",
+        "visible": true
+      },
+      {
+        "tag": "pre.code",
+        "text": "Python · SPIKE 3",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Try it",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Try it",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Try it",
+        "visible": true
+      },
+      {
+        "tag": "a.chip",
+        "text": "Drive a square with 30 cm sides",
+        "visible": true
+      },
+      {
+        "tag": "a.chip",
+        "text": "Show a heart and beep",
+        "visible": true
+      },
+      {
+        "tag": "a.chip",
+        "text": "Stop when the force sensor is pressed",
+        "visible": true
+      },
+      {
+        "tag": "a.chip",
+        "text": "Blink the button light 5 times",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Open the studio",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "FLL coach",
+        "visible": true
+      }
+    ]
+  },
+  {
+    "page": "workspace",
+    "stops": [
+      {
+        "tag": "a.brand",
+        "text": "RoboEasyAI",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Студия",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "FLL-тренер",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "RU",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "KZ",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "EN",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Тема: светлая",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "На главную",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "text": "БлокиДля начинающих — как в SPIKE",
+        "visible": true
+      },
+      {
+        "tag": "button",
+        "text": "PythonДля тех, кто учит код",
+        "visible": true
+      },
+      {
+        "tag": "textarea.textarea",
+        "text": "",
+        "visible": true
+      },
+      {
+        "tag": "button.chip",
+        "text": "Проедь квадрат со стороной 30 см",
+        "visible": true
+      },
+      {
+        "tag": "button.chip",
+        "text": "Остановись в 10 см от стены и пискни",
+        "visible": true
+      },
+      {
+        "tag": "button.chip",
+        "text": "Езжай по чёрной линии",
+        "visible": true
+      },
+      {
+        "tag": "button.chip",
+        "text": "Покажи сердечко и сыграй три ноты",
+        "visible": true
+      },
+      {
+        "tag": "summary",
+        "text": "Настройки роботаМоторы A+B · дальномер C",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Создать программу",
+        "visible": true
+      },
+      {
+        "tag": "nextjs-portal",
+        "text": "",
+        "visible": false
+      },
+      {
+        "tag": "body",
+        "text": "",
+        "visible": false
+      },
+      {
+        "tag": "a.skip-link",
+        "text": "Перейти к содержимому",
+        "visible": true
+      },
+      {
+        "tag": "a.brand",
+        "text": "RoboEasyAI",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Студия",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "FLL-тренер",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "RU",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "KZ",
+        "visible": true
+      }
+    ]
+  },
+  {
+    "page": "fll",
+    "stops": [
+      {
+        "tag": "a.brand",
+        "text": "RoboEasyAI",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Студия",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "FLL-тренер",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "RU",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "KZ",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "EN",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Тема: светлая",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "На главную",
+        "visible": true
+      },
+      {
+        "tag": "select.select",
+        "text": "BIOGLOW 2026–2027 · текущийUNEARTHED 202",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Редактор поля",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Разметить в редакторе",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Загрузить фото или PDF",
+        "visible": true
+      },
+      {
+        "tag": "select.select",
+        "text": "ABCDEF",
+        "visible": true
+      },
+      {
+        "tag": "select.select",
+        "text": "ABCDEF",
+        "visible": true
+      },
+      {
+        "tag": "input.input",
+        "text": "",
+        "visible": true
+      },
+      {
+        "tag": "input.input",
+        "text": "",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Добавить насадку",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Скачать тест",
+        "visible": true
+      },
+      {
+        "tag": "input.input",
+        "text": "",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Скачать тест",
+        "visible": true
+      },
+      {
+        "tag": "input.input",
+        "text": "",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Блоки",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Python",
+        "visible": true
+      },
+      {
+        "tag": "nextjs-portal",
+        "text": "",
+        "visible": false
+      },
+      {
+        "tag": "body",
+        "text": "",
+        "visible": false
+      }
+    ]
+  },
+  {
+    "page": "fll-editor",
+    "stops": [
+      {
+        "tag": "a.brand",
+        "text": "RoboEasyAI",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Студия",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "FLL-тренер",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "RU",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "KZ",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "EN",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Тема: светлая",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "На главную",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "К планировщику",
+        "visible": true
+      },
+      {
+        "tag": "select.select",
+        "text": "BIOGLOW 2026–2027 · текущийUNEARTHED 202",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Импорт JSON",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Экспорт JSON",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Выбор",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Миссия",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Зона старта",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Запретная зона",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Приблизить",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Отдалить",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Всё поле",
+        "visible": true
+      },
+      {
+        "tag": "select.select",
+        "text": "нет102550100",
+        "visible": true
+      },
+      {
+        "tag": "input",
+        "text": "",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Загрузить фото или PDF",
+        "visible": true
+      },
+      {
+        "tag": "input.input",
+        "text": "",
+        "visible": true
+      },
+      {
+        "tag": "input.input",
+        "text": "",
+        "visible": true
+      },
+      {
+        "tag": "select.select",
+        "text": "текущийархив",
+        "visible": true
+      }
+    ]
+  },
+  {
+    "page": "design",
+    "stops": [
+      {
+        "tag": "a.brand",
+        "text": "RoboEasyAI",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "Студия",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "FLL-тренер",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "RU",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "KZ",
+        "visible": true
+      },
+      {
+        "tag": "a",
+        "text": "EN",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Тема: светлая",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "На главную",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Главное действие",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Главное действие",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Обычная",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Тихая",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Удалить",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Подсказка появляется при наведении и фок",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": ".llsp3",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Python",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Блоки",
+        "visible": true
+      },
+      {
+        "tag": "div.outline-none",
+        "text": "Здесь блоки программы.",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Открыть диалог",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Показать уведомление",
+        "visible": true
+      },
+      {
+        "tag": "button.h-fit",
+        "text": "Опишите задачу",
+        "visible": true
+      },
+      {
+        "tag": "button.h-fit",
+        "text": "2Проверьте блоки",
+        "visible": true
+      },
+      {
+        "tag": "button.h-fit",
+        "text": "3Запустите на роботе",
+        "visible": true
+      },
+      {
+        "tag": "button.inline-flex",
+        "text": "Главное действие",
+        "visible": true
+      },
+      {
+        "tag": "nextjs-portal",
+        "text": "",
+        "visible": false
+      }
+    ]
+  },
+  {
+    "page": "not-found",
+    "stops": [
+      {
+        "tag": "a.inline-flex",
+        "text": "На главную",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Басты бетке",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Go home",
+        "visible": true
+      },
+      {
+        "tag": "nextjs-portal",
+        "text": "",
+        "visible": false
+      },
+      {
+        "tag": "body",
+        "text": "",
+        "visible": false
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "На главную",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Басты бетке",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Go home",
+        "visible": true
+      },
+      {
+        "tag": "nextjs-portal",
+        "text": "",
+        "visible": false
+      },
+      {
+        "tag": "body",
+        "text": "",
+        "visible": false
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "На главную",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Басты бетке",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Go home",
+        "visible": true
+      },
+      {
+        "tag": "nextjs-portal",
+        "text": "",
+        "visible": false
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "На главную",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Басты бетке",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Go home",
+        "visible": true
+      },
+      {
+        "tag": "nextjs-portal",
+        "text": "",
+        "visible": false
+      },
+      {
+        "tag": "body",
+        "text": "",
+        "visible": false
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "На главную",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Басты бетке",
+        "visible": true
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "Go home",
+        "visible": true
+      },
+      {
+        "tag": "nextjs-portal",
+        "text": "",
+        "visible": false
+      },
+      {
+        "tag": "body",
+        "text": "",
+        "visible": false
+      },
+      {
+        "tag": "a.inline-flex",
+        "text": "На главную",
+        "visible": true
+      }
+    ]
+  }
+]

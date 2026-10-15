@@ -31,6 +31,7 @@ const PAGES = [
   { name: 'workspace', url: '/ru/workspace' },
   { name: 'fll', url: '/ru/fll' },
   { name: 'fll-editor', url: '/ru/fll/editor' },
+  { name: 'design', url: '/ru/design' },
   { name: 'not-found', url: '/ru/does-not-exist' },
 ] as const
 
@@ -122,8 +123,8 @@ async function filledStates(page: Page, width: number, theme: Theme) {
   await page.goto(`${base}/ru/workspace`)
   await settle(page)
   await page.locator('textarea.textarea').fill('Проедь квадрат 30 см и пискни в конце')
-  await page.locator('button.btn-primary.btn-block').first().click()
-  await page.waitForSelector('.result .format-badge, .result [role=tablist]', { timeout: 15000 })
+  await page.getByRole('button', { name: 'Создать программу' }).click()
+  await page.waitForSelector('.result [role=tablist], .result [data-slot=badge]', { timeout: 15000 })
   await settle(page)
   await shot(page, `workspace-result-${suffix}`)
 
@@ -152,7 +153,7 @@ async function filledStates(page: Page, width: number, theme: Theme) {
   await page.reload()
   await page.waitForSelector('.fll-draft')
   for (const id of ['M01', 'M02', 'M03']) await page.locator('.fll-missions label', { hasText: id === 'M01' ? 'Пример 1' : id === 'M02' ? 'Пример 2' : 'Пример 3' }).click()
-  await page.locator('.fll-plan .btn-primary').click()
+  await page.locator('.fll-plan').getByRole('button', { name: 'Предложить план' }).click()
   await page.waitForSelector('.fll-run')
   await settle(page)
   await shot(page, `fll-plan-${suffix}`)
