@@ -24,7 +24,7 @@ export function Label({ at, children, className, size = 34 }: { at: Point; child
 }
 
 /** Mat, optional user background, grid. Must be outside <FieldFrame>. */
-export function MatBase({ width, height, background, backgroundOpacity = 1, grid = 100 }: { width: number; height: number; background?: string | null; backgroundOpacity?: number; grid?: number }) {
+export function MatBase({ width, height, background, backgroundOpacity = 1, grid = 100, unit = 'mm' }: { width: number; height: number; background?: string | null; backgroundOpacity?: number; grid?: number; unit?: string }) {
   const id = `fll-grid-${grid}`
   return (
     <>
@@ -39,7 +39,45 @@ export function MatBase({ width, height, background, backgroundOpacity = 1, grid
       <rect className="fll-mat" x="0" y="0" width={width} height={height} rx="12" />
       {background && <image href={background} x="0" y="0" width={width} height={height} preserveAspectRatio="none" opacity={backgroundOpacity} />}
       {grid > 0 && <rect x="0" y="0" width={width} height={height} fill={`url(#${id})`} pointerEvents="none" />}
+      <MatScale width={width} height={height} unit={unit} />
     </>
+  )
+}
+
+/** Millimetre ticks along the bottom and left edges (origin = bottom-left corner). */
+function MatScale({ width, height, unit }: { width: number; height: number; unit: string }) {
+  const step = 250
+  const xs = Array.from({ length: Math.floor(width / step) + 1 }, (_, i) => i * step)
+  const ys = Array.from({ length: Math.floor(height / step) + 1 }, (_, i) => i * step)
+  return (
+    <g className="fll-scale" aria-hidden="true" pointerEvents="none">
+      {xs.map((x) => (
+        <g key={`x${x}`}>
+          <line x1={x} y1={height} x2={x} y2={height - (x % 500 ? 18 : 34)} />
+          {x % 500 === 0 && x > 0 && x < width - 100 && (
+            <text x={x} y={height - 44} textAnchor="middle">
+              {x}
+            </text>
+          )}
+        </g>
+      ))}
+      {ys.map((y) => (
+        <g key={`y${y}`}>
+          <line x1={0} y1={height - y} x2={y % 500 ? 18 : 34} y2={height - y} />
+          {y % 500 === 0 && y > 0 && y < height - 60 && (
+            <text x={44} y={height - y} dominantBaseline="central">
+              {y}
+            </text>
+          )}
+        </g>
+      ))}
+      <text x={width - 16} y={height - 44} textAnchor="end">
+        {width} {unit}
+      </text>
+      <text x={44} y={36} dominantBaseline="central">
+        {height}
+      </text>
+    </g>
   )
 }
 

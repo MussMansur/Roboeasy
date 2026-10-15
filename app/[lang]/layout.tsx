@@ -63,7 +63,7 @@ export default async function RootLayout({ children, params }: Params & { childr
   const { lang } = await params
   if (!isLocale(lang)) notFound()
   return (
-    <html lang={lang} className={`${heading.variable} ${body.variable} ${code.variable}`} suppressHydrationWarning>
+    <html lang={lang} className={`${heading.variable} ${body.variable} ${code.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <InlineScript html={THEME_SCRIPT} />
       </head>

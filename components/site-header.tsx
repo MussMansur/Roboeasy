@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, Moon, Sun, X } from 'lucide-react'
+import { House, Menu, Moon, Sun, X } from 'lucide-react'
 
 import { LogoMark } from '@/components/logo'
 import { type Locale, LOCALE_COOKIE, localeLabels, locales } from '@/lib/i18n/config'
@@ -125,8 +125,9 @@ export function SiteHeader({ lang, t, variant = 'landing' }: SiteHeaderProps) {
                 </button>
               </>
             ) : (
-              <Link className="btn btn-ghost btn-sm" href={home}>
-                {t.home}
+              <Link className="btn btn-ghost btn-sm header-home" href={home} aria-label={t.home} title={t.home}>
+                <House size={18} aria-hidden="true" />
+                <span>{t.home}</span>
               </Link>
             )}
           </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { AlertTriangle, Check, Compass, FileDown, Info, Lightbulb, Loader2, PencilRuler, Plus, Ruler, Trash2 } from 'lucide-react'
+import { AlertTriangle, Check, Compass, FileDown, ImageUp, Info, Lightbulb, Loader2, PencilRuler, Plus, Ruler, Trash2 } from 'lucide-react'
 
 import { BlockStack } from '@/components/block-stack'
 import { BackgroundControls, useFieldBackground } from '@/components/fll/background'
@@ -241,17 +241,35 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
             {t.fieldTitle}
           </h2>
           <p className="tab-note">{t.fieldHint}</p>
-          <Field
-            season={season}
-            lang={lang}
-            selected={selected}
-            onToggle={toggle}
-            routes={runs.map((r) => r.trace)}
-            background={bg.url}
-            backgroundOpacity={bg.opacity}
-            label={t.fieldTitle}
-          />
-          <BackgroundControls state={bg} field={season.field} t={t.background} />
+          <div className="fll-field-wrap">
+            <Field
+              season={season}
+              lang={lang}
+              selected={selected}
+              onToggle={toggle}
+              routes={runs.map((r) => r.trace)}
+              background={bg.url}
+              backgroundOpacity={bg.opacity}
+              label={t.fieldTitle}
+            />
+            {season.missions.length === 0 && season.launchAreas.length === 0 && !bg.url && (
+              <div className="fll-field-empty">
+                <strong>{t.emptyMapTitle}</strong>
+                <span>{t.emptyMapText}</span>
+                <div className="fll-field-empty-actions">
+                  <label className="btn btn-primary btn-sm" htmlFor="fll-bg-file">
+                    <ImageUp size={16} aria-hidden="true" />
+                    {t.background.upload}
+                  </label>
+                  <a className="btn btn-sm" href={`/${lang}/fll/editor${shipped.id === defaultSeasonId ? '' : `?season=${shipped.id}`}`}>
+                    <PencilRuler size={16} aria-hidden="true" />
+                    {t.emptyMapEditor}
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
+          <BackgroundControls state={bg} field={season.field} t={t.background} inputId="fll-bg-file" />
 
           <h3 className="fll-subtitle">{t.missionsTitle}</h3>
           {season.missions.length === 0 || season.launchAreas.length === 0 ? (

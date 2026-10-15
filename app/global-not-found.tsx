@@ -22,7 +22,7 @@ const MESSAGES = [
 
 export default function GlobalNotFound() {
   return (
-    <html lang="ru" className={`${heading.variable} ${body.variable}`} suppressHydrationWarning>
+    <html lang="ru" className={`${heading.variable} ${body.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <InlineScript html={THEME_SCRIPT} />
       </head>

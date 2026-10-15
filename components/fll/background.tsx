@@ -79,10 +79,12 @@ interface ControlsProps {
   state: FieldBackgroundState
   field: { widthMm: number; heightMm: number }
   t: BgT
+  /** id of the file input, so other buttons (an empty map) can open it. */
+  inputId?: string
 }
 
 /** Upload / corners / remove / brightness for the field background. */
-export function BackgroundControls({ state, field, t }: ControlsProps) {
+export function BackgroundControls({ state, field, t, inputId }: ControlsProps) {
   const input = useRef<HTMLInputElement>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -133,7 +135,7 @@ export function BackgroundControls({ state, field, t }: ControlsProps) {
     <div className="fll-bg">
       <div className="fll-bg-row">
         <strong>{t.title}</strong>
-        <input ref={input} type="file" accept="image/*,application/pdf,.pdf" hidden onChange={(e) => void onFile(e.target.files?.[0])} />
+        <input ref={input} id={inputId} type="file" accept="image/*,application/pdf,.pdf" hidden onChange={(e) => void onFile(e.target.files?.[0])} />
         <button type="button" className="btn btn-sm" onClick={() => input.current?.click()} disabled={busy}>
           {busy ? <Loader2 size={16} className="spin" aria-hidden="true" /> : <ImageUp size={16} aria-hidden="true" />}
           {busy ? t.working : background ? t.replace : t.upload}

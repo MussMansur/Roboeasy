@@ -382,7 +382,7 @@ export function EditorCanvas(props: CanvasProps) {
       <defs>
         <ArrowMarker />
       </defs>
-      <MatBase width={W} height={H} background={background} backgroundOpacity={backgroundOpacity} grid={grid || 100} />
+      <MatBase width={W} height={H} background={background} backgroundOpacity={backgroundOpacity} grid={grid || 100} unit={lang === 'en' ? 'mm' : 'мм'} />
       <FieldFrame height={H}>
         {season.forbiddenZones.map((z) => (
           <g key={z.id} className="ed-item" data-selected={isSel('forbidden', z.id)} {...data('forbidden', z.id, 'item')}>

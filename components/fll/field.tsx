@@ -35,7 +35,7 @@ export function Field({ season, lang, selected, onToggle, routes = [], backgroun
       <defs>
         <ArrowMarker />
       </defs>
-      <MatBase width={W} height={H} background={background} backgroundOpacity={backgroundOpacity} />
+      <MatBase width={W} height={H} background={background} backgroundOpacity={backgroundOpacity} unit={lang === 'en' ? 'mm' : 'мм'} />
       <FieldFrame height={H}>
         {season.forbiddenZones.map((z) => (
           <ForbiddenShape key={z.id} zone={z} />
