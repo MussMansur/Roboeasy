@@ -3,7 +3,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { AlertTriangle, Check, Compass, FileDown, ImageUp, Info, Lightbulb, Loader2, PencilRuler, Plus, Ruler, Trash2 } from 'lucide-react'
 
+import { toast } from 'sonner'
+
 import { BlockStack } from '@/components/block-stack'
+import { Badge } from '@/components/ui/badge'
+import { EmptyState } from '@/components/ui/empty'
+import { Stepper } from '@/components/ui/stepper'
+import { tabTriggerClass } from '@/components/ui/tabs'
+import { Hint } from '@/components/ui/tooltip'
 import { BackgroundControls, useFieldBackground } from '@/components/fll/background'
 import { Field, RUN_COLORS } from '@/components/fll/field'
 import { SeasonSelect, useSeasonChoice } from '@/components/fll/season-select'
@@ -17,6 +24,7 @@ import { type Season, localize } from '@/lib/fll/season'
 import { type Locale, fill } from '@/lib/i18n/config'
 import type { Dictionary } from '@/lib/i18n/ru'
 import { loadRobot, saveRobot } from '@/lib/studio-state'
+import { buttonVariants } from '@/components/ui/button'
 
 type OkPlan = Extract<PlanResponse, { ok: true }>
 
@@ -63,7 +71,6 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
   const [error, setError] = useState('')
   const [measured, setMeasured] = useState({ distance: '', turn: '' })
   const [openRuns, setOpenRuns] = useState<Set<number>>(new Set())
-  const [toast, setToast] = useState('')
 
   useEffect(() => {
     const saved = loadRobot()
@@ -99,12 +106,6 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
     setError('')
     setStatus('idle')
   }, [season])
-
-  useEffect(() => {
-    if (!toast) return
-    const id = setTimeout(() => setToast(''), 2600)
-    return () => clearTimeout(id)
-  }, [toast])
 
   const update = (next: RobotProfile) => {
     setRobot(next)
@@ -171,7 +172,7 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
     const next = applyCalibration(robot, { distanceCm: num(measured.distance) || undefined, turnDeg: num(measured.turn) || undefined })
     update(next)
     setMeasured({ distance: '', turn: '' })
-    setToast(t.applied)
+    toast.success(t.applied)
   }
 
   const portSelect = (value: Port, onChange: (p: Port) => void, label: string) => (
@@ -204,9 +205,9 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
         <p className="lead">{t.lead}</p>
         <div className="fll-season-row">
           <SeasonSelect seasons={seasons} value={shipped.id} onChange={chooseSeason} lang={lang} t={t} />
-          <span className="format-badge">{t.editions[season.edition]}</span>
-          <span className="format-badge">{t.platforms[season.platform]}</span>
-          <a className="btn btn-sm" href={`/${lang}/fll/editor${shipped.id === defaultSeasonId ? '' : `?season=${shipped.id}`}`}>
+          <Badge variant="outline">{t.editions[season.edition]}</Badge>
+          <Badge variant="outline">{t.platforms[season.platform]}</Badge>
+          <a className={buttonVariants({ size: 'sm' })} href={`/${lang}/fll/editor${shipped.id === defaultSeasonId ? '' : `?season=${shipped.id}`}`}>
             <PencilRuler size={16} aria-hidden="true" />
             {t.openEditor}
           </a>
@@ -220,7 +221,7 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
             </span>
           </label>
         )}
-        {!fromDraft && season.todo && (
+        {!fromDraft && season.todo && season.missions.length > 0 && (
           <p className="alert alert-warn" role="note">
             <Info size={18} aria-hidden="true" />
             <span>{t.seasonTodo}</span>
@@ -253,29 +254,28 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
               label={t.fieldTitle}
             />
             {season.missions.length === 0 && season.launchAreas.length === 0 && !bg.url && (
-              <div className="fll-field-empty">
-                <strong>{t.emptyMapTitle}</strong>
-                <span>{t.emptyMapText}</span>
-                <div className="fll-field-empty-actions">
-                  <label className="btn btn-primary btn-sm" htmlFor="fll-bg-file">
-                    <ImageUp size={16} aria-hidden="true" />
-                    {t.background.upload}
-                  </label>
-                  <a className="btn btn-sm" href={`/${lang}/fll/editor${shipped.id === defaultSeasonId ? '' : `?season=${shipped.id}`}`}>
-                    <PencilRuler size={16} aria-hidden="true" />
-                    {t.emptyMapEditor}
-                  </a>
-                </div>
-              </div>
+              <EmptyState className="fll-field-empty" icon={<Compass aria-hidden="true" />} title={t.emptyMapTitle} description={t.emptyMapText}>
+                <label className={buttonVariants({ variant: 'primary', size: 'sm' })} htmlFor="fll-bg-file">
+                  <ImageUp aria-hidden="true" />
+                  {t.background.upload}
+                </label>
+                <a className={buttonVariants({ size: 'sm' })} href={`/${lang}/fll/editor${shipped.id === defaultSeasonId ? '' : `?season=${shipped.id}`}`}>
+                  <PencilRuler aria-hidden="true" />
+                  {t.emptyMapEditor}
+                </a>
+              </EmptyState>
             )}
           </div>
           <BackgroundControls state={bg} field={season.field} t={t.background} inputId="fll-bg-file" />
 
           <h3 className="fll-subtitle">{t.missionsTitle}</h3>
-          {season.missions.length === 0 || season.launchAreas.length === 0 ? (
+          {season.missions.length === 0 ? (
+            // Without a background the map above already explains this.
+            bg.url && <p className="tab-note">{t.noMissions}</p>
+          ) : season.launchAreas.length === 0 ? (
             <p className="alert alert-warn" role="note">
               <Info size={18} aria-hidden="true" />
-              <span>{season.missions.length === 0 ? t.noMissions : t.errors.season_incomplete}</span>
+              <span>{t.errors.season_incomplete}</span>
             </p>
           ) : (
             <p className="fll-selected">{fill(t.selected, { n: selected.size, p: selectedPoints })}</p>
@@ -364,20 +364,21 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
                       ))}
                     </select>
                   </label>
-                  <button
-                    type="button"
-                    className="icon-btn"
-                    aria-label={t.attachmentRemove}
-                    title={t.attachmentRemove}
-                    onClick={() => update({ ...robot, attachments: robot.attachments.filter((_, j) => j !== i) })}
-                  >
-                    <Trash2 size={16} aria-hidden="true" />
-                  </button>
+                  <Hint label={t.attachmentRemove}>
+                    <button
+                      type="button"
+                      className={buttonVariants({ variant: 'danger', size: 'icon' })}
+                      aria-label={t.attachmentRemove}
+                      onClick={() => update({ ...robot, attachments: robot.attachments.filter((_, j) => j !== i) })}
+                    >
+                      <Trash2 aria-hidden="true" />
+                    </button>
+                  </Hint>
                 </li>
               ))}
             </ul>
             {robot.attachments.length < 6 && (
-              <button type="button" className="btn btn-sm" onClick={addAttachment}>
+              <button type="button" className={buttonVariants({ size: 'sm' })} onClick={addAttachment}>
                 <Plus size={16} aria-hidden="true" />
                 {t.attachmentAdd}
               </button>
@@ -390,58 +391,74 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
               {t.calibrationTitle}
             </h2>
             <p className="tab-note">{t.calibrationLead}</p>
-            <ol className="fll-calib">
-              <li>
-                <p>{fill(t.calibDistance, { d: CALIBRATION.distanceCm })}</p>
-                <div className="fll-calib-row">
-                  <button type="button" className="btn btn-sm" disabled={!compiler} onClick={() => void download(distanceTestProgram(`Test ${CALIBRATION.distanceCm} cm`))}>
-                    <FileDown size={16} aria-hidden="true" />
-                    {t.downloadTest}
-                  </button>
-                  <label>
-                    {t.measuredDistance}
-                    <input
-                      className="input"
-                      inputMode="decimal"
-                      value={measured.distance}
-                      placeholder={String(CALIBRATION.distanceCm)}
-                      onChange={(e) => setMeasured((m) => ({ ...m, distance: e.target.value }))}
-                    />
-                  </label>
-                </div>
-              </li>
-              <li>
-                <p>{fill(t.calibTurn, { t: CALIBRATION.turnDeg })}</p>
-                <div className="fll-calib-row">
-                  <button type="button" className="btn btn-sm" disabled={!compiler} onClick={() => void download(turnTestProgram(`Test ${CALIBRATION.turnDeg}`))}>
-                    <FileDown size={16} aria-hidden="true" />
-                    {t.downloadTest}
-                  </button>
-                  <label>
-                    {t.measuredTurn}
-                    <input
-                      className="input"
-                      inputMode="decimal"
-                      value={measured.turn}
-                      placeholder={String(CALIBRATION.turnDeg)}
-                      onChange={(e) => setMeasured((m) => ({ ...m, turn: e.target.value }))}
-                    />
-                  </label>
-                </div>
-              </li>
-            </ol>
-            <div className="fll-calib-foot">
-              <button type="button" className="btn btn-primary btn-sm" onClick={applyMeasured} disabled={!measured.distance && !measured.turn}>
-                <Check size={16} aria-hidden="true" />
-                {t.apply}
-              </button>
-              <span>{fill(t.factors, { d: robot.distanceFactor, t: robot.turnFactor })}</span>
-              {(robot.distanceFactor !== 1 || robot.turnFactor !== 1) && (
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => update({ ...robot, distanceFactor: 1, turnFactor: 1 })}>
-                  {t.resetFactors}
-                </button>
-              )}
-            </div>
+            <Stepper
+              className="fll-calib"
+              label={t.calibrationTitle}
+              current={measured.distance ? (measured.turn ? 2 : 1) : 0}
+              steps={[
+                {
+                  title: t.calibStepDistance,
+                  description: fill(t.calibDistance, { d: CALIBRATION.distanceCm }),
+                  content: (
+                    <div className="fll-calib-row">
+                      <button type="button" className={buttonVariants({ size: 'sm' })} disabled={!compiler} onClick={() => void download(distanceTestProgram(`Test ${CALIBRATION.distanceCm} cm`))}>
+                        <FileDown aria-hidden="true" />
+                        {t.downloadTest}
+                      </button>
+                      <label>
+                        {t.measuredDistance}
+                        <input
+                          className="input"
+                          inputMode="decimal"
+                          value={measured.distance}
+                          placeholder={String(CALIBRATION.distanceCm)}
+                          onChange={(e) => setMeasured((m) => ({ ...m, distance: e.target.value }))}
+                        />
+                      </label>
+                    </div>
+                  ),
+                },
+                {
+                  title: t.calibStepTurn,
+                  description: fill(t.calibTurn, { t: CALIBRATION.turnDeg }),
+                  content: (
+                    <div className="fll-calib-row">
+                      <button type="button" className={buttonVariants({ size: 'sm' })} disabled={!compiler} onClick={() => void download(turnTestProgram(`Test ${CALIBRATION.turnDeg}`))}>
+                        <FileDown aria-hidden="true" />
+                        {t.downloadTest}
+                      </button>
+                      <label>
+                        {t.measuredTurn}
+                        <input
+                          className="input"
+                          inputMode="decimal"
+                          value={measured.turn}
+                          placeholder={String(CALIBRATION.turnDeg)}
+                          onChange={(e) => setMeasured((m) => ({ ...m, turn: e.target.value }))}
+                        />
+                      </label>
+                    </div>
+                  ),
+                },
+                {
+                  title: t.calibStepSave,
+                  content: (
+                    <div className="fll-calib-foot">
+                      <button type="button" className={buttonVariants({ variant: 'primary', size: 'sm' })} onClick={applyMeasured} disabled={!measured.distance && !measured.turn}>
+                        <Check aria-hidden="true" />
+                        {t.apply}
+                      </button>
+                      <span>{fill(t.factors, { d: robot.distanceFactor, t: robot.turnFactor })}</span>
+                      {(robot.distanceFactor !== 1 || robot.turnFactor !== 1) && (
+                        <button type="button" className={buttonVariants({ variant: 'ghost', size: 'sm' })} onClick={() => update({ ...robot, distanceFactor: 1, turnFactor: 1 })}>
+                          {t.resetFactors}
+                        </button>
+                      )}
+                    </div>
+                  ),
+                },
+              ]}
+            />
           </section>
         </div>
       </div>
@@ -452,9 +469,9 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
             {t.planTitle}
           </h2>
           {compiler && compiler.formats.length > 1 && (
-            <div className="tabs" role="group" aria-label={t.format} style={{ margin: 0 }}>
+            <div className="tab-tray" role="group" aria-label={t.format}>
               {compiler.formats.map((f) => (
-                <button key={f} type="button" aria-pressed={format === f} onClick={() => setFormat(f)}>
+                <button key={f} type="button" className={tabTriggerClass} aria-pressed={format === f} onClick={() => setFormat(f)}>
                   {formatT[f]}
                 </button>
               ))}
@@ -462,12 +479,12 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
           )}
         </div>
 
-        <button type="button" className="btn btn-primary btn-lg" onClick={() => void plan()} disabled={status === 'loading' || season.missions.length === 0 || season.launchAreas.length === 0}>
+        <button type="button" className={buttonVariants({ variant: 'primary', size: 'lg' })} onClick={() => void plan()} disabled={status === 'loading' || season.missions.length === 0 || season.launchAreas.length === 0}>
           {status === 'loading' ? <Loader2 size={18} className="spin" aria-hidden="true" /> : <Lightbulb size={18} aria-hidden="true" />}
           {status === 'loading' ? t.planning : t.planButton}
         </button>
         <p className="tab-note" style={{ marginTop: 12 }}>
-          {fill(t.selected, { n: selected.size, p: selectedPoints })}
+          {season.missions.length === 0 ? t.emptyMapTitle : fill(t.selected, { n: selected.size, p: selectedPoints })}
         </p>
 
         {error && (
@@ -479,7 +496,7 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
 
         {response && (
           <div className="fll-result" aria-live="polite">
-            <p className="format-badge">{t.source[response.source]}</p>
+            <Badge variant={response.source === 'ai' ? 'primary' : 'outline'}>{t.source[response.source]}</Badge>
             {response.notice && (
               <p className="alert alert-warn" role="note">
                 <Info size={18} aria-hidden="true" />
@@ -497,7 +514,7 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
                   <li key={i} className="fll-run" style={{ ['--run' as string]: RUN_COLORS[i % RUN_COLORS.length] }}>
                     <div className="fll-run-head">
                       <h3>{run.name}</h3>
-                      <span className="format-badge">{fill(t.points, { p: built?.points ?? 0 })}</span>
+                      <Badge>{fill(t.points, { p: built?.points ?? 0 })}</Badge>
                     </div>
                     <p className="fll-meta">
                       {fill(t.launch, { area: area ? localize(area.name, lang) : run.launchAreaId })} ·{' '}
@@ -515,14 +532,14 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
                     ))}
                     <div className="toolbar">
                       {compiler && (
-                        <button type="button" className="btn btn-primary btn-sm" onClick={() => built && void download(built.program)}>
+                        <button type="button" className={buttonVariants({ variant: 'primary', size: 'sm' })} onClick={() => built && void download(built.program)}>
                           <FileDown size={16} aria-hidden="true" />
                           {fill(t.download, { ext: compiler.fileExtension })}
                         </button>
                       )}
                       <button
                         type="button"
-                        className="btn btn-sm"
+                        className={buttonVariants({ size: 'sm' })}
                         aria-expanded={open}
                         onClick={() =>
                           setOpenRuns((prev) => {
@@ -566,12 +583,6 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
         )}
       </section>
 
-      {toast && (
-        <div className="toast" role="status">
-          <Check size={18} aria-hidden="true" />
-          {toast}
-        </div>
-      )}
     </div>
   )
 }

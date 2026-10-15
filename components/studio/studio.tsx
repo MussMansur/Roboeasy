@@ -21,8 +21,14 @@ import {
   Wand2,
 } from 'lucide-react'
 
+import { toast } from 'sonner'
+
 import { BlockStack } from '@/components/block-stack'
 import { CodeView } from '@/components/code-view'
+import { Badge } from '@/components/ui/badge'
+import { EmptyState } from '@/components/ui/empty'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { type Format, type GenerateErrorCode, type GenerateResponse, PROMPT_MAX } from '@/lib/api-types'
 import { type Locale, fill } from '@/lib/i18n/config'
 import type { Dictionary } from '@/lib/i18n/ru'
@@ -41,6 +47,7 @@ import {
   saveHistory,
   saveRobot,
 } from '@/lib/studio-state'
+import { buttonVariants } from '@/components/ui/button'
 
 type Status = 'idle' | 'loading' | 'error' | 'done'
 type ErrorState = { code: GenerateErrorCode | 'network' | 'file'; retryAfter?: number; where: 'composer' | 'result' }
@@ -81,18 +88,14 @@ export function Studio({ lang, t, labels }: StudioProps) {
   const [loadingStep, setLoadingStep] = useState(0)
   const [pendingFormat, setPendingFormat] = useState<Format>('blocks')
   const [announce, setAnnounce] = useState('')
-  const [toast, setToast] = useState<string | null>(null)
   const [aiReady, setAiReady] = useState<boolean | null>(null)
 
   const abortRef = useRef<AbortController | null>(null)
   const resultRef = useRef<HTMLElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   const showToast = useCallback((message: string) => {
-    setToast(message)
-    clearTimeout(toastTimer.current)
-    toastTimer.current = setTimeout(() => setToast(null), 2600)
+    toast.success(message)
   }, [])
 
   const openResult = useCallback((r: StudioResult) => {
@@ -463,7 +466,7 @@ export function Studio({ lang, t, labels }: StudioProps) {
               </label>
               <div className="robot-foot">
                 <span>{t.robot.hint}</span>
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => updateRobot(DEFAULT_ROBOT)}>
+                <button type="button" className={buttonVariants({ variant: 'ghost', size: 'sm' })} onClick={() => updateRobot(DEFAULT_ROBOT)}>
                   <RotateCcw size={15} aria-hidden="true" />
                   {t.robot.reset}
                 </button>
@@ -472,7 +475,7 @@ export function Studio({ lang, t, labels }: StudioProps) {
           </details>
 
           <div className="generate-row">
-            <button type="button" className="btn btn-primary btn-lg btn-block" onClick={() => void generate('new')} disabled={status === 'loading'}>
+            <button type="button" className={buttonVariants({ variant: 'primary', size: 'lg', block: true })} onClick={() => void generate('new')} disabled={status === 'loading'}>
               {status === 'loading' ? <Loader2 size={18} className="spin" aria-hidden="true" /> : <Sparkles size={18} aria-hidden="true" />}
               {status === 'loading' ? t.generating : t.generate}
             </button>
@@ -495,7 +498,7 @@ export function Studio({ lang, t, labels }: StudioProps) {
             {history.length > 0 && (
               <button
                 type="button"
-                className="btn btn-ghost btn-sm"
+                className={buttonVariants({ variant: 'ghost', size: 'sm' })}
                 onClick={() => {
                   setHistory([])
                   saveHistory([])
@@ -552,11 +555,11 @@ export function Studio({ lang, t, labels }: StudioProps) {
         {status === 'loading' ? (
           <div className="result-empty result-loading">
             <div>
-              <div className="ghost-stack" aria-hidden="true">
-                <i />
-                <i />
-                <i />
-                <i />
+              <div className="grid w-56 gap-2" aria-hidden="true">
+                <Skeleton className="h-8 w-2/3 bg-(--blk-events)/50" />
+                <Skeleton className="h-8 w-5/6 bg-(--blk-move)/40" />
+                <Skeleton className="ml-6 h-8 w-1/2 bg-(--blk-motor)/40" />
+                <Skeleton className="h-8 w-3/4 bg-(--blk-sound)/40" />
               </div>
               <ol className="loading-steps">
                 {loadingSteps.map((s, i) => (
@@ -589,32 +592,16 @@ export function Studio({ lang, t, labels }: StudioProps) {
             error={error?.where === 'result' ? errorText : ''}
           />
         ) : (
-          <div className="result-empty">
-            <div>
-              <div className="ghost-stack" aria-hidden="true">
-                <i />
-                <i />
-                <i />
-                <i />
-              </div>
-              <h2>{t.empty.title}</h2>
-              <p>{t.empty.text}</p>
-              <ul className="tips">
-                {t.empty.tips.map((tip) => (
-                  <li key={tip}>{tip}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
+          <EmptyState className="result-empty-state" icon={<Sparkles aria-hidden="true" />} title={t.empty.title} description={t.empty.text}>
+            <ul className="tips">
+              {t.empty.tips.map((tip) => (
+                <li key={tip}>{tip}</li>
+              ))}
+            </ul>
+          </EmptyState>
         )}
       </section>
 
-      {toast && (
-        <div className="toast" role="status">
-          <Check size={18} aria-hidden="true" />
-          {toast}
-        </div>
-      )}
     </div>
   )
 }
@@ -662,30 +649,20 @@ function ResultView(p: ResultViewProps) {
           {result.description && <p className="result-desc">{result.description}</p>}
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
-          <span className="format-badge">
-            {isBlocks ? <Blocks size={15} aria-hidden="true" /> : <Code2 size={15} aria-hidden="true" />}
+          <Badge>
+            {isBlocks ? <Blocks aria-hidden="true" /> : <Code2 aria-hidden="true" />}
             {isBlocks && program
               ? `${countSteps(program.steps)} ${pluralForm(p.lang, countSteps(program.steps), t.result.blocksCount)}`
               : hasProgram
                 ? t.python
                 : t.freePython}
-          </span>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={p.onReset}>
+          </Badge>
+          <button type="button" className={buttonVariants({ variant: 'ghost', size: 'sm' })} onClick={p.onReset}>
             <RotateCcw size={15} aria-hidden="true" />
             {t.result.newProgram}
           </button>
         </div>
       </div>
-
-      {hasProgram && (
-        <div className="tabs" role="tablist" aria-label={t.formatLabel}>
-          {ordered.map((k) => (
-            <button key={k} type="button" role="tab" id={`tab-${k}`} aria-controls={`panel-${k}`} aria-selected={tab === k} onClick={() => p.setView(k)}>
-              {k === 'blocks' ? t.result.blocksTab : t.result.pythonTab}
-            </button>
-          ))}
-        </div>
-      )}
 
       {result.warnings.length > 0 && (
         <div className="alert alert-warn" role="note">
@@ -701,40 +678,50 @@ function ResultView(p: ResultViewProps) {
         </div>
       )}
 
-      <div style={{ marginTop: hasProgram ? 0 : 18 }}>
-        {program && tab === 'blocks' ? (
-          <div role="tabpanel" id="panel-blocks" aria-labelledby="tab-blocks">
+      {program ? (
+        <Tabs value={tab} onValueChange={(v) => p.setView(v === 'python' ? 'python' : 'blocks')} className="result-tabs">
+          <TabsList aria-label={t.formatLabel}>
+            {ordered.map((k) => (
+              <TabsTrigger key={k} value={k}>
+                {k === 'blocks' ? t.result.blocksTab : t.result.pythonTab}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <TabsContent value="blocks">
             {!isBlocks && <p className="tab-note">{t.result.blocksOfPython}</p>}
             <div className="canvas">
               <BlockStack program={program} labels={p.labels} robot={result.robot} animate />
             </div>
-          </div>
-        ) : (
-          <div role={hasProgram ? 'tabpanel' : undefined} id="panel-python" aria-labelledby={hasProgram ? 'tab-python' : undefined}>
+          </TabsContent>
+          <TabsContent value="python">
             {isBlocks && <p className="tab-note">{t.result.pythonOfBlocks}</p>}
             <CodeView code={code} label="Python" />
-          </div>
-        )}
-      </div>
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <div style={{ marginTop: 18 }}>
+          <CodeView code={code} label="Python" />
+        </div>
+      )}
 
       <div className="toolbar">
         <label className="name-field">
           {t.result.projectName}
           <input className="input" value={p.projectName} maxLength={40} onChange={(e) => p.setProjectName(e.target.value)} />
         </label>
-        <button type="button" className="btn btn-primary" onClick={p.onDownload}>
+        <button type="button" className={buttonVariants({ variant: 'primary' })} onClick={p.onDownload}>
           <FileDown size={18} aria-hidden="true" />
           {t.result.download}
         </button>
-        <button type="button" className="btn" onClick={p.onCopy}>
+        <button type="button" className={buttonVariants()} onClick={p.onCopy}>
           <Copy size={17} aria-hidden="true" />
           {t.result.copy}
         </button>
-        <button type="button" className="btn" onClick={p.onDownloadPy}>
+        <button type="button" className={buttonVariants()} onClick={p.onDownloadPy}>
           <FileCode2 size={17} aria-hidden="true" />
           {t.result.downloadPy}
         </button>
-        <button type="button" className="btn" onClick={p.onShare}>
+        <button type="button" className={buttonVariants()} onClick={p.onShare}>
           <Link2 size={17} aria-hidden="true" />
           {t.result.share}
         </button>
@@ -757,7 +744,7 @@ function ResultView(p: ResultViewProps) {
           placeholder={t.result.refinePlaceholder}
           onChange={(e) => p.setRefineText(e.target.value)}
         />
-        <button type="submit" className="btn">
+        <button type="submit" className={buttonVariants()}>
           <Wand2 size={17} aria-hidden="true" />
           {t.result.refine}
         </button>

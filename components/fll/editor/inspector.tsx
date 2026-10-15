@@ -8,6 +8,8 @@ import { actionZoneFrame } from '@/lib/fll/geometry'
 import { EDITIONS, type Localized, MISSION_ACTIONS, PLATFORMS, SEASON_STATUSES, type Season, type Shape, localize } from '@/lib/fll/season'
 import { fill } from '@/lib/i18n/config'
 import type { Dictionary } from '@/lib/i18n/ru'
+import { buttonVariants } from '@/components/ui/button'
+import { Hint } from '@/components/ui/tooltip'
 
 type FllT = Dictionary['fll']
 type EdT = FllT['editor']
@@ -159,7 +161,7 @@ export function Inspector({ season, selection, lang, t, fllT, onChange, onSelect
               <ul>
                 {l.items.map((it) => (
                   <li key={it.id}>
-                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => onSelect({ kind: l.kind, id: it.id })}>
+                    <button type="button" className={buttonVariants({ variant: 'ghost', size: 'sm' })} onClick={() => onSelect({ kind: l.kind, id: it.id })}>
                       {it.label}
                     </button>
                   </li>
@@ -187,17 +189,19 @@ export function Inspector({ season, selection, lang, t, fllT, onChange, onSelect
     <div className="ed-inspector-head">
       <h2 className="panel-title">{t.tool[selection.kind === 'launch' ? 'launch' : selection.kind]}</h2>
       <div className="toolbar">
-        <button type="button" className="btn btn-sm" onClick={onDuplicate}>
+        <button type="button" className={buttonVariants({ size: 'sm' })} onClick={onDuplicate}>
           <Copy size={16} aria-hidden="true" />
           {t.duplicate}
         </button>
-        <button type="button" className="btn btn-sm btn-danger" onClick={onDelete}>
+        <button type="button" className={buttonVariants({ variant: 'danger', size: 'sm' })} onClick={onDelete}>
           <Trash2 size={16} aria-hidden="true" />
           {t.delete}
         </button>
-        <button type="button" className="icon-btn" aria-label={t.deselect} title={t.deselect} onClick={() => onSelect(null)}>
-          <X size={18} aria-hidden="true" />
-        </button>
+        <Hint label={t.deselect}>
+          <button type="button" className={buttonVariants({ size: 'icon' })} aria-label={t.deselect} onClick={() => onSelect(null)}>
+            <X aria-hidden="true" />
+          </button>
+        </Hint>
       </div>
     </div>
   )
@@ -282,20 +286,21 @@ export function Inspector({ season, selection, lang, t, fllT, onChange, onSelect
               <div key={i} className="ed-via-row">
                 <NumField label={`${i + 1}: ${p.x}`} value={v.x} onChange={(x) => x !== undefined && set({ plan: { ...m.plan, via: m.plan.via.map((q, j) => (j === i ? { ...q, x } : q)) } }, `via${i}x`)} />
                 <NumField label={`${i + 1}: ${p.y}`} value={v.y} onChange={(y) => y !== undefined && set({ plan: { ...m.plan, via: m.plan.via.map((q, j) => (j === i ? { ...q, y } : q)) } }, `via${i}y`)} />
-                <button
-                  type="button"
-                  className="icon-btn"
-                  aria-label={fill(p.removeVia, { n: i + 1 })}
-                  title={fill(p.removeVia, { n: i + 1 })}
-                  onClick={() => set({ plan: { ...m.plan, via: m.plan.via.filter((_, j) => j !== i) } }, `via-del${i}`)}
-                >
-                  <Trash2 size={16} aria-hidden="true" />
-                </button>
+                <Hint label={fill(p.removeVia, { n: i + 1 })}>
+                  <button
+                    type="button"
+                    className={buttonVariants({ variant: 'danger', size: 'icon' })}
+                    aria-label={fill(p.removeVia, { n: i + 1 })}
+                    onClick={() => set({ plan: { ...m.plan, via: m.plan.via.filter((_, j) => j !== i) } }, `via-del${i}`)}
+                  >
+                    <Trash2 aria-hidden="true" />
+                  </button>
+                </Hint>
               </div>
             ))}
             <button
               type="button"
-              className="btn btn-sm"
+              className={buttonVariants({ size: 'sm' })}
               onClick={() => {
                 const last = m.plan.via.at(-1) ?? zone
                 set({ plan: { ...m.plan, via: [...m.plan.via, { x: Math.round(last.x - 150), y: Math.round(last.y) }] } }, `via-add${m.plan.via.length}`)

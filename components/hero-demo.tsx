@@ -5,6 +5,7 @@ import { Check, FileDown, Loader2, Sparkles } from 'lucide-react'
 
 import { BlockStack } from '@/components/block-stack'
 import { CodeView } from '@/components/code-view'
+import { tabTriggerClass } from '@/components/ui/tabs'
 import type { Dictionary } from '@/lib/i18n/ru'
 import { IMAGES, type Program } from '@/lib/dsl/types'
 
@@ -73,9 +74,9 @@ export function HeroDemo({ t, tabs, labels, program, python }: HeroDemoProps) {
           <span className="live-dot" aria-hidden="true" />
           {t.label}
         </span>
-        <div className="tabs" role="tablist">
+        <div className="tab-tray" role="tablist">
           {(['blocks', 'python'] as const).map((k) => (
-            <button key={k} type="button" role="tab" id={`demo-tab-${k}`} aria-controls="demo-panel" aria-selected={tab === k} onClick={() => setTab(k)}>
+            <button key={k} type="button" role="tab" className={tabTriggerClass} id={`demo-tab-${k}`} aria-controls="demo-panel" aria-selected={tab === k} onClick={() => setTab(k)}>
               {tabs[k]}
             </button>
           ))}

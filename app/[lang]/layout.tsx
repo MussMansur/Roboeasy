@@ -1,21 +1,16 @@
 import type { Metadata, Viewport } from 'next'
 import type { ReactNode } from 'react'
-import { JetBrains_Mono, Onest, Unbounded } from 'next/font/google'
 import { notFound } from 'next/navigation'
 import { Analytics } from '@vercel/analytics/next'
 
 import { InlineScript } from '@/components/inline-script'
+import { Providers } from '@/components/providers'
+import { fontVariables } from '@/lib/fonts'
 import { getDictionary, isLocale, locales } from '@/lib/i18n'
+import { THEME_SCRIPT } from '@/lib/theme-script'
 import '../globals.css'
 
-const heading = Unbounded({ subsets: ['latin', 'cyrillic', 'cyrillic-ext'], variable: '--font-heading', display: 'swap' })
-const body = Onest({ subsets: ['latin', 'cyrillic', 'cyrillic-ext'], variable: '--font-body', display: 'swap' })
-const code = JetBrains_Mono({ subsets: ['latin', 'cyrillic'], variable: '--font-code', display: 'swap' })
-
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
-
-// Runs before paint: applies the saved theme (or the system one) so there is no flash.
-const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.setAttribute('data-theme',t)}catch(e){}})()`
 
 type Params = { params: Promise<{ lang: string }> }
 
@@ -54,8 +49,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export const viewport: Viewport = {
   colorScheme: 'dark light',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f7f6f2' },
-    { media: '(prefers-color-scheme: dark)', color: '#0b0d10' },
+    { media: '(prefers-color-scheme: light)', color: '#fff9ee' },
+    { media: '(prefers-color-scheme: dark)', color: '#141826' },
   ],
 }
 
@@ -63,12 +58,12 @@ export default async function RootLayout({ children, params }: Params & { childr
   const { lang } = await params
   if (!isLocale(lang)) notFound()
   return (
-    <html lang={lang} className={`${heading.variable} ${body.variable} ${code.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang={lang} className={fontVariables} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <InlineScript html={THEME_SCRIPT} />
       </head>
       <body>
-        {children}
+        <Providers>{children}</Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

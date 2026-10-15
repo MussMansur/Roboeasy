@@ -1,13 +1,15 @@
 'use client'
 
 import { type KeyboardEvent, type PointerEvent, useEffect, useRef, useState } from 'react'
-import { Crop, ImageUp, Loader2, Trash2, X } from 'lucide-react'
+import { Crop, ImageUp, Loader2, Trash2 } from 'lucide-react'
 
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { type FieldBackground, deleteBackground, loadBackground, readPicture, rectifyPicture, saveBackground } from '@/lib/fll/background'
 import { type MatCorners, imageCorners, isConvexQuad } from '@/lib/fll/homography'
 import type { Point } from '@/lib/fll/season'
 import { fill } from '@/lib/i18n/config'
 import type { Dictionary } from '@/lib/i18n/ru'
+import { buttonVariants } from '@/components/ui/button'
 
 type BgT = Dictionary['fll']['background']
 
@@ -136,7 +138,7 @@ export function BackgroundControls({ state, field, t, inputId }: ControlsProps) 
       <div className="fll-bg-row">
         <strong>{t.title}</strong>
         <input ref={input} id={inputId} type="file" accept="image/*,application/pdf,.pdf" hidden onChange={(e) => void onFile(e.target.files?.[0])} />
-        <button type="button" className="btn btn-sm" onClick={() => input.current?.click()} disabled={busy}>
+        <button type="button" className={buttonVariants({ size: 'sm' })} onClick={() => input.current?.click()} disabled={busy}>
           {busy ? <Loader2 size={16} className="spin" aria-hidden="true" /> : <ImageUp size={16} aria-hidden="true" />}
           {busy ? t.working : background ? t.replace : t.upload}
         </button>
@@ -144,7 +146,7 @@ export function BackgroundControls({ state, field, t, inputId }: ControlsProps) 
           <>
             <button
               type="button"
-              className="btn btn-sm"
+              className={buttonVariants({ size: 'sm' })}
               disabled={busy}
               onClick={() =>
                 setDraft({ fileName: background.fileName, source: background.source, width: background.sourceWidth, height: background.sourceHeight, corners: background.corners })
@@ -153,7 +155,7 @@ export function BackgroundControls({ state, field, t, inputId }: ControlsProps) 
               <Crop size={16} aria-hidden="true" />
               {t.corners}
             </button>
-            <button type="button" className="btn btn-ghost btn-sm" onClick={() => void state.remove()} disabled={busy}>
+            <button type="button" className={buttonVariants({ variant: 'ghost', size: 'sm' })} onClick={() => void state.remove()} disabled={busy}>
               <Trash2 size={16} aria-hidden="true" />
               {t.remove}
             </button>
@@ -199,7 +201,6 @@ function CornerDialog({ draft, t, busy, onCancel, onApply }: DialogProps) {
   const [url, setUrl] = useState<string | null>(null)
   const svg = useRef<SVGSVGElement>(null)
   const dragging = useRef<number | null>(null)
-  const dialog = useRef<HTMLDivElement>(null)
   const { width: w, height: h } = draft
 
   useEffect(() => {
@@ -207,12 +208,6 @@ function CornerDialog({ draft, t, busy, onCancel, onApply }: DialogProps) {
     setUrl(next)
     return () => URL.revokeObjectURL(next)
   }, [draft.source])
-
-  useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null
-    dialog.current?.focus()
-    return () => previous?.focus()
-  }, [])
 
   const toImage = (e: PointerEvent): Point | null => {
     const ctm = svg.current?.getScreenCTM()
@@ -267,15 +262,12 @@ function CornerDialog({ draft, t, busy, onCancel, onApply }: DialogProps) {
   const loupeSide = `${z.y > h / 2 ? 'top' : 'bottom'}-${z.x > w / 2 ? 'left' : 'right'}`
 
   return (
-    <div className="modal-backdrop" role="presentation" onKeyDown={(e) => e.key === 'Escape' && onCancel()}>
-      <div className="modal card fll-corners" role="dialog" aria-modal="true" aria-labelledby="fll-corners-title" tabIndex={-1} ref={dialog}>
-        <div className="fll-corners-head">
-          <h2 id="fll-corners-title">{t.dialogTitle}</h2>
-          <button type="button" className="icon-btn" aria-label={t.cancel} onClick={onCancel}>
-            <X size={18} aria-hidden="true" />
-          </button>
-        </div>
-        <p className="tab-note">{t.dialogLead}</p>
+    <Dialog open onOpenChange={(open) => !open && onCancel()}>
+      <DialogContent className="fll-corners max-w-[980px]" closeLabel={t.cancel}>
+        <DialogHeader>
+          <DialogTitle>{t.dialogTitle}</DialogTitle>
+          <DialogDescription>{t.dialogLead}</DialogDescription>
+        </DialogHeader>
         <p className="fll-corners-next" aria-live="polite">
           {fill(t.next, { name: `${active + 1} · ${t.cornerNames[active]}` })}
         </p>
@@ -322,20 +314,19 @@ function CornerDialog({ draft, t, busy, onCancel, onApply }: DialogProps) {
             {t.badCorners}
           </p>
         )}
-        <div className="toolbar">
-          <button type="button" className="btn btn-sm" onClick={() => setCorners([...imageCorners(w, h)])}>
+        <DialogFooter>
+          <button type="button" className={buttonVariants({ size: 'sm', className: 'mr-auto' })} onClick={() => setCorners([...imageCorners(w, h)])}>
             {t.whole}
           </button>
-          <span className="toolbar-spacer" />
-          <button type="button" className="btn btn-ghost btn-sm" onClick={onCancel}>
+          <button type="button" className={buttonVariants({ variant: 'ghost', size: 'sm' })} onClick={onCancel}>
             {t.cancel}
           </button>
-          <button type="button" className="btn btn-primary btn-sm" disabled={!valid || busy} onClick={() => onApply([corners[0], corners[1], corners[2], corners[3]])}>
+          <button type="button" className={buttonVariants({ variant: 'primary', size: 'sm' })} disabled={!valid || busy} onClick={() => onApply([corners[0], corners[1], corners[2], corners[3]])}>
             {busy && <Loader2 size={16} className="spin" aria-hidden="true" />}
             {t.apply}
           </button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

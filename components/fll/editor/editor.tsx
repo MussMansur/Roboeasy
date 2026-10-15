@@ -3,10 +3,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AlertTriangle, Ban, Check, Download, Maximize, MousePointer2, Redo2, Rocket, RotateCcw, Target, Undo2, Upload, ZoomIn, ZoomOut } from 'lucide-react'
 
+import { toast } from 'sonner'
+
 import { BackgroundControls, useFieldBackground } from '@/components/fll/background'
 import { EditorCanvas, type Tool, type View, VIEW_MARGIN, fitView } from '@/components/fll/editor/canvas'
 import { Inspector } from '@/components/fll/editor/inspector'
 import { SeasonSelect, useSeasonChoice } from '@/components/fll/season-select'
+import { Skeleton } from '@/components/ui/skeleton'
+import { tabTriggerClass } from '@/components/ui/tabs'
+import { Hint } from '@/components/ui/tooltip'
 import {
   type History,
   type Selection,
@@ -29,6 +34,7 @@ import { SEASON_SCHEMA_VERSION, type Season, safeParseSeason } from '@/lib/fll/s
 import { deleteDraft, loadDraft, saveDraft } from '@/lib/fll/drafts'
 import { type Locale, fill } from '@/lib/i18n/config'
 import type { Dictionary } from '@/lib/i18n/ru'
+import { buttonVariants } from '@/components/ui/button'
 
 interface EditorProps {
   lang: Locale
@@ -72,7 +78,6 @@ export default function SeasonEditor({ lang, seasons, defaultSeasonId, t: fllT }
   const [snapOn, setSnapOn] = useState(true)
   const [view, setView] = useState<View>(() => fitView(shipped))
   const [cursor, setCursor] = useState<{ x: number; y: number } | null>(null)
-  const [message, setMessage] = useState<{ kind: 'ok' | 'error'; text: string } | null>(null)
   const fileInput = useRef<HTMLInputElement>(null)
   const bg = useFieldBackground(seasonId)
 
@@ -111,12 +116,6 @@ export default function SeasonEditor({ lang, seasons, defaultSeasonId, t: fllT }
     return () => clearTimeout(id)
   }, [doc])
 
-  useEffect(() => {
-    if (!message) return
-    const id = setTimeout(() => setMessage(null), message.kind === 'ok' ? 3000 : 8000)
-    return () => clearTimeout(id)
-  }, [message])
-
   const change = useCallback((next: Season, key: string | null) => setDoc((d) => (d ? { ...d, history: commit(d.history, next, key) } : d)), [])
   const onCanvasChange = useCallback((next: Season, key: string) => change(next, key), [change])
   const step = (fn: (h: History<Season>) => History<Season>) => setDoc((d) => (d ? { ...d, history: fn(d.history) } : d))
@@ -150,7 +149,7 @@ export default function SeasonEditor({ lang, seasons, defaultSeasonId, t: fllT }
   })
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (isTyping(e.target) || document.querySelector('[aria-modal="true"]')) return
+      if (isTyping(e.target) || document.querySelector('[role="dialog"]')) return
       const { present: s, selection: sel, grid: gr, snapOn: sn } = keyState.current
       const mod = e.ctrlKey || e.metaKey
       const k = e.key.toLowerCase()
@@ -188,15 +187,15 @@ export default function SeasonEditor({ lang, seasons, defaultSeasonId, t: fllT }
       const raw: unknown = JSON.parse(await file.text())
       const r = safeParseSeason(raw)
       if (!r.ok) {
-        setMessage({ kind: 'error', text: fill(t.importError, { error: r.error.slice(0, 600) }) })
+        toast.error(fill(t.importError, { error: r.error.slice(0, 600) }), { duration: 8000 })
         return
       }
       change(r.season, null)
       setSelection(null)
       setView(fitView(r.season))
-      setMessage({ kind: 'ok', text: r.migrated ? `${t.imported}. ${fill(t.migrated, { v: SEASON_SCHEMA_VERSION })}` : t.imported })
+      toast.success(r.migrated ? `${t.imported}. ${fill(t.migrated, { v: SEASON_SCHEMA_VERSION })}` : t.imported)
     } catch (error) {
-      setMessage({ kind: 'error', text: fill(t.importError, { error: error instanceof Error ? error.message : 'JSON' }) })
+      toast.error(fill(t.importError, { error: error instanceof Error ? error.message : 'JSON' }), { duration: 8000 })
     }
   }
 
@@ -206,7 +205,7 @@ export default function SeasonEditor({ lang, seasons, defaultSeasonId, t: fllT }
   function onExport() {
     if (!present) return
     if (validation && !validation.ok) {
-      setMessage({ kind: 'error', text: t.exportBlocked })
+      toast.error(t.exportBlocked, { duration: 8000 })
       return
     }
     download(seasonToJson(present), `${present.id}.json`)
@@ -254,7 +253,7 @@ export default function SeasonEditor({ lang, seasons, defaultSeasonId, t: fllT }
         <h1>{t.title}</h1>
         <p className="lead">{t.lead}</p>
         <div className="toolbar">
-          <a className="btn btn-sm" href={`/${lang}/fll${seasonId === defaultSeasonId ? '' : `?season=${seasonId}`}`}>
+          <a className={buttonVariants({ size: 'sm' })} href={`/${lang}/fll${seasonId === defaultSeasonId ? '' : `?season=${seasonId}`}`}>
             {t.back}
           </a>
         </div>
@@ -267,55 +266,60 @@ export default function SeasonEditor({ lang, seasons, defaultSeasonId, t: fllT }
         </p>
         <div className="toolbar">
           <input ref={fileInput} type="file" accept="application/json,.json" hidden onChange={(e) => void onImport(e.target.files?.[0])} />
-          <button type="button" className="btn btn-sm" onClick={() => fileInput.current?.click()}>
+          <button type="button" className={buttonVariants({ size: 'sm' })} onClick={() => fileInput.current?.click()}>
             <Upload size={16} aria-hidden="true" />
             {t.import}
           </button>
-          <button type="button" className="btn btn-primary btn-sm" onClick={onExport} disabled={!present}>
+          <button type="button" className={buttonVariants({ variant: 'primary', size: 'sm' })} onClick={onExport} disabled={!present}>
             <Download size={16} aria-hidden="true" />
             {t.export}
           </button>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={() => void onReset()} disabled={!draftInfo.restored && !draftInfo.savedAt}>
+          <button type="button" className={buttonVariants({ variant: 'ghost', size: 'sm' })} onClick={() => void onReset()} disabled={!draftInfo.restored && !draftInfo.savedAt}>
             <RotateCcw size={16} aria-hidden="true" />
             {t.reset}
           </button>
         </div>
       </section>
 
-      {message && (
-        <p className={message.kind === 'ok' ? 'alert alert-ok' : 'alert'} role={message.kind === 'ok' ? 'status' : 'alert'}>
-          {message.kind === 'ok' ? <Check size={18} aria-hidden="true" /> : <AlertTriangle size={18} aria-hidden="true" />}
-          <span>{message.text}</span>
-        </p>
-      )}
-
       <div className="ed-grid">
         <section className="card panel ed-stage" aria-label={fllT.fieldTitle}>
           <div className="ed-toolbar" role="toolbar" aria-label={t.tools}>
-            <div className="tabs" role="group" aria-label={t.tools}>
+            <div className="tab-tray" role="group" aria-label={t.tools}>
               {TOOLS.map(({ id, icon: Icon, key }) => (
-                <button key={id} type="button" aria-pressed={tool === id} onClick={() => setTool(id)} title={`${t.tool[id]} (${key.toUpperCase()})`}>
-                  <Icon size={16} aria-hidden="true" />
-                  <span>{t.tool[id]}</span>
-                </button>
+                <Hint key={id} label={`${t.tool[id]} (${key.toUpperCase()})`}>
+                  <button type="button" className={tabTriggerClass} aria-pressed={tool === id} onClick={() => setTool(id)}>
+                    <Icon aria-hidden="true" />
+                    <span>{t.tool[id]}</span>
+                  </button>
+                </Hint>
               ))}
             </div>
             <div className="ed-toolbar-group">
-              <button type="button" className="icon-btn" onClick={() => step(undo)} disabled={!canUndo} aria-label={t.undo} title={`${t.undo} (Ctrl+Z)`}>
-                <Undo2 size={18} aria-hidden="true" />
-              </button>
-              <button type="button" className="icon-btn" onClick={() => step(redo)} disabled={!canRedo} aria-label={t.redo} title={`${t.redo} (Ctrl+Shift+Z)`}>
-                <Redo2 size={18} aria-hidden="true" />
-              </button>
-              <button type="button" className="icon-btn" onClick={() => zoom(1 / 1.3)} aria-label={t.zoomIn} title={t.zoomIn}>
-                <ZoomIn size={18} aria-hidden="true" />
-              </button>
-              <button type="button" className="icon-btn" onClick={() => zoom(1.3)} aria-label={t.zoomOut} title={t.zoomOut}>
-                <ZoomOut size={18} aria-hidden="true" />
-              </button>
-              <button type="button" className="icon-btn" onClick={() => setView(fitView(present ?? shipped))} aria-label={t.zoomFit} title={t.zoomFit}>
-                <Maximize size={18} aria-hidden="true" />
-              </button>
+              <Hint label={`${t.undo} (Ctrl+Z)`}>
+                <button type="button" className={buttonVariants({ size: 'icon' })} onClick={() => step(undo)} disabled={!canUndo} aria-label={t.undo}>
+                  <Undo2 aria-hidden="true" />
+                </button>
+              </Hint>
+              <Hint label={`${t.redo} (Ctrl+Shift+Z)`}>
+                <button type="button" className={buttonVariants({ size: 'icon' })} onClick={() => step(redo)} disabled={!canRedo} aria-label={t.redo}>
+                  <Redo2 aria-hidden="true" />
+                </button>
+              </Hint>
+              <Hint label={t.zoomIn}>
+                <button type="button" className={buttonVariants({ size: 'icon' })} onClick={() => zoom(1 / 1.3)} aria-label={t.zoomIn}>
+                  <ZoomIn aria-hidden="true" />
+                </button>
+              </Hint>
+              <Hint label={t.zoomOut}>
+                <button type="button" className={buttonVariants({ size: 'icon' })} onClick={() => zoom(1.3)} aria-label={t.zoomOut}>
+                  <ZoomOut aria-hidden="true" />
+                </button>
+              </Hint>
+              <Hint label={t.zoomFit}>
+                <button type="button" className={buttonVariants({ size: 'icon' })} onClick={() => setView(fitView(present ?? shipped))} aria-label={t.zoomFit}>
+                  <Maximize aria-hidden="true" />
+                </button>
+              </Hint>
             </div>
             <div className="ed-toolbar-group">
               <label className="ed-inline">
@@ -356,7 +360,7 @@ export default function SeasonEditor({ lang, seasons, defaultSeasonId, t: fllT }
                 label={fllT.fieldTitle}
               />
             ) : (
-              <div className="ed-canvas ed-loading" style={{ aspectRatio: `${shipped.field.widthMm} / ${shipped.field.heightMm}` }} />
+              <Skeleton className="ed-canvas" style={{ aspectRatio: `${shipped.field.widthMm} / ${shipped.field.heightMm}` }} />
             )}
             {cursor && (
               <span className="ed-cursor" aria-hidden="true">

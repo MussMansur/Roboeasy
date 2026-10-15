@@ -10,6 +10,7 @@ import { SiteHeader } from '@/components/site-header'
 import { getDictionary, isLocale } from '@/lib/i18n'
 import type { Program } from '@/lib/dsl/types'
 import { programToPython } from '@/lib/dsl/compile-python'
+import { buttonVariants } from '@/components/ui/button'
 
 const FEATURE_ICONS = [FileCheck2, Eye, MessageSquareText, SlidersHorizontal, ShieldCheck, Languages]
 const FEATURE_TONES = ['var(--yellow-ink)', 'var(--azure-ink)', 'var(--magenta-ink)', 'var(--azure-ink)', 'var(--success)', 'var(--yellow-ink)']
@@ -72,11 +73,11 @@ export default async function LandingPage({ params }: { params: Promise<{ lang: 
               </h1>
               <p className="hero-sub">{t.hero.subtitle}</p>
               <div className="hero-actions">
-                <Link className="btn btn-primary btn-lg" href={studio}>
+                <Link className={buttonVariants({ variant: 'primary', size: 'lg' })} href={studio}>
                   {t.hero.ctaPrimary}
                   <ArrowRight size={18} aria-hidden="true" />
                 </Link>
-                <a className="btn btn-lg" href="#examples">
+                <a className={buttonVariants({ size: 'lg' })} href="#examples">
                   {t.hero.ctaSecondary}
                 </a>
               </div>
@@ -168,7 +169,7 @@ export default async function LandingPage({ params }: { params: Promise<{ lang: 
                   <div className="example-body">
                     <h3>{ex.title}</h3>
                     <p>{ex.text}</p>
-                    <Link className="btn btn-sm" href={tryLink(ex.prompt)}>
+                    <Link className={buttonVariants({ size: 'sm' })} href={tryLink(ex.prompt)}>
                       {t.examples.tryIt}
                       <ArrowRight size={16} aria-hidden="true" />
                     </Link>
@@ -221,11 +222,11 @@ export default async function LandingPage({ params }: { params: Promise<{ lang: 
                 <h2 className="section-title">{t.teachers.title}</h2>
                 <p className="lead">{t.teachers.text}</p>
                 <div className="hero-actions">
-                  <Link className="btn btn-primary" href={studio}>
+                  <Link className={buttonVariants({ variant: 'primary' })} href={studio}>
                     {t.teachers.cta}
                     <ArrowRight size={18} aria-hidden="true" />
                   </Link>
-                  <Link className="btn" href={`/${lang}/fll`}>
+                  <Link className={buttonVariants()} href={`/${lang}/fll`}>
                     {t.nav.fll}
                   </Link>
                 </div>
@@ -270,7 +271,7 @@ export default async function LandingPage({ params }: { params: Promise<{ lang: 
               <div className="cta-studs" aria-hidden="true" />
               <h2>{t.cta.title}</h2>
               <p>{t.cta.text}</p>
-              <Link className="btn btn-lg" href={studio}>
+              <Link className={buttonVariants({ size: 'lg' })} href={studio}>
                 {t.cta.button}
                 <ArrowRight size={18} aria-hidden="true" />
               </Link>

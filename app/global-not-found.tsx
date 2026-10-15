@@ -1,14 +1,11 @@
 import type { Metadata } from 'next'
-import { Onest, Unbounded } from 'next/font/google'
 
 import { InlineScript } from '@/components/inline-script'
 import { LogoMark } from '@/components/logo'
+import { buttonVariants } from '@/components/ui/button'
+import { fontVariables } from '@/lib/fonts'
+import { THEME_SCRIPT } from '@/lib/theme-script'
 import './globals.css'
-
-const heading = Unbounded({ subsets: ['latin', 'cyrillic', 'cyrillic-ext'], variable: '--font-heading', display: 'swap' })
-const body = Onest({ subsets: ['latin', 'cyrillic', 'cyrillic-ext'], variable: '--font-body', display: 'swap' })
-
-const THEME_SCRIPT = `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'&&t!=='dark'){t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}document.documentElement.setAttribute('data-theme',t)}catch(e){}})()`
 
 export const metadata: Metadata = {
   title: '404 — RoboEasy AI',
@@ -22,7 +19,7 @@ const MESSAGES = [
 
 export default function GlobalNotFound() {
   return (
-    <html lang="ru" className={`${heading.variable} ${body.variable}`} data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="ru" className={fontVariables} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <InlineScript html={THEME_SCRIPT} />
       </head>
@@ -35,7 +32,7 @@ export default function GlobalNotFound() {
               {MESSAGES.map((m) => (
                 <li key={m.lang} lang={m.lang} style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'center' }}>
                   <span style={{ color: 'var(--text-2)' }}>{m.title}</span>
-                  <a className="btn btn-sm" href={`/${m.lang}`}>
+                  <a className={buttonVariants({ size: 'sm' })} href={`/${m.lang}`}>
                     {m.link}
                   </a>
                 </li>

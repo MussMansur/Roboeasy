@@ -3,26 +3,19 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { House, Menu, Moon, Sun, X } from 'lucide-react'
+import { House, Menu, X } from 'lucide-react'
 
 import { LogoMark } from '@/components/logo'
+import { ThemeSwitch } from '@/components/theme-switch'
+import { buttonVariants } from '@/components/ui/button'
 import { type Locale, LOCALE_COOKIE, localeLabels, locales } from '@/lib/i18n/config'
 import type { Dictionary } from '@/lib/i18n/ru'
 
 interface SiteHeaderProps {
   lang: Locale
   t: Dictionary['nav']
-  /** Landing shows section links; the studio keeps the header minimal. */
+  /** Landing shows section links; app pages show the app sections. */
   variant?: 'landing' | 'studio'
-}
-
-function toggleTheme() {
-  const root = document.documentElement
-  const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light'
-  root.setAttribute('data-theme', next)
-  try {
-    localStorage.setItem('theme', next)
-  } catch {}
 }
 
 function rememberLocale(locale: Locale) {
@@ -50,7 +43,7 @@ export function SiteHeader({ lang, t, variant = 'landing' }: SiteHeaderProps) {
 
   const rest = pathname.replace(/^\/(ru|kk|en)(?=\/|$)/, '')
   const home = `/${lang}`
-  const links =
+  const sections =
     variant === 'landing'
       ? [
           { href: '#how', label: t.how },
@@ -59,6 +52,11 @@ export function SiteHeader({ lang, t, variant = 'landing' }: SiteHeaderProps) {
           { href: '#faq', label: t.faq },
         ]
       : []
+  // App pages, marked current by path.
+  const pages = [
+    { href: `${home}/workspace`, label: t.studio, current: rest.startsWith('/workspace') },
+    { href: `${home}/fll`, label: t.fll, current: rest.startsWith('/fll') },
+  ]
 
   return (
     <>
@@ -68,21 +66,25 @@ export function SiteHeader({ lang, t, variant = 'landing' }: SiteHeaderProps) {
       </a>
       <header className="site-header" data-scrolled={scrolled}>
         <div className="container">
-          <Link className="brand" href={home} aria-label="RoboEasy AI">
+          <Link className="brand" href={home}>
             <LogoMark />
             <span className="brand-name">RoboEasy</span>
             <span className="brand-ai">AI</span>
           </Link>
 
-          {links.length > 0 && (
-            <nav className="main-nav" aria-label={t.menu}>
-              {links.map((l) => (
-                <a key={l.href} href={l.href}>
-                  {l.label}
-                </a>
+          <nav className="main-nav" aria-label={t.menu}>
+            {sections.map((l) => (
+              <a key={l.href} href={l.href}>
+                {l.label}
+              </a>
+            ))}
+            {variant === 'studio' &&
+              pages.map((p) => (
+                <Link key={p.href} href={p.href} aria-current={p.current ? 'page' : undefined}>
+                  {p.label}
+                </Link>
               ))}
-            </nav>
-          )}
+          </nav>
 
           <div className="header-actions">
             <nav className="lang-switch" aria-label={t.language}>
@@ -101,53 +103,57 @@ export function SiteHeader({ lang, t, variant = 'landing' }: SiteHeaderProps) {
                 </a>
               ))}
             </nav>
-            <button type="button" className="icon-btn" onClick={toggleTheme} aria-label={t.theme} title={t.theme}>
-              <Sun size={18} className="theme-icon-sun" aria-hidden="true" />
-              <Moon size={18} className="theme-icon-moon" aria-hidden="true" />
-            </button>
-            <Link className="btn btn-ghost btn-sm header-fll" href={`${home}/fll`}>
-              {t.fll}
-            </Link>
+            <ThemeSwitch labels={{ theme: t.theme, system: t.themeSystem, light: t.themeLight, dark: t.themeDark }} />
             {variant === 'landing' ? (
               <>
-                <Link className="btn btn-primary btn-sm header-cta" href={`${home}/workspace`}>
+                <Link className={buttonVariants({ variant: 'ghost', size: 'sm', className: 'header-wide' })} href={`${home}/fll`}>
+                  {t.fll}
+                </Link>
+                <Link className={buttonVariants({ variant: 'primary', size: 'sm', className: 'header-wide' })} href={`${home}/workspace`}>
                   {t.open}
                 </Link>
-                <button
-                  type="button"
-                  className="icon-btn menu-toggle"
-                  aria-expanded={open}
-                  aria-controls="mobile-nav"
-                  aria-label={t.menu}
-                  onClick={() => setOpen((v) => !v)}
-                >
-                  {open ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
-                </button>
               </>
             ) : (
-              <Link className="btn btn-ghost btn-sm header-home" href={home} aria-label={t.home} title={t.home}>
-                <House size={18} aria-hidden="true" />
-                <span>{t.home}</span>
+              <Link className={buttonVariants({ variant: 'ghost', size: 'sm', className: 'header-wide' })} href={home}>
+                <House aria-hidden="true" />
+                {t.home}
               </Link>
             )}
+            <button
+              type="button"
+              className={buttonVariants({ size: 'icon', className: 'menu-toggle' })}
+              aria-expanded={open}
+              aria-controls="mobile-nav"
+              aria-label={t.menu}
+              onClick={() => setOpen((v) => !v)}
+            >
+              {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+            </button>
           </div>
         </div>
 
-        {variant === 'landing' && (
-          <div id="mobile-nav" className="mobile-nav" data-open={open}>
-            {links.map((l) => (
-              <a key={l.href} href={l.href} onClick={() => setOpen(false)}>
-                {l.label}
-              </a>
-            ))}
-            <Link href={`${home}/fll`} onClick={() => setOpen(false)}>
-              {t.fll}
+        <div id="mobile-nav" className="mobile-nav" data-open={open}>
+          {sections.map((l) => (
+            <a key={l.href} className="mobile-link" href={l.href} onClick={() => setOpen(false)}>
+              {l.label}
+            </a>
+          ))}
+          {variant === 'studio' && (
+            <Link className="mobile-link" href={home} onClick={() => setOpen(false)}>
+              {t.home}
             </Link>
-            <Link className="btn btn-primary btn-block" href={`${home}/workspace`} onClick={() => setOpen(false)}>
+          )}
+          {pages.map((p) => (
+            <Link key={p.href} href={p.href} aria-current={p.current ? 'page' : undefined} onClick={() => setOpen(false)} className="mobile-link">
+              {p.label}
+            </Link>
+          ))}
+          {variant === 'landing' && (
+            <Link className={buttonVariants({ variant: 'primary', block: true })} href={`${home}/workspace`} onClick={() => setOpen(false)}>
               {t.open}
             </Link>
-          </div>
-        )}
+          )}
+        </div>
       </header>
     </>
   )
