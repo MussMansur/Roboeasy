@@ -1,9 +1,14 @@
-/** The course map, bundled for the browser too (no file system access here, unlike content.ts). */
+/**
+ * The course map, bundled for the browser too (no file system access here,
+ * unlike content.ts). Not parsed at runtime, to keep zod out of the page
+ * bundles: tests/content.test.ts checks that the file matches courseSchema
+ * exactly (all defaults written out).
+ */
 
 import courseJson from '../../content/learn/course.json'
-import { type Course, courseSchema } from './schema'
+import type { Course } from './schema'
 
-export const COURSE: Course = courseSchema.parse(courseJson)
+export const COURSE = courseJson as Course
 
 export type Track = Course['tracks'][number]
 

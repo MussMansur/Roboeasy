@@ -85,13 +85,13 @@ export function LearnLanding({ lang, t }: { lang: Locale; t: LearnLandingCopy })
           </h1>
           <p className="lead m-0">{t.hero.sub}</p>
           <div className="flex flex-wrap gap-3">
-            <a className={buttonVariants({ variant: 'primary', size: 'lg' })} href="#tracks">
+            <Link className={buttonVariants({ variant: 'primary', size: 'lg' })} href={`/${lang}/path`}>
               {t.hero.cta}
               <ArrowRight aria-hidden="true" />
-            </a>
-            <a className={buttonVariants({ size: 'lg' })} href="#tracks">
+            </Link>
+            <Link className={buttonVariants({ size: 'lg' })} href={`/${lang}/learn/placement`}>
               {t.hero.ctaTest}
-            </a>
+            </Link>
           </div>
           <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
             {t.hero.chips.map((c) => (
@@ -333,10 +333,10 @@ export function LearnLanding({ lang, t }: { lang: Locale; t: LearnLandingCopy })
           <div className="cta-band">
             <h2>{t.final.title}</h2>
             <p>{t.final.text}</p>
-            <a className={buttonVariants({ size: 'lg' })} href="#tracks">
+            <Link className={buttonVariants({ size: 'lg' })} href={`/${lang}/path`}>
               {t.final.cta}
               <ArrowRight aria-hidden="true" />
-            </a>
+            </Link>
             <div className="cta-studs" aria-hidden="true" />
           </div>
         </div>

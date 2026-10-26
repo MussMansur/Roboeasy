@@ -1,8 +1,7 @@
 /**
- * Copy of the new landing ("Learn robotics from scratch"), phase 13.
- * Shown at /[lang]/preview/landing until the first track ships; then it
- * replaces the landing section of the dictionaries. Kazakh needs a review
- * by a native speaker before launch.
+ * Copy of the home page ("Learn robotics from scratch"), phase 13; live at
+ * /[lang] since the first tracks shipped (the AI generator's page moved to
+ * /[lang]/ai). Kazakh needs a review by a native speaker before launch.
  */
 
 import type { Locale } from './config'

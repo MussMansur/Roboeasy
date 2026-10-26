@@ -45,16 +45,7 @@ export type SimField = z.infer<typeof fieldSchema>
 export type FieldInput = z.input<typeof fieldSchema>
 export type Rect = z.infer<typeof rect>
 
-/** Robot dimensions (a typical SPIKE Prime driving base, approximate). */
-export const ROBOT_SHAPE = {
-  /** Body length (forward) and width, mm; the wheel axle is at the centre. */
-  length: 170,
-  width: 130,
-  /** Sensor positions in front of the axle, mm. */
-  colorSensorAhead: 70,
-  distanceSensorAhead: 85,
-  bumperAhead: 85,
-} as const
+export { ROBOT_SHAPE } from './robot'
 
 export function parseField(raw: unknown): SimField {
   return fieldSchema.parse(raw)

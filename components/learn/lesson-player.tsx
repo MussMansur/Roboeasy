@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, Bot, Clock, Lock, PartyPopper, RotateCcw, Target, X } from 'lucide-react'
-import { motion } from 'motion/react'
 
 import { RichText } from '@/components/learn/rich-text'
 import { CodeStep } from '@/components/learn/steps/code-step'
@@ -121,11 +120,7 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
   if (index < 0 && !finished)
     return (
       <div className="container grid min-h-[70vh] place-items-center py-10">
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid w-full max-w-xl gap-5 rounded-(--radius-xl) border-(length:--stroke) border-outline bg-card p-6 shadow-(--shadow-hard) sm:p-8"
-        >
+        <div className="animate-in duration-300 fade-in-0 slide-in-from-bottom-3 motion-reduce:animate-none grid w-full max-w-xl gap-5 rounded-(--radius-xl) border-(length:--stroke) border-outline bg-card p-6 shadow-(--shadow-hard) sm:p-8">
           <Link href={mapHref} className="inline-flex items-center gap-1 text-sm font-bold text-muted-foreground">
             <ArrowLeft className="size-4" aria-hidden="true" />
             {trackTitle} · {unitTitle}
@@ -171,7 +166,7 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
               <ArrowRight aria-hidden="true" />
             </button>
           )}
-        </motion.div>
+        </div>
       </div>
     )
 
@@ -179,24 +174,16 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
   if (finished)
     return (
       <div className="container grid min-h-[70vh] place-items-center py-10">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="grid w-full max-w-xl justify-items-center gap-5 rounded-(--radius-xl) border-(length:--stroke) border-outline bg-card p-8 text-center shadow-(--shadow-hard)"
-        >
+        <div className="animate-in duration-300 fade-in-0 zoom-in-95 motion-reduce:animate-none grid w-full max-w-xl justify-items-center gap-5 rounded-(--radius-xl) border-(length:--stroke) border-outline bg-card p-8 text-center shadow-(--shadow-hard)">
           <span className="grid size-20 place-items-center rounded-full border-(length:--stroke) border-outline bg-primary text-primary-foreground shadow-(--shadow-hard-sm)">
             <PartyPopper className="size-10" aria-hidden="true" />
           </span>
           <h1 className="m-0 text-(length:--text-3xl)">{t.lesson.done}</h1>
           <RichText text={lesson.summary[lang]} className="text-lg [&>p]:my-0" />
           {xpGained > 0 && (
-            <motion.span
-              initial={{ scale: 0.6 }}
-              animate={{ scale: 1 }}
-              className="rounded-full border-(length:--stroke-thin) border-outline bg-(--ok-bg) px-4 py-1.5 font-display text-2xl font-extrabold text-success"
-            >
+            <span className="animate-in delay-150 duration-300 fill-mode-backwards zoom-in-50 motion-reduce:animate-none rounded-full border-(length:--stroke-thin) border-outline bg-(--ok-bg) px-4 py-1.5 font-display text-2xl font-extrabold text-success">
               {fill(t.lesson.xp, { xp: xpGained })}
-            </motion.span>
+            </span>
           )}
           <div className="flex flex-wrap justify-center gap-2">
             {next ? (
@@ -215,7 +202,7 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
               {t.lesson.again}
             </button>
           </div>
-        </motion.div>
+        </div>
       </div>
     )
 
@@ -254,7 +241,7 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
         <p className="mt-0 mb-3 text-sm font-bold text-muted-foreground">
           {lesson.title[lang]} · {t.lesson.stepTypes[step!.type]}
         </p>
-        <motion.div key={step!.id} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.2 }}>
+        <div key={step!.id} className="animate-in duration-200 fade-in-0 slide-in-from-right-4 motion-reduce:animate-none">
           {step!.type === 'theory' && <TheoryStep step={step!} lang={lang} blocksT={blocksT} onDone={onDone} />}
           {step!.type === 'build' && <BuildStep step={step!} lang={lang} t={t} onDone={onDone} />}
           {step!.type === 'quiz' && <QuizStep key={step!.id} step={step!} lang={lang} t={t} done={stepDone} onDone={onDone} onMistake={onMistake} />}
@@ -288,7 +275,7 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
               onMistake={onMistake}
             />
           )}
-        </motion.div>
+        </div>
       </main>
 
       <footer className="sticky bottom-0 z-30 border-t-(length:--stroke) border-outline bg-background/95 backdrop-blur">

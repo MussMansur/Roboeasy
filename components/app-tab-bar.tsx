@@ -33,6 +33,7 @@ export function AppTabBar({ lang, names }: { lang: Locale; names: LearnText['nav
           const active = current === s
           return (
             <Link
+              prefetch={false}
               key={s}
               href={`/${lang}/${s}`}
               aria-current={active ? 'page' : undefined}

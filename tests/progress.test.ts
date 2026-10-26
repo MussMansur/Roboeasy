@@ -188,3 +188,19 @@ describe('analytics and flags', () => {
     expect(seen.size).toBe(2)
   })
 })
+
+describe('bundled data without runtime parsing', () => {
+  it('course.json matches the schema exactly (defaults written out)', async () => {
+    const { courseSchema } = await import('@/lib/learn/schema')
+    const raw = (await import('@/content/learn/course.json')).default
+    expect(courseSchema.parse(raw)).toEqual(raw)
+  })
+
+  it('state schema (zod/mini) fills defaults and rejects bad data', async () => {
+    const { profileSchema } = await import('@/lib/learn/state')
+    const p = profileSchema.parse({ nickname: '  Robo  ', ageRange: '10-12', timezone: 'UTC', goal: { kind: 'lessons', n: 1 }, createdAt: 1, anonId: 'anon_12345678' })
+    expect(p).toMatchObject({ nickname: 'Robo', skipWeekends: false, parentConsent: false, reminders: { enabled: false }, cosmetics: { color: 'sun' } })
+    expect(profileSchema.safeParse({ ...p, goal: { kind: 'lessons', n: 3 } }).success).toBe(false)
+    expect(profileSchema.safeParse({ ...p, nickname: 'x'.repeat(30) }).success).toBe(false)
+  })
+})

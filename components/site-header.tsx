@@ -36,6 +36,10 @@ function rememberLocale(locale: Locale) {
   document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=31536000; samesite=lax`
 }
 
+/*
+ * Navigation links do not prefetch: they are on every page, and prefetching
+ * every section's code on each load costs more than it saves on phones.
+ */
 export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: SiteHeaderProps) {
   const pathname = usePathname() ?? `/${lang}`
   const [scrolled, setScrolled] = useState(false)
@@ -82,7 +86,7 @@ export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: Si
       </a>
       <header className="site-header" data-scrolled={scrolled}>
         <div className="container">
-          <Link className="brand" href={home}>
+          <Link prefetch={false} className="brand" href={home}>
             <LogoMark />
             <span className="brand-name">RoboEasy</span>
             <span className="brand-ai">AI</span>
@@ -96,7 +100,7 @@ export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: Si
             ))}
             {variant === 'app' &&
               pages.map((p) => (
-                <Link key={p.href} href={p.href} aria-current={p.current ? 'page' : undefined}>
+                <Link prefetch={false} key={p.href} href={p.href} aria-current={p.current ? 'page' : undefined}>
                   {p.label}
                 </Link>
               ))}
@@ -130,6 +134,7 @@ export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: Si
             {variant === 'landing' ? (
               <>
                 <Link
+                  prefetch={false}
                   className={buttonVariants({
                     variant: 'ghost',
                     size: 'sm',
@@ -140,6 +145,7 @@ export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: Si
                   {names.compete}
                 </Link>
                 <Link
+                  prefetch={false}
                   className={buttonVariants({
                     variant: 'primary',
                     size: 'sm',
@@ -152,6 +158,7 @@ export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: Si
               </>
             ) : (
               <Link
+                prefetch={false}
                 className={buttonVariants({
                   variant: current === 'profile' ? 'secondary' : 'ghost',
                   size: 'sm',
@@ -187,7 +194,7 @@ export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: Si
             </a>
           ))}
           {variant === 'app' && (
-            <Link className="mobile-link" href={home} onClick={() => setOpen(false)}>
+            <Link prefetch={false} className="mobile-link" href={home} onClick={() => setOpen(false)}>
               <House aria-hidden="true" className="inline size-4 align-[-2px]" /> {t.home}
             </Link>
           )}
@@ -199,12 +206,19 @@ export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: Si
               current: current === 'profile',
             },
           ].map((p) => (
-            <Link key={p.href} href={p.href} aria-current={p.current ? 'page' : undefined} onClick={() => setOpen(false)} className="mobile-link">
+            <Link
+              prefetch={false}
+              key={p.href}
+              href={p.href}
+              aria-current={p.current ? 'page' : undefined}
+              onClick={() => setOpen(false)}
+              className="mobile-link"
+            >
               {p.label}
             </Link>
           ))}
           {variant === 'landing' && (
-            <Link className={buttonVariants({ variant: 'primary', block: true })} href={`${home}/path`} onClick={() => setOpen(false)}>
+            <Link prefetch={false} className={buttonVariants({ variant: 'primary', block: true })} href={`${home}/path`} onClick={() => setOpen(false)}>
               {names.path}
             </Link>
           )}

@@ -2,7 +2,6 @@
 
 import type { ReactNode } from 'react'
 import { Check } from 'lucide-react'
-import { motion } from 'motion/react'
 
 import { cn } from '@/lib/utils'
 
@@ -51,9 +50,9 @@ export function Stepper({
             )}
           >
             {state === 'done' ? (
-              <motion.span initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.18 }} className="grid">
+              <span className="grid animate-in duration-200 zoom-in-50 fade-in-0 motion-reduce:animate-none">
                 <Check className="size-[18px]" strokeWidth={3} aria-hidden="true" />
-              </motion.span>
+              </span>
             ) : (
               i + 1
             )}
@@ -67,7 +66,10 @@ export function Stepper({
             className={cn('relative flex gap-3', orientation === 'vertical' && 'pb-5 last:pb-0')}
           >
             {orientation === 'vertical' && i < steps.length - 1 && (
-              <span aria-hidden="true" className={cn('absolute top-10 bottom-1 left-[17px] w-[2.5px] rounded-full', i < current ? 'bg-success' : 'bg-border')} />
+              <span
+                aria-hidden="true"
+                className={cn('absolute top-10 bottom-1 left-[17px] w-[2.5px] rounded-full', i < current ? 'bg-success' : 'bg-border')}
+              />
             )}
             {onSelect ? (
               <button type="button" onClick={() => onSelect(i)} className="h-fit cursor-pointer rounded-full border-0 bg-transparent p-0">

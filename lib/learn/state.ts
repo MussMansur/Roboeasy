@@ -5,28 +5,32 @@
  * an event id that already exists is ignored.
  */
 
-import { z } from 'zod'
+// zod/mini: this module runs in every learner page; the full zod build is several times larger.
+import * as z from 'zod/mini'
 
-import { SKILLS } from './schema'
+import { SKILLS } from './skills'
 
 export const AGE_RANGES = ['under-10', '10-12', '13-15', '16-plus'] as const
 export type AgeRange = (typeof AGE_RANGES)[number]
 
 export const profileSchema = z.object({
-  nickname: z.string().trim().min(1).max(24),
+  nickname: z.string().check(z.trim(), z.minLength(1), z.maxLength(24)),
   ageRange: z.enum(AGE_RANGES),
-  timezone: z.string().min(1),
+  timezone: z.string().check(z.minLength(1)),
   /** Daily goal: number of lessons, or minutes of practice. */
   goal: z.discriminatedUnion('kind', [z.object({ kind: z.literal('lessons'), n: z.union([z.literal(1), z.literal(2)]) }), z.object({ kind: z.literal('minutes'), n: z.literal(15) })]),
-  skipWeekends: z.boolean().default(false),
-  reminders: z.object({ enabled: z.boolean(), time: z.string().regex(/^\d{2}:\d{2}$/) }).default({ enabled: false, time: '18:00' }),
-  cosmetics: z.object({ color: z.string().default('sun'), sticker: z.string().default('none'), wheels: z.string().default('classic'), sound: z.string().default('beep') }).default({ color: 'sun', sticker: 'none', wheels: 'classic', sound: 'beep' }),
+  skipWeekends: z._default(z.boolean(), false),
+  reminders: z._default(z.object({ enabled: z.boolean(), time: z.string().check(z.regex(/^\d{2}:\d{2}$/)) }), { enabled: false, time: '18:00' }),
+  cosmetics: z._default(
+    z.object({ color: z._default(z.string(), 'sun'), sticker: z._default(z.string(), 'none'), wheels: z._default(z.string(), 'classic'), sound: z._default(z.string(), 'beep') }),
+    { color: 'sun', sticker: 'none', wheels: 'classic', sound: 'beep' },
+  ),
   /** Grown-up confirmed for under-16 learners (see docs/privacy.md). */
-  parentConsent: z.boolean().default(false),
+  parentConsent: z._default(z.boolean(), false),
   createdAt: z.number(),
   /** Anonymous id for A/B buckets and, later, linking to an account. */
-  anonId: z.string().min(8),
-  tour: z.boolean().default(false),
+  anonId: z.string().check(z.minLength(8)),
+  tour: z._default(z.boolean(), false),
 })
 export type Profile = z.infer<typeof profileSchema>
 
@@ -34,19 +38,19 @@ const skill = z.enum(SKILLS)
 
 export const eventSchema = z.discriminatedUnion('kind', [
   /** A step finished. `firstTry`: solved without failed checks or hints. */
-  z.object({ id: z.string(), at: z.number(), kind: z.literal('step_done'), lesson: z.string(), step: z.string(), stepType: z.string(), firstTry: z.boolean(), hints: z.number().int().nonnegative(), blocks: z.number().optional(), referenceBlocks: z.number().optional(), skill: skill.optional() }),
+  z.object({ id: z.string(), at: z.number(), kind: z.literal('step_done'), lesson: z.string(), step: z.string(), stepType: z.string(), firstTry: z.boolean(), hints: z.int().check(z.nonnegative()), blocks: z.optional(z.number()), referenceBlocks: z.optional(z.number()), skill: z.optional(skill) }),
   /** A failed check or a wrong answer (feeds review and the "where students get stuck" stats). */
-  z.object({ id: z.string(), at: z.number(), kind: z.literal('mistake'), lesson: z.string(), step: z.string(), skill: skill.optional() }),
-  z.object({ id: z.string(), at: z.number(), kind: z.literal('lesson_done'), lesson: z.string(), track: z.string(), unit: z.string(), project: z.boolean(), seconds: z.number().nonnegative() }),
+  z.object({ id: z.string(), at: z.number(), kind: z.literal('mistake'), lesson: z.string(), step: z.string(), skill: z.optional(skill) }),
+  z.object({ id: z.string(), at: z.number(), kind: z.literal('lesson_done'), lesson: z.string(), track: z.string(), unit: z.string(), project: z.boolean(), seconds: z.number().check(z.nonnegative()) }),
   z.object({ id: z.string(), at: z.number(), kind: z.literal('real_robot'), lesson: z.string(), step: z.string() }),
   /** Active practice time (for the "15 minutes a day" goal). */
-  z.object({ id: z.string(), at: z.number(), kind: z.literal('time'), seconds: z.number().nonnegative() }),
+  z.object({ id: z.string(), at: z.number(), kind: z.literal('time'), seconds: z.number().check(z.nonnegative()) }),
   /** A lesson was opened and started (lesson funnel: started → steps → finished). */
   z.object({ id: z.string(), at: z.number(), kind: z.literal('lesson_start'), lesson: z.string() }),
   /** Lessons and units marked as known (placement or "I know this" test). */
-  z.object({ id: z.string(), at: z.number(), kind: z.literal('known'), lessons: z.array(z.string()), skills: z.array(skill), source: z.enum(['placement', 'unit']).optional() }),
-  z.object({ id: z.string(), at: z.number(), kind: z.literal('review_done'), skills: z.array(skill), correct: z.number().int(), total: z.number().int() }),
-  z.object({ id: z.string(), at: z.number(), kind: z.literal('challenge_done'), week: z.string(), challenge: z.string().optional() }),
+  z.object({ id: z.string(), at: z.number(), kind: z.literal('known'), lessons: z.array(z.string()), skills: z.array(skill), source: z.optional(z.enum(['placement', 'unit'])) }),
+  z.object({ id: z.string(), at: z.number(), kind: z.literal('review_done'), skills: z.array(skill), correct: z.int(), total: z.int() }),
+  z.object({ id: z.string(), at: z.number(), kind: z.literal('challenge_done'), week: z.string(), challenge: z.optional(z.string()) }),
   z.object({ id: z.string(), at: z.number(), kind: z.literal('certificate'), track: z.string(), code: z.string() }),
   z.object({ id: z.string(), at: z.number(), kind: z.literal('achievement'), achievement: z.string() }),
 ])
@@ -55,7 +59,7 @@ export type EventKind = LearnEvent['kind']
 
 export const stateSchema = z.object({
   version: z.literal(1),
-  profile: profileSchema.nullable(),
+  profile: z.nullable(profileSchema),
   events: z.array(eventSchema),
 })
 export type LearnState = z.infer<typeof stateSchema>

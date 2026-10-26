@@ -9,36 +9,13 @@ import { z } from 'zod'
 import { STEP_OPS, parseProgram } from '../dsl/schema'
 import type { Step } from '../dsl/types'
 import { fieldSchema } from '../sim/field'
+import { SKILLS } from './skills'
 
 export const LANGS = ['ru', 'kk', 'en'] as const
 export const localized = z.object({ ru: z.string().min(1), kk: z.string().min(1), en: z.string().min(1) })
 export type Localized = z.infer<typeof localized>
 
-export const SKILLS = [
-  'robot-basics',
-  'sequence',
-  'motion',
-  'turns',
-  'loops',
-  'conditions',
-  'variables',
-  'functions',
-  'sensor-color',
-  'sensor-distance',
-  'sensor-force',
-  'gyro',
-  'line-follow',
-  'control',
-  'calibration',
-  'parts',
-  'structures',
-  'gears',
-  'mechanisms',
-  'python',
-  'strategy',
-  'teamwork',
-] as const
-export type Skill = (typeof SKILLS)[number]
+export { SKILLS, type Skill } from './skills'
 
 /** Built-in illustrations (components/learn/illustrations.tsx) — our own drawings, no LEGO artwork. */
 export const ILLUSTRATIONS = ['robot-parts', 'hub', 'motor', 'sensors', 'app-steps', 'units', 'turn', 'sequence', 'speed', 'debug', 'square'] as const

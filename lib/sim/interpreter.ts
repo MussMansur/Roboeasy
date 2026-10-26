@@ -14,7 +14,8 @@
 import { type Condition, DEFAULT_ROBOT, type Port, type RobotProfile, type Step, imagePixels, toMatrixText } from '../dsl/types'
 import { pointInPolygon, polygonsIntersect } from '../fll/geometry'
 import type { Point } from '../fll/season'
-import { ROBOT_SHAPE, type Rect, type SimField } from './field'
+import type { Rect, SimField } from './field'
+import { ROBOT_SHAPE } from './robot'
 
 export const DT = 0.01
 /** Drive speed at 100 %, mm/s (approximate). */
