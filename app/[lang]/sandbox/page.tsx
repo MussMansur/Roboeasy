@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { SiteHeader } from '@/components/site-header'
+import { AppShell } from '@/components/app-shell'
 import { Studio } from '@/components/studio/studio'
 import { getDictionary, isLocale } from '@/lib/i18n'
 
@@ -11,7 +11,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { lang } = await params
   if (!isLocale(lang)) return {}
   const t = getDictionary(lang)
-  return { title: t.meta.studioTitle, alternates: { canonical: `/${lang}/workspace` } }
+  return {
+    title: t.meta.studioTitle,
+    alternates: { canonical: `/${lang}/sandbox` },
+  }
 }
 
 export default async function WorkspacePage({ params }: Params) {
@@ -19,11 +22,8 @@ export default async function WorkspacePage({ params }: Params) {
   if (!isLocale(lang)) notFound()
   const t = getDictionary(lang)
   return (
-    <>
-      <SiteHeader lang={lang} t={t.nav} variant="studio" />
-      <main id="main">
-        <Studio lang={lang} t={t.studio} labels={t.blocks} />
-      </main>
-    </>
+    <AppShell lang={lang}>
+      <Studio lang={lang} t={t.studio} labels={t.blocks} />
+    </AppShell>
   )
 }

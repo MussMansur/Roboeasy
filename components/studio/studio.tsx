@@ -260,7 +260,7 @@ export function Studio({ lang, t, labels }: StudioProps) {
     if (!result) return
     try {
       const token = await encodeShare(result)
-      const url = `${window.location.origin}/${lang}/workspace#r=${token}`
+      const url = `${window.location.origin}/${lang}/sandbox#r=${token}`
       await navigator.clipboard.writeText(url)
       showToast(t.result.shared)
     } catch {

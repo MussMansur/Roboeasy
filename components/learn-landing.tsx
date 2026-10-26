@@ -273,7 +273,7 @@ export function LearnLanding({ lang, t }: { lang: Locale; t: LearnLandingCopy })
               <h2 className="m-0 text-(length:--text-2xl)">{t.compete.title}</h2>
               <p className="m-0 max-w-[60ch] text-muted-foreground">{t.compete.text}</p>
             </div>
-            <Link className={buttonVariants({ size: 'lg' })} href={`/${lang}/fll`}>
+            <Link className={buttonVariants({ size: 'lg' })} href={`/${lang}/compete`}>
               <Trophy aria-hidden="true" />
               {t.compete.cta}
             </Link>

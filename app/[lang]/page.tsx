@@ -7,6 +7,7 @@ import { CodeView } from '@/components/code-view'
 import { HeroDemo } from '@/components/hero-demo'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
+import { getLearnText } from '@/lib/i18n/learn'
 import { getDictionary, isLocale } from '@/lib/i18n'
 import type { Program } from '@/lib/dsl/types'
 import { programToPython } from '@/lib/dsl/compile-python'
@@ -20,7 +21,7 @@ export default async function LandingPage({ params }: { params: Promise<{ lang: 
   const { lang } = await params
   if (!isLocale(lang)) notFound()
   const t = getDictionary(lang)
-  const studio = `/${lang}/workspace`
+  const studio = `/${lang}/sandbox`
   const tryLink = (prompt: string) => `${studio}?format=blocks&prompt=${encodeURIComponent(prompt)}`
 
   const demo: Program = {
@@ -29,7 +30,16 @@ export default async function LandingPage({ params }: { params: Promise<{ lang: 
     steps: [
       { op: 'set_speed', speed: 40 },
       { op: 'start_move', direction: 'forward' },
-      { op: 'wait_until', condition: { sensor: 'distance', port: 'C', comparator: '<', value: 10, unit: 'cm' } },
+      {
+        op: 'wait_until',
+        condition: {
+          sensor: 'distance',
+          port: 'C',
+          comparator: '<',
+          value: 10,
+          unit: 'cm',
+        },
+      },
       { op: 'stop_move' },
       { op: 'beep', note: 72, seconds: 0.3 },
       { op: 'show_image', image: 'smile' },
@@ -53,7 +63,7 @@ export default async function LandingPage({ params }: { params: Promise<{ lang: 
 
   return (
     <>
-      <SiteHeader lang={lang} t={t.nav} />
+      <SiteHeader lang={lang} t={t.nav} sections={getLearnText(lang).nav} />
       <main id="main">
         {/* Hero */}
         <section className="hero">
@@ -93,7 +103,10 @@ export default async function LandingPage({ params }: { params: Promise<{ lang: 
             <div className="reveal" style={{ animationDelay: '0.15s' }}>
               <HeroDemo
                 t={t.demo}
-                tabs={{ blocks: t.studio.result.blocksTab, python: t.studio.result.pythonTab }}
+                tabs={{
+                  blocks: t.studio.result.blocksTab,
+                  python: t.studio.result.pythonTab,
+                }}
                 labels={t.blocks}
                 program={demo}
                 python={programToPython(demo)}
@@ -226,7 +239,7 @@ export default async function LandingPage({ params }: { params: Promise<{ lang: 
                     {t.teachers.cta}
                     <ArrowRight size={18} aria-hidden="true" />
                   </Link>
-                  <Link className={buttonVariants()} href={`/${lang}/fll`}>
+                  <Link className={buttonVariants()} href={`/${lang}/compete`}>
                     {t.nav.fll}
                   </Link>
                 </div>

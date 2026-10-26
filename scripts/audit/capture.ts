@@ -28,9 +28,9 @@ const PAGES = [
   { name: 'landing-ru', url: '/ru' },
   { name: 'landing-kk', url: '/kk' },
   { name: 'landing-en', url: '/en' },
-  { name: 'workspace', url: '/ru/workspace' },
-  { name: 'fll', url: '/ru/fll' },
-  { name: 'fll-editor', url: '/ru/fll/editor' },
+  { name: 'workspace', url: '/ru/sandbox' },
+  { name: 'fll', url: '/ru/compete' },
+  { name: 'fll-editor', url: '/ru/compete/editor' },
   { name: 'design', url: '/ru/design' },
   { name: 'not-found', url: '/ru/does-not-exist' },
 ] as const
@@ -120,7 +120,7 @@ const shot = (page: Page, name: string) => page.screenshot({ path: path.join(out
 async function filledStates(page: Page, width: number, theme: Theme) {
   const suffix = `${width}-${theme}`
   // Studio after a (mocked) generation
-  await page.goto(`${base}/ru/workspace`)
+  await page.goto(`${base}/ru/sandbox`)
   await settle(page)
   await page.locator('textarea.textarea').fill('Проедь квадрат 30 см и пискни в конце')
   await page.getByRole('button', { name: 'Создать программу' }).click()
@@ -129,7 +129,7 @@ async function filledStates(page: Page, width: number, theme: Theme) {
   await shot(page, `workspace-result-${suffix}`)
 
   // FLL planner with an editor draft and a (mocked) plan
-  await page.goto(`${base}/ru/fll`)
+  await page.goto(`${base}/ru/compete`)
   await page.evaluate(
     (draft) =>
       new Promise<void>((resolve, reject) => {
@@ -159,7 +159,7 @@ async function filledStates(page: Page, width: number, theme: Theme) {
   await shot(page, `fll-plan-${suffix}`)
 
   // Editor with the same draft
-  await page.goto(`${base}/ru/fll/editor`)
+  await page.goto(`${base}/ru/compete/editor`)
   await page.waitForSelector('svg.ed-canvas .fll-mission')
   await settle(page)
   await shot(page, `fll-editor-filled-${suffix}`)

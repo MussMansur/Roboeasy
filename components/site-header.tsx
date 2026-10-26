@@ -3,26 +3,40 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { House, Menu, X } from 'lucide-react'
+import { House, Menu, UserRound, X } from 'lucide-react'
 
 import { LogoMark } from '@/components/logo'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { buttonVariants } from '@/components/ui/button'
 import { type Locale, LOCALE_COOKIE, localeLabels, locales } from '@/lib/i18n/config'
+import type { LearnText } from '@/lib/i18n/learn'
 import type { Dictionary } from '@/lib/i18n/ru'
 
 interface SiteHeaderProps {
   lang: Locale
   t: Dictionary['nav']
+  /** Names of the app sections (Мой путь, Обучение, …). */
+  sections: LearnText['nav']
   /** Landing shows section links; app pages show the app sections. */
-  variant?: 'landing' | 'studio'
+  variant?: 'landing' | 'app'
+}
+
+/** The app sections, in menu order (docs/product/information-architecture.md). */
+export const APP_SECTIONS = ['path', 'learn', 'sandbox', 'compete', 'profile'] as const
+export type AppSection = (typeof APP_SECTIONS)[number]
+
+export function currentSection(rest: string): AppSection | null {
+  return (
+    APP_SECTIONS.find((s) => rest === `/${s}` || rest.startsWith(`/${s}/`)) ??
+    (rest.startsWith('/review') ? 'path' : rest.startsWith('/cert') ? 'profile' : null)
+  )
 }
 
 function rememberLocale(locale: Locale) {
   document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=31536000; samesite=lax`
 }
 
-export function SiteHeader({ lang, t, variant = 'landing' }: SiteHeaderProps) {
+export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: SiteHeaderProps) {
   const pathname = usePathname() ?? `/${lang}`
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
@@ -52,11 +66,13 @@ export function SiteHeader({ lang, t, variant = 'landing' }: SiteHeaderProps) {
           { href: '#faq', label: t.faq },
         ]
       : []
-  // App pages, marked current by path.
-  const pages = [
-    { href: `${home}/workspace`, label: t.studio, current: rest.startsWith('/workspace') },
-    { href: `${home}/fll`, label: t.fll, current: rest.startsWith('/fll') },
-  ]
+  // App sections, marked current by path. Profile sits with the actions.
+  const current = currentSection(rest)
+  const pages = APP_SECTIONS.filter((p) => p !== 'profile').map((p) => ({
+    href: `${home}/${p}`,
+    label: names[p],
+    current: current === p,
+  }))
 
   return (
     <>
@@ -78,7 +94,7 @@ export function SiteHeader({ lang, t, variant = 'landing' }: SiteHeaderProps) {
                 {l.label}
               </a>
             ))}
-            {variant === 'studio' &&
+            {variant === 'app' &&
               pages.map((p) => (
                 <Link key={p.href} href={p.href} aria-current={p.current ? 'page' : undefined}>
                   {p.label}
@@ -103,25 +119,57 @@ export function SiteHeader({ lang, t, variant = 'landing' }: SiteHeaderProps) {
                 </a>
               ))}
             </nav>
-            <ThemeSwitch labels={{ theme: t.theme, system: t.themeSystem, light: t.themeLight, dark: t.themeDark }} />
+            <ThemeSwitch
+              labels={{
+                theme: t.theme,
+                system: t.themeSystem,
+                light: t.themeLight,
+                dark: t.themeDark,
+              }}
+            />
             {variant === 'landing' ? (
               <>
-                <Link className={buttonVariants({ variant: 'ghost', size: 'sm', className: 'header-wide' })} href={`${home}/fll`}>
-                  {t.fll}
+                <Link
+                  className={buttonVariants({
+                    variant: 'ghost',
+                    size: 'sm',
+                    className: 'header-wide',
+                  })}
+                  href={`${home}/compete`}
+                >
+                  {names.compete}
                 </Link>
-                <Link className={buttonVariants({ variant: 'primary', size: 'sm', className: 'header-wide' })} href={`${home}/workspace`}>
-                  {t.open}
+                <Link
+                  className={buttonVariants({
+                    variant: 'primary',
+                    size: 'sm',
+                    className: 'header-wide',
+                  })}
+                  href={`${home}/path`}
+                >
+                  {names.path}
                 </Link>
               </>
             ) : (
-              <Link className={buttonVariants({ variant: 'ghost', size: 'sm', className: 'header-wide' })} href={home}>
-                <House aria-hidden="true" />
-                {t.home}
+              <Link
+                className={buttonVariants({
+                  variant: current === 'profile' ? 'secondary' : 'ghost',
+                  size: 'sm',
+                  className: 'header-wide',
+                })}
+                href={`${home}/profile`}
+                aria-current={current === 'profile' ? 'page' : undefined}
+              >
+                <UserRound aria-hidden="true" />
+                {names.profile}
               </Link>
             )}
             <button
               type="button"
-              className={buttonVariants({ size: 'icon', className: 'menu-toggle' })}
+              className={buttonVariants({
+                size: 'icon',
+                className: 'menu-toggle',
+              })}
               aria-expanded={open}
               aria-controls="mobile-nav"
               aria-label={t.menu}
@@ -138,19 +186,26 @@ export function SiteHeader({ lang, t, variant = 'landing' }: SiteHeaderProps) {
               {l.label}
             </a>
           ))}
-          {variant === 'studio' && (
+          {variant === 'app' && (
             <Link className="mobile-link" href={home} onClick={() => setOpen(false)}>
-              {t.home}
+              <House aria-hidden="true" className="inline size-4 align-[-2px]" /> {t.home}
             </Link>
           )}
-          {pages.map((p) => (
+          {[
+            ...pages,
+            {
+              href: `${home}/profile`,
+              label: names.profile,
+              current: current === 'profile',
+            },
+          ].map((p) => (
             <Link key={p.href} href={p.href} aria-current={p.current ? 'page' : undefined} onClick={() => setOpen(false)} className="mobile-link">
               {p.label}
             </Link>
           ))}
           {variant === 'landing' && (
-            <Link className={buttonVariants({ variant: 'primary', block: true })} href={`${home}/workspace`} onClick={() => setOpen(false)}>
-              {t.open}
+            <Link className={buttonVariants({ variant: 'primary', block: true })} href={`${home}/path`} onClick={() => setOpen(false)}>
+              {names.path}
             </Link>
           )}
         </div>

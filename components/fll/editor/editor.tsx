@@ -253,7 +253,7 @@ export default function SeasonEditor({ lang, seasons, defaultSeasonId, t: fllT }
         <h1>{t.title}</h1>
         <p className="lead">{t.lead}</p>
         <div className="toolbar">
-          <a className={buttonVariants({ size: 'sm' })} href={`/${lang}/fll${seasonId === defaultSeasonId ? '' : `?season=${seasonId}`}`}>
+          <a className={buttonVariants({ size: 'sm' })} href={`/${lang}/compete${seasonId === defaultSeasonId ? '' : `?season=${seasonId}`}`}>
             {t.back}
           </a>
         </div>

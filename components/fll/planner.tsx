@@ -207,7 +207,7 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
           <SeasonSelect seasons={seasons} value={shipped.id} onChange={chooseSeason} lang={lang} t={t} />
           <Badge variant="outline">{t.editions[season.edition]}</Badge>
           <Badge variant="outline">{t.platforms[season.platform]}</Badge>
-          <a className={buttonVariants({ size: 'sm' })} href={`/${lang}/fll/editor${shipped.id === defaultSeasonId ? '' : `?season=${shipped.id}`}`}>
+          <a className={buttonVariants({ size: 'sm' })} href={`/${lang}/compete/editor${shipped.id === defaultSeasonId ? '' : `?season=${shipped.id}`}`}>
             <PencilRuler size={16} aria-hidden="true" />
             {t.openEditor}
           </a>
@@ -259,7 +259,7 @@ export function FllPlanner({ lang, seasons, defaultSeasonId, t, robotT, labels, 
                   <ImageUp aria-hidden="true" />
                   {t.background.upload}
                 </label>
-                <a className={buttonVariants({ size: 'sm' })} href={`/${lang}/fll/editor${shipped.id === defaultSeasonId ? '' : `?season=${shipped.id}`}`}>
+                <a className={buttonVariants({ size: 'sm' })} href={`/${lang}/compete/editor${shipped.id === defaultSeasonId ? '' : `?season=${shipped.id}`}`}>
                   <PencilRuler aria-hidden="true" />
                   {t.emptyMapEditor}
                 </a>
