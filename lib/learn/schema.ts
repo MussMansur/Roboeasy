@@ -45,6 +45,8 @@ export const ILLUSTRATIONS = ['robot-parts', 'hub', 'motor', 'sensors', 'app-ste
 
 /** DSL steps validated exactly like programs from the AI. */
 export const dslSteps = z.array(z.unknown()).transform((raw, ctx): Step[] => {
+  // An empty editor is a valid start; programs from the AI need at least one step, lessons do not.
+  if (raw.length === 0) return []
   const r = parseProgram({ title: 'lesson', description: '', steps: raw })
   if (!r.ok) {
     ctx.addIssue({ code: 'custom', message: `invalid DSL steps: ${r.error}` })

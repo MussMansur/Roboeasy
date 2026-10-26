@@ -1,0 +1,402 @@
+{
+  "id": "blocks-01",
+  "track": "blocks",
+  "unit": "blocks-sequence",
+  "minutes": 7,
+  "skills": [
+    "sequence"
+  ],
+  "title": {
+    "ru": "Порядок важен",
+    "kk": "Рет маңызды",
+    "en": "Order matters"
+  },
+  "goal": {
+    "ru": "Сегодня ты научишь робота выполнять команды в правильном порядке.",
+    "kk": "Бүгін сен роботты командаларды дұрыс ретпен орындауға үйретесің.",
+    "en": "Today you will teach the robot to run commands in the right order."
+  },
+  "summary": {
+    "ru": "Теперь ты знаешь: одни и те же блоки в другом порядке — это другая программа.",
+    "kk": "Енді сен білесің: сол блоктар басқа ретпен — бұл басқа бағдарлама.",
+    "en": "Now you know: the same blocks in another order make a different program."
+  },
+  "steps": [
+    {
+      "id": "top-down",
+      "type": "theory",
+      "illustration": "sequence",
+      "title": {
+        "ru": "Сверху вниз",
+        "kk": "Жоғарыдан төменге",
+        "en": "From top to bottom"
+      },
+      "body": {
+        "ru": "Робот выполняет блоки **по одному**, сверху вниз. Пока не закончится один блок, следующий не начнётся.\n\nПоменяй два блока местами — и робот поедет совсем по-другому. Поэтому порядок команд — главное в программе.",
+        "kk": "Робот блоктарды **бір-бірден**, жоғарыдан төменге орындайды. Бір блок бітпейінше, келесісі басталмайды.\n\nЕкі блоктың орнын ауыстыр — робот мүлдем басқаша жүреді. Сондықтан командалардың реті — бағдарламадағы ең бастысы.",
+        "en": "The robot runs blocks **one at a time**, from top to bottom. The next block does not start until the current one ends.\n\nSwap two blocks — and the robot drives a completely different way. That is why the order of commands matters most."
+      }
+    },
+    {
+      "id": "predict-order",
+      "type": "predict",
+      "skill": "sequence",
+      "title": {
+        "ru": "Где финиш?",
+        "kk": "Мәре қайда?",
+        "en": "Where is the finish?"
+      },
+      "question": {
+        "ru": "Программа: сначала повернуть налево на 90°, потом проехать 30 см. Какой путь у робота?",
+        "kk": "Бағдарлама: алдымен солға 90°-қа бұрылу, содан кейін 30 см жүру. Роботтың жолы қандай?",
+        "en": "The program: first turn left 90°, then drive 30 cm. Which path does the robot take?"
+      },
+      "field": {
+        "width": 1000,
+        "height": 800,
+        "start": {
+          "x": 300,
+          "y": 250,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "top",
+            "x": 200,
+            "y": 450,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Цель",
+              "kk": "Нысана",
+              "en": "Target"
+            }
+          }
+        ],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "program": [
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        }
+      ],
+      "options": [
+        {
+          "label": {
+            "ru": "Путь A",
+            "kk": "A жолы",
+            "en": "Path A"
+          },
+          "steps": [
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "left",
+              "degrees": 90
+            }
+          ]
+        },
+        {
+          "label": {
+            "ru": "Путь B",
+            "kk": "B жолы",
+            "en": "Path B"
+          },
+          "steps": [
+            {
+              "op": "turn",
+              "direction": "left",
+              "degrees": 90
+            },
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            }
+          ]
+        },
+        {
+          "label": {
+            "ru": "Путь C",
+            "kk": "C жолы",
+            "en": "Path C"
+          },
+          "steps": [
+            {
+              "op": "turn",
+              "direction": "right",
+              "degrees": 90
+            },
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            }
+          ]
+        }
+      ],
+      "correct": 1,
+      "explanation": {
+        "ru": "Сначала поворот вверх, а уже потом движение — робот едет вверх.",
+        "kk": "Алдымен жоғары бұрылыс, содан кейін ғана қозғалыс — робот жоғары жүреді.",
+        "en": "First the turn upward, only then the drive — the robot goes up."
+      }
+    },
+    {
+      "id": "swap",
+      "type": "debug",
+      "skill": "sequence",
+      "title": {
+        "ru": "Поменяй местами",
+        "kk": "Орнын ауыстыр",
+        "en": "Swap them"
+      },
+      "task": {
+        "ru": "Робот должен доехать до зоны «Цель» наверху. Блоки уже есть, но стоят не в том порядке. Поменяй их местами.",
+        "kk": "Робот жоғарыдағы «Нысана» аймағына жетуі керек. Блоктар бар, бірақ дұрыс емес ретпен тұр. Олардың орнын ауыстыр.",
+        "en": "The robot should reach the “Target” zone at the top. The blocks are there but in the wrong order. Swap them."
+      },
+      "field": {
+        "width": 1000,
+        "height": 800,
+        "start": {
+          "x": 300,
+          "y": 250,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "top",
+            "x": 200,
+            "y": 450,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Цель",
+              "kk": "Нысана",
+              "en": "Target"
+            }
+          }
+        ],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn"
+      ],
+      "start": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        }
+      ],
+      "checks": [
+        {
+          "type": "finishInZone",
+          "zone": "top"
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Запусти программу. Где робот делает не то?",
+          "kk": "Бағдарламаны іске қос. Робот қай жерде қате істейді?",
+          "en": "Run the program. Where does the robot go wrong?"
+        },
+        {
+          "ru": "Робот едет вправо, а нужно вверх. Что должно случиться раньше — поворот или движение?",
+          "kk": "Робот оңға жүреді, ал жоғары жүру керек. Не бұрын болуы керек — бұрылыс па, қозғалыс па?",
+          "en": "The robot goes right, but it should go up. What should come first — the turn or the drive?"
+        },
+        {
+          "ru": "Перетащи блок поворота наверх, под стартовый блок.",
+          "kk": "Бұрылыс блогын жоғары, бастапқы блоктың астына сүйре.",
+          "en": "Drag the turn block up, right under the start block."
+        }
+      ],
+      "reference": [
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "zigzag",
+      "type": "code",
+      "skill": "sequence",
+      "title": {
+        "ru": "Через две точки",
+        "kk": "Екі нүкте арқылы",
+        "en": "Through two points"
+      },
+      "task": {
+        "ru": "Проедь через точку 1, потом через точку 2.",
+        "kk": "Алдымен 1-нүкте, содан кейін 2-нүкте арқылы өт.",
+        "en": "Drive through point 1, then through point 2."
+      },
+      "field": {
+        "width": 1000,
+        "height": 800,
+        "start": {
+          "x": 200,
+          "y": 250,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [],
+        "points": [
+          {
+            "id": "p1",
+            "x": 600,
+            "y": 250,
+            "r": 60,
+            "label": {
+              "ru": "1",
+              "kk": "1",
+              "en": "1"
+            }
+          },
+          {
+            "id": "p2",
+            "x": 600,
+            "y": 600,
+            "r": 60,
+            "label": {
+              "ru": "2",
+              "kk": "2",
+              "en": "2"
+            }
+          }
+        ],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "passPoints",
+          "points": [
+            "p1",
+            "p2"
+          ]
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Сначала доедь до первой точки.",
+          "kk": "Алдымен бірінші нүктеге жет.",
+          "en": "First reach the first point."
+        },
+        {
+          "ru": "До точки 1 — 40 см. Точка 2 выше: поверни налево.",
+          "kk": "1-нүктеге дейін — 40 см. 2-нүкте жоғарыда: солға бұрыл.",
+          "en": "Point 1 is 40 cm away. Point 2 is above: turn left."
+        },
+        {
+          "ru": "Вперёд 40 см, налево 90°, вперёд 35 см.",
+          "kk": "40 см алға, солға 90°, 35 см алға.",
+          "en": "Forward 40 cm, left 90°, forward 35 cm."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 35,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "order-quiz",
+      "type": "quiz",
+      "kind": "order",
+      "skill": "sequence",
+      "question": {
+        "ru": "Робот должен проехать вперёд, повернуть направо и подать сигнал. Расставь блоки.",
+        "kk": "Робот алға жүріп, оңға бұрылып, белгі беруі керек. Блоктарды ретімен қой.",
+        "en": "The robot should drive forward, turn right and beep. Put the blocks in order."
+      },
+      "items": [
+        {
+          "ru": "ехать вперёд",
+          "kk": "алға жүру",
+          "en": "move forward"
+        },
+        {
+          "ru": "развернуться вправо",
+          "kk": "оңға бұрылу",
+          "en": "turn right"
+        },
+        {
+          "ru": "сигнал",
+          "kk": "дыбыс",
+          "en": "beep"
+        }
+      ],
+      "explanation": {
+        "ru": "Блоки стоят в том же порядке, в котором робот должен действовать.",
+        "kk": "Блоктар робот әрекет етуі керек ретпен тұрады.",
+        "en": "The blocks go in the same order the robot should act."
+      }
+    }
+  ]
+}

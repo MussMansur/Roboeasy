@@ -1,0 +1,365 @@
+{
+  "id": "start-06",
+  "track": "start",
+  "unit": "start-drive",
+  "minutes": 7,
+  "skills": [
+    "motion",
+    "sequence"
+  ],
+  "title": {
+    "ru": "Вперёд и назад",
+    "kk": "Алға және артқа",
+    "en": "Forward and back"
+  },
+  "goal": {
+    "ru": "Сегодня ты научишь робота доезжать точно до цели и возвращаться.",
+    "kk": "Бүгін сен роботты нысанаға дәл жетуге және қайтуға үйретесің.",
+    "en": "Today you will teach the robot to drive exactly to a target and back."
+  },
+  "summary": {
+    "ru": "Теперь ты умеешь задавать расстояние и направление движения.",
+    "kk": "Енді сен қашықтық пен қозғалыс бағытын бере аласың.",
+    "en": "Now you can set the distance and the direction of driving."
+  },
+  "steps": [
+    {
+      "id": "units",
+      "type": "theory",
+      "illustration": "units",
+      "title": {
+        "ru": "Сколько ехать",
+        "kk": "Қанша жүру керек",
+        "en": "How far to drive"
+      },
+      "body": {
+        "ru": "В блоке «ехать» есть три настройки: **куда** (вперёд или назад), **сколько** и **в чём** считать.\n\nПроще всего считать в **сантиметрах**. Можно и в оборотах колеса или в секундах.\n\nНа поле нарисована сетка: одна клетка — 10 см. По ней удобно мерить путь.",
+        "kk": "«Жүру» блогында үш баптау бар: **қайда** (алға немесе артқа), **қанша** және **немен** санау.\n\nЕң оңайы — **сантиметрмен** санау. Доңғалақ айналымымен немесе секундпен де болады.\n\nАлаңда тор салынған: бір шаршы — 10 см. Жолды соның көмегімен өлшеу ыңғайлы.",
+        "en": "The “move” block has three settings: **which way** (forward or back), **how much** and **in what units**.\n\nCentimetres are the easiest. Wheel rotations or seconds work too.\n\nThe field has a grid: one square is 10 cm. It is handy for measuring the path."
+      }
+    },
+    {
+      "id": "predict-back",
+      "type": "predict",
+      "skill": "motion",
+      "title": {
+        "ru": "Где остановится робот?",
+        "kk": "Робот қай жерде тоқтайды?",
+        "en": "Where will the robot stop?"
+      },
+      "question": {
+        "ru": "Робот едет вперёд на 30 см, потом назад на 10 см. Где он окажется?",
+        "kk": "Робот 30 см алға, содан кейін 10 см артқа жүреді. Ол қай жерде болады?",
+        "en": "The robot drives forward 30 cm, then back 10 cm. Where does it end up?"
+      },
+      "field": {
+        "width": 1200,
+        "height": 500,
+        "start": {
+          "x": 200,
+          "y": 250,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "program": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "move",
+          "direction": "back",
+          "value": 10,
+          "unit": "cm"
+        }
+      ],
+      "options": [
+        {
+          "label": {
+            "ru": "В 20 см от старта",
+            "kk": "Старттан 20 см жерде",
+            "en": "20 cm from the start"
+          },
+          "steps": [
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "move",
+              "direction": "back",
+              "value": 10,
+              "unit": "cm"
+            }
+          ]
+        },
+        {
+          "label": {
+            "ru": "В 40 см от старта",
+            "kk": "Старттан 40 см жерде",
+            "en": "40 cm from the start"
+          },
+          "steps": [
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 10,
+              "unit": "cm"
+            }
+          ]
+        },
+        {
+          "label": {
+            "ru": "На старте",
+            "kk": "Стартта",
+            "en": "At the start"
+          },
+          "steps": [
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "move",
+              "direction": "back",
+              "value": 30,
+              "unit": "cm"
+            }
+          ]
+        }
+      ],
+      "correct": 0,
+      "explanation": {
+        "ru": "30 вперёд и 10 назад: 30 − 10 = 20 см от старта.",
+        "kk": "30 алға және 10 артқа: 30 − 10 = 20 см.",
+        "en": "30 forward and 10 back: 30 − 10 = 20 cm from the start."
+      }
+    },
+    {
+      "id": "to-garage",
+      "type": "code",
+      "skill": "motion",
+      "title": {
+        "ru": "В гараж",
+        "kk": "Гаражға",
+        "en": "Into the garage"
+      },
+      "task": {
+        "ru": "Заведи робота в гараж: он должен остановиться внутри зелёной зоны.",
+        "kk": "Роботты гаражға кіргіз: ол жасыл аймақтың ішінде тоқтауы керек.",
+        "en": "Drive the robot into the garage: it should stop inside the green zone."
+      },
+      "field": {
+        "width": 1400,
+        "height": 600,
+        "start": {
+          "x": 200,
+          "y": 300,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "garage",
+            "x": 700,
+            "y": 200,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Гараж",
+              "kk": "Гараж",
+              "en": "Garage"
+            }
+          }
+        ],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "finishInZone",
+          "zone": "garage"
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Посчитай клетки от робота до середины гаража.",
+          "kk": "Роботтан гараждың ортасына дейінгі шаршыларды сана.",
+          "en": "Count the squares from the robot to the middle of the garage."
+        },
+        {
+          "ru": "Одна клетка — 10 см. До середины гаража 6 клеток.",
+          "kk": "Бір шаршы — 10 см. Гараждың ортасына дейін 6 шаршы.",
+          "en": "One square is 10 cm. The middle of the garage is 6 squares away."
+        },
+        {
+          "ru": "«ехать вперёд на 60 см».",
+          "kk": "«60 см алға жүру».",
+          "en": "“move forward 60 cm”."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 60,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "flag-and-back",
+      "type": "code",
+      "skill": "motion",
+      "title": {
+        "ru": "До флажка и обратно",
+        "kk": "Жалаушаға дейін және кері",
+        "en": "To the flag and back"
+      },
+      "task": {
+        "ru": "Доедь до флажка и вернись назад в гараж.",
+        "kk": "Жалаушаға дейін барып, гаражға қайт.",
+        "en": "Drive to the flag and come back into the garage."
+      },
+      "field": {
+        "width": 1200,
+        "height": 500,
+        "start": {
+          "x": 200,
+          "y": 250,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "garage",
+            "x": 100,
+            "y": 150,
+            "w": 220,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Гараж",
+              "kk": "Гараж",
+              "en": "Garage"
+            }
+          }
+        ],
+        "points": [
+          {
+            "id": "flag",
+            "x": 900,
+            "y": 250,
+            "r": 60,
+            "label": {
+              "ru": "Флажок",
+              "kk": "Жалауша",
+              "en": "Flag"
+            }
+          }
+        ],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "passPoints",
+          "points": [
+            "flag"
+          ]
+        },
+        {
+          "type": "finishInZone",
+          "zone": "garage"
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Нужны два блока движения.",
+          "kk": "Екі қозғалыс блогы керек.",
+          "en": "You need two move blocks."
+        },
+        {
+          "ru": "До флажка 70 см. Обратно — столько же, но назад.",
+          "kk": "Жалаушаға дейін 70 см. Кері — сонша, бірақ артқа.",
+          "en": "The flag is 70 cm away. Back is the same distance, but backwards."
+        },
+        {
+          "ru": "«вперёд 70 см», потом «назад 70 см».",
+          "kk": "«70 см алға», содан кейін «70 см артқа».",
+          "en": "“forward 70 cm”, then “back 70 cm”."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 70,
+          "unit": "cm"
+        },
+        {
+          "op": "move",
+          "direction": "back",
+          "value": 70,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "how-far",
+      "type": "quiz",
+      "kind": "number",
+      "skill": "motion",
+      "question": {
+        "ru": "Робот проехал вперёд 50 см, а потом назад 20 см. На сколько сантиметров он от старта?",
+        "kk": "Робот 50 см алға, содан кейін 20 см артқа жүрді. Ол стартттан неше сантиметр жерде?",
+        "en": "The robot drove forward 50 cm and then back 20 cm. How many centimetres is it from the start?"
+      },
+      "answer": 30,
+      "tolerance": 0,
+      "unit": {
+        "ru": "см",
+        "kk": "см",
+        "en": "cm"
+      },
+      "explanation": {
+        "ru": "50 − 20 = 30 см.",
+        "kk": "50 − 20 = 30 см.",
+        "en": "50 − 20 = 30 cm."
+      }
+    }
+  ]
+}

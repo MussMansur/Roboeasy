@@ -1,0 +1,166 @@
+{
+  "id": "start-02",
+  "track": "start",
+  "unit": "start-robot",
+  "minutes": 6,
+  "skills": [
+    "robot-basics"
+  ],
+  "title": {
+    "ru": "Хаб — мозг робота",
+    "kk": "Хаб — роботтың миы",
+    "en": "The hub — the robot’s brain"
+  },
+  "goal": {
+    "ru": "Сегодня ты научишь робота показывать картинку на экране и издавать звук.",
+    "kk": "Бүгін сен роботты экранда сурет көрсетуге және дыбыс шығаруға үйретесің.",
+    "en": "Today you will teach the robot to show a picture on its screen and make a sound."
+  },
+  "summary": {
+    "ru": "Теперь ты знаешь, что есть у хаба: порты, экран, кнопки, динамик и датчик поворота.",
+    "kk": "Енді сен хабта не бар екенін білесің: порттар, экран, түймелер, динамик және бұрылыс датчигі.",
+    "en": "Now you know what the hub has: ports, a screen, buttons, a speaker and a turn sensor."
+  },
+  "steps": [
+    {
+      "id": "hub",
+      "type": "theory",
+      "illustration": "hub",
+      "title": {
+        "ru": "Что есть у хаба",
+        "kk": "Хабта не бар",
+        "en": "What the hub has"
+      },
+      "body": {
+        "ru": "Хаб — главная деталь робота. Внутри у него компьютер и батарея.\n\n**Порты A–F** — шесть разъёмов. В них подключают моторы и датчики.\n\n**Экран** из 25 огоньков (5 × 5) показывает картинки и буквы. Ещё есть **кнопки**, **динамик** для звуков и спрятанный внутри **датчик поворота** (гироскоп).",
+        "kk": "Хаб — роботтың басты бөлшегі. Оның ішінде компьютер мен батарея бар.\n\n**A–F порттары** — алты ұяшық. Оларға моторлар мен датчиктер жалғанады.\n\n25 шамнан (5 × 5) тұратын **экран** суреттер мен әріптерді көрсетеді. Сондай-ақ **түймелер**, дыбысқа арналған **динамик** және ішінде жасырылған **бұрылыс датчигі** (гироскоп) бар.",
+        "en": "The hub is the main part of the robot. Inside it there is a computer and a battery.\n\n**Ports A–F** are six sockets. Motors and sensors plug into them.\n\nThe **screen** of 25 lights (5 × 5) shows pictures and letters. There are also **buttons**, a **speaker** for sounds and a hidden **turn sensor** (gyro) inside."
+      }
+    },
+    {
+      "id": "ports",
+      "type": "quiz",
+      "kind": "number",
+      "skill": "robot-basics",
+      "question": {
+        "ru": "Сколько портов у хаба?",
+        "kk": "Хабтың неше порты бар?",
+        "en": "How many ports does the hub have?"
+      },
+      "answer": 6,
+      "tolerance": 0,
+      "explanation": {
+        "ru": "Шесть: A, B, C, D, E и F.",
+        "kk": "Алты: A, B, C, D, E және F.",
+        "en": "Six: A, B, C, D, E and F."
+      }
+    },
+    {
+      "id": "smile",
+      "type": "code",
+      "title": {
+        "ru": "Улыбка и звук",
+        "kk": "Күлкі және дыбыс",
+        "en": "A smile and a sound"
+      },
+      "task": {
+        "ru": "Покажи на экране хаба улыбку, а потом подай звуковой сигнал.",
+        "kk": "Хаб экранында күлкі көрсет, содан кейін дыбыс бер.",
+        "en": "Show a smile on the hub’s screen, then play a beep."
+      },
+      "field": {
+        "width": 800,
+        "height": 500,
+        "start": {
+          "x": 400,
+          "y": 250,
+          "heading": 90
+        },
+        "border": true,
+        "zones": [],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "show_image",
+        "beep",
+        "wait"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "displayed",
+          "image": "smile"
+        },
+        {
+          "type": "beeped"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Какие блоки фиолетовые и розовые? Они про свет и звук.",
+          "kk": "Қай блоктар күлгін және қызғылт? Олар жарық пен дыбыс туралы.",
+          "en": "Which blocks are purple and pink? They are about light and sound."
+        },
+        {
+          "ru": "В блоке «показать» выбери картинку в списке.",
+          "kk": "«Көрсету» блогында тізімнен суретті таңда.",
+          "en": "In the “show” block pick the picture from the list."
+        },
+        {
+          "ru": "Нужны два блока: «показать улыбку» и «сигнал».",
+          "kk": "Екі блок керек: «күлкі көрсету» және «дыбыс».",
+          "en": "You need two blocks: “show smile” and “beep”."
+        }
+      ],
+      "reference": [
+        {
+          "op": "show_image",
+          "image": "smile"
+        },
+        {
+          "op": "beep",
+          "note": 60,
+          "seconds": 0.5
+        }
+      ]
+    },
+    {
+      "id": "plug",
+      "type": "quiz",
+      "kind": "choice",
+      "skill": "robot-basics",
+      "question": {
+        "ru": "Куда подключают мотор?",
+        "kk": "Мотор қайда жалғанады?",
+        "en": "Where do you plug in a motor?"
+      },
+      "options": [
+        {
+          "ru": "В порт, например A",
+          "kk": "Портқа, мысалы A",
+          "en": "Into a port, for example A"
+        },
+        {
+          "ru": "В экран",
+          "kk": "Экранға",
+          "en": "Into the screen"
+        },
+        {
+          "ru": "В кнопку",
+          "kk": "Түймеге",
+          "en": "Into a button"
+        }
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": {
+        "ru": "Моторы и датчики подключаются к портам A–F. В программе мы указываем букву порта.",
+        "kk": "Моторлар мен датчиктер A–F порттарына жалғанады. Бағдарламада порттың әрпін көрсетеміз.",
+        "en": "Motors and sensors plug into ports A–F. In the program we choose the port letter."
+      }
+    }
+  ]
+}

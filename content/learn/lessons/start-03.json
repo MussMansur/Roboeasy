@@ -1,0 +1,245 @@
+{
+  "id": "start-03",
+  "track": "start",
+  "unit": "start-robot",
+  "minutes": 7,
+  "skills": [
+    "robot-basics",
+    "motion"
+  ],
+  "title": {
+    "ru": "Моторы",
+    "kk": "Моторлар",
+    "en": "Motors"
+  },
+  "goal": {
+    "ru": "Сегодня ты научишь робота крутить мотор на точный угол.",
+    "kk": "Бүгін сен роботты моторды дәл бұрышқа айналдыруға үйретесің.",
+    "en": "Today you will teach the robot to turn a motor by an exact angle."
+  },
+  "summary": {
+    "ru": "Теперь ты умеешь крутить мотор в оборотах и градусах, в обе стороны.",
+    "kk": "Енді сен моторды айналым мен градуспен, екі жаққа да айналдыра аласың.",
+    "en": "Now you can turn a motor in rotations and degrees, both ways."
+  },
+  "steps": [
+    {
+      "id": "motor",
+      "type": "theory",
+      "illustration": "motor",
+      "title": {
+        "ru": "Мотор крутит ось",
+        "kk": "Мотор осьті айналдырады",
+        "en": "A motor turns an axle"
+      },
+      "body": {
+        "ru": "Мотор крутит ось, а на ось надевают колесо или рычаг.\n\nСколько крутить, можно задать в **оборотах**, **градусах** или **секундах**. Один полный оборот — это **360 градусов**, половина — 180°.\n\nМотор крутится **по часовой** или **против часовой** стрелки.",
+        "kk": "Мотор осьті айналдырады, ал оське доңғалақ немесе иінтірек кигізіледі.\n\nҚанша айналдыру керегін **айналыммен**, **градуспен** немесе **секундпен** беруге болады. Бір толық айналым — **360 градус**, жартысы — 180°.\n\nМотор **сағат тілімен** немесе **сағат тіліне қарсы** айналады.",
+        "en": "A motor turns an axle, and a wheel or a lever goes on the axle.\n\nYou can set how much to turn in **rotations**, **degrees** or **seconds**. One full rotation is **360 degrees**, half is 180°.\n\nA motor turns **clockwise** or **counterclockwise**."
+      }
+    },
+    {
+      "id": "half",
+      "type": "quiz",
+      "kind": "number",
+      "skill": "motion",
+      "question": {
+        "ru": "Сколько градусов в половине оборота?",
+        "kk": "Жарты айналымда неше градус бар?",
+        "en": "How many degrees are in half a rotation?"
+      },
+      "answer": 180,
+      "tolerance": 0,
+      "unit": {
+        "ru": "градусов",
+        "kk": "градус",
+        "en": "degrees"
+      },
+      "explanation": {
+        "ru": "Полный оборот — 360°, половина — 360 : 2 = 180°.",
+        "kk": "Толық айналым — 360°, жартысы — 360 : 2 = 180°.",
+        "en": "A full rotation is 360°, half of it is 360 ÷ 2 = 180°."
+      }
+    },
+    {
+      "id": "one-rotation",
+      "type": "code",
+      "title": {
+        "ru": "Ровно один оборот",
+        "kk": "Дәл бір айналым",
+        "en": "Exactly one rotation"
+      },
+      "task": {
+        "ru": "К порту C подключён мотор. Поверни его ровно на один оборот.",
+        "kk": "C портына мотор жалғанған. Оны дәл бір айналымға бұр.",
+        "en": "A motor is plugged into port C. Turn it exactly one rotation."
+      },
+      "field": {
+        "width": 800,
+        "height": 500,
+        "start": {
+          "x": 400,
+          "y": 250,
+          "heading": 90
+        },
+        "border": true,
+        "zones": [],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "motor_run"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "motorTurned",
+          "port": "C",
+          "degrees": 360,
+          "tolerance": 5
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Нужен синий блок мотора.",
+          "kk": "Көк мотор блогы керек.",
+          "en": "You need the blue motor block."
+        },
+        {
+          "ru": "Проверь порт в блоке: должен быть C.",
+          "kk": "Блоктағы портты тексер: C болуы керек.",
+          "en": "Check the port in the block: it should be C."
+        },
+        {
+          "ru": "Мотор C на 1 оборот — или на 360 градусов.",
+          "kk": "C моторы 1 айналымға — немесе 360 градусқа.",
+          "en": "Motor C for 1 rotation — or 360 degrees."
+        }
+      ],
+      "reference": [
+        {
+          "op": "motor_run",
+          "port": "C",
+          "direction": "clockwise",
+          "value": 1,
+          "unit": "rotations"
+        }
+      ]
+    },
+    {
+      "id": "there-and-back",
+      "type": "code",
+      "title": {
+        "ru": "Туда и обратно",
+        "kk": "Барып-қайту",
+        "en": "There and back"
+      },
+      "task": {
+        "ru": "Поверни мотор C на 90° по часовой стрелке, а потом на 90° против часовой — он должен вернуться на место.",
+        "kk": "C моторын сағат тілімен 90°-қа бұр, содан кейін сағат тіліне қарсы 90°-қа — ол орнына қайтуы керек.",
+        "en": "Turn motor C 90° clockwise, then 90° counterclockwise — it should come back to where it started."
+      },
+      "field": {
+        "width": 800,
+        "height": 500,
+        "start": {
+          "x": 400,
+          "y": 250,
+          "heading": 90
+        },
+        "border": true,
+        "zones": [],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "motor_run"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "usesOp",
+          "op": "motor_run",
+          "min": 2
+        },
+        {
+          "type": "motorTurned",
+          "port": "C",
+          "degrees": 0,
+          "tolerance": 5
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Сколько блоков мотора понадобится?",
+          "kk": "Мотордың неше блогы керек болады?",
+          "en": "How many motor blocks will you need?"
+        },
+        {
+          "ru": "Во втором блоке поменяй направление.",
+          "kk": "Екінші блокта бағытты ауыстыр.",
+          "en": "Change the direction in the second block."
+        },
+        {
+          "ru": "Два блока: C по часовой 90 градусов, затем C против часовой 90 градусов.",
+          "kk": "Екі блок: C сағат тілімен 90 градус, содан кейін C сағат тіліне қарсы 90 градус.",
+          "en": "Two blocks: C clockwise 90 degrees, then C counterclockwise 90 degrees."
+        }
+      ],
+      "reference": [
+        {
+          "op": "motor_run",
+          "port": "C",
+          "direction": "clockwise",
+          "value": 90,
+          "unit": "degrees"
+        },
+        {
+          "op": "motor_run",
+          "port": "C",
+          "direction": "counterclockwise",
+          "value": 90,
+          "unit": "degrees"
+        }
+      ]
+    },
+    {
+      "id": "units",
+      "type": "quiz",
+      "kind": "choice",
+      "skill": "motion",
+      "question": {
+        "ru": "Как задать ровно пол-оборота?",
+        "kk": "Дәл жарты айналымды қалай беруге болады?",
+        "en": "How do you set exactly half a rotation?"
+      },
+      "options": [
+        {
+          "ru": "180 градусов",
+          "kk": "180 градус",
+          "en": "180 degrees"
+        },
+        {
+          "ru": "2 секунды",
+          "kk": "2 секунд",
+          "en": "2 seconds"
+        },
+        {
+          "ru": "50 сантиметров",
+          "kk": "50 сантиметр",
+          "en": "50 centimetres"
+        }
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": {
+        "ru": "Половина от 360° — это 180°. Секунды зависят от скорости, а сантиметры — для колёс робота.",
+        "kk": "360°-тың жартысы — 180°. Секундтар жылдамдыққа байланысты, ал сантиметрлер робот доңғалақтарына арналған.",
+        "en": "Half of 360° is 180°. Seconds depend on the speed, and centimetres are for the robot’s wheels."
+      }
+    }
+  ]
+}

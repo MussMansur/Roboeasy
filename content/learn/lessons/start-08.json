@@ -1,0 +1,227 @@
+{
+  "id": "start-08",
+  "track": "start",
+  "unit": "start-drive",
+  "minutes": 10,
+  "skills": [
+    "motion",
+    "turns",
+    "sequence"
+  ],
+  "title": {
+    "ru": "Проект «Доставка»",
+    "kk": "«Жеткізу» жобасы",
+    "en": "Project “Delivery”"
+  },
+  "goal": {
+    "ru": "Сегодня ты сам напишешь программу для робота-курьера.",
+    "kk": "Бүгін сен робот-курьерге арналған бағдарламаны өзің жазасың.",
+    "en": "Today you will write a program for a courier robot by yourself."
+  },
+  "summary": {
+    "ru": "Ты прошёл трек «Старт»! Робот слушается твоих программ: едет, поворачивает и подаёт сигналы.",
+    "kk": "Сен «Бастау» трегінен өттің! Робот бағдарламаларыңа бағынады: жүреді, бұрылады және белгі береді.",
+    "en": "You finished the “Start” track! The robot follows your programs: it drives, turns and signals."
+  },
+  "steps": [
+    {
+      "id": "brief",
+      "type": "theory",
+      "title": {
+        "ru": "Задание для курьера",
+        "kk": "Курьерге тапсырма",
+        "en": "The courier’s task"
+      },
+      "body": {
+        "ru": "Робот работает курьером. Ему нужно заехать на **Склад** за посылкой, привезти её в зону **Дом** и в конце подать сигнал: «Посылка доставлена!»\n\nОсторожно: на поле есть стена. Используй всё, что уже знаешь: движение, повороты и звук.",
+        "kk": "Робот курьер болып жұмыс істейді. Оған сәлемдеме алу үшін **Қоймаға** соғып, оны **Үй** аймағына жеткізу және соңында белгі беру керек: «Сәлемдеме жеткізілді!»\n\nАбайла: алаңда қабырға бар. Білетініңнің бәрін қолдан: қозғалыс, бұрылыстар және дыбыс.",
+        "en": "The robot works as a courier. It has to stop at the **Warehouse** for a parcel, bring it to the **Home** zone and beep at the end: “Parcel delivered!”\n\nCareful: there is a wall on the field. Use everything you know: driving, turning and sound."
+      }
+    },
+    {
+      "id": "delivery",
+      "type": "project",
+      "skill": "sequence",
+      "title": {
+        "ru": "Доставка",
+        "kk": "Жеткізу",
+        "en": "Delivery"
+      },
+      "task": {
+        "ru": "Проедь через Склад, финишируй в зоне «Дом», не задев стену, и подай сигнал в конце.",
+        "kk": "Қойма арқылы өтіп, қабырғаға тимей «Үй» аймағында мәреге жет және соңында белгі бер.",
+        "en": "Pass through the Warehouse, finish in the “Home” zone without touching the wall, and beep at the end."
+      },
+      "field": {
+        "width": 1400,
+        "height": 900,
+        "start": {
+          "x": 200,
+          "y": 200,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "home",
+            "x": 700,
+            "y": 600,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Дом",
+              "kk": "Үй",
+              "en": "Home"
+            }
+          }
+        ],
+        "points": [
+          {
+            "id": "warehouse",
+            "x": 800,
+            "y": 200,
+            "r": 70,
+            "label": {
+              "ru": "Склад",
+              "kk": "Қойма",
+              "en": "Warehouse"
+            }
+          }
+        ],
+        "walls": [
+          {
+            "x": 300,
+            "y": 450,
+            "w": 240,
+            "h": 40
+          }
+        ],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn",
+        "set_speed",
+        "wait",
+        "beep",
+        "show_image"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "passPoints",
+          "points": [
+            "warehouse"
+          ]
+        },
+        {
+          "type": "finishInZone",
+          "zone": "home"
+        },
+        {
+          "type": "beeped"
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Нарисуй путь пальцем на экране: куда ехать сначала, где повернуть?",
+          "kk": "Жолды экранда саусағыңмен сыз: алдымен қайда жүру, қай жерде бұрылу?",
+          "en": "Trace the path on the screen with your finger: where first, where to turn?"
+        },
+        {
+          "ru": "До склада 60 см прямо. Дом выше склада — значит, поворот налево.",
+          "kk": "Қоймаға дейін тура 60 см. Үй қоймадан жоғары — демек, солға бұрылу.",
+          "en": "The warehouse is 60 cm straight ahead. Home is above it — so turn left."
+        },
+        {
+          "ru": "Вперёд 60 см, налево 90°, вперёд 50 см, сигнал.",
+          "kk": "60 см алға, солға 90°, 50 см алға, дыбыс.",
+          "en": "Forward 60 cm, left 90°, forward 50 cm, beep."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 60,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 50,
+          "unit": "cm"
+        },
+        {
+          "op": "beep",
+          "note": 72,
+          "seconds": 0.5
+        }
+      ]
+    },
+    {
+      "id": "real",
+      "type": "real_robot",
+      "title": {
+        "ru": "Доставка на настоящем роботе",
+        "kk": "Нағыз роботпен жеткізу",
+        "en": "Delivery with a real robot"
+      },
+      "task": {
+        "ru": "Есть набор? Разметь на полу склад и дом (например, бумагой) и запусти свою программу. Посмотри, насколько точно приедет настоящий робот.",
+        "kk": "Жиынтық бар ма? Еденге қойма мен үйді белгіле (мысалы, қағазбен) және бағдарламаңды іске қос. Нағыз робот қаншалықты дәл жететінін қара.",
+        "en": "Have a kit? Mark the warehouse and home on the floor (with paper, for example) and run your program. See how precisely the real robot arrives."
+      },
+      "checklist": [
+        {
+          "ru": "Разметил склад и дом",
+          "kk": "Қойма мен үйді белгіледім",
+          "en": "I marked the warehouse and home"
+        },
+        {
+          "ru": "Запустил программу",
+          "kk": "Бағдарламаны іске қостым",
+          "en": "I ran the program"
+        },
+        {
+          "ru": "Робот доехал до дома",
+          "kk": "Робот үйге жетті",
+          "en": "The robot reached home"
+        }
+      ],
+      "program": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 60,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 50,
+          "unit": "cm"
+        },
+        {
+          "op": "beep",
+          "note": 72,
+          "seconds": 0.5
+        }
+      ]
+    }
+  ]
+}

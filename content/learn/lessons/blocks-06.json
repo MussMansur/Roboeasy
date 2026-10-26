@@ -1,0 +1,380 @@
+{
+  "id": "blocks-06",
+  "track": "blocks",
+  "unit": "blocks-sequence",
+  "minutes": 10,
+  "skills": [
+    "sequence",
+    "motion",
+    "turns"
+  ],
+  "title": {
+    "ru": "Проект «Экскурсия»",
+    "kk": "«Экскурсия» жобасы",
+    "en": "Project “Tour”"
+  },
+  "goal": {
+    "ru": "Сегодня ты сам напишешь программу для робота-экскурсовода.",
+    "kk": "Бүгін сен робот-экскурсоводқа арналған бағдарламаны өзің жазасың.",
+    "en": "Today you will write a program for a robot tour guide by yourself."
+  },
+  "summary": {
+    "ru": "Этап пройден! Ты умеешь строить длинные программы из движений, поворотов, пауз и картинок.",
+    "kk": "Кезең өтілді! Сен қозғалыстардан, бұрылыстардан, үзілістер мен суреттерден ұзын бағдарламалар құра аласың.",
+    "en": "Unit complete! You can build long programs from drives, turns, pauses and pictures."
+  },
+  "steps": [
+    {
+      "id": "brief",
+      "type": "theory",
+      "title": {
+        "ru": "Робот-экскурсовод",
+        "kk": "Робот-экскурсовод",
+        "en": "The robot tour guide"
+      },
+      "body": {
+        "ru": "В музее три экспоната. Робот-экскурсовод должен подъехать к каждому, **остановиться на 1 секунду** и **показать картинку** — любую, какая нравится.\n\nПосле третьего экспоната робот возвращается ко **входу**. Подсказка: путь похож на квадрат.",
+        "kk": "Мұражайда үш экспонат бар. Робот-экскурсовод әрқайсысына келіп, **1 секундқа тоқтап**, **сурет көрсетуі** керек — өзіңе ұнағанын.\n\nҮшінші экспонаттан кейін робот **кіреберіске** қайтады. Кеңес: жол шаршыға ұқсайды.",
+        "en": "The museum has three exhibits. The robot guide must drive up to each one, **stop for 1 second** and **show a picture** — any you like.\n\nAfter the third exhibit the robot returns to the **entrance**. Tip: the path looks like a square."
+      }
+    },
+    {
+      "id": "tour",
+      "type": "project",
+      "skill": "sequence",
+      "title": {
+        "ru": "Экскурсия",
+        "kk": "Экскурсия",
+        "en": "The tour"
+      },
+      "task": {
+        "ru": "Посети экспонаты 1, 2 и 3: у каждого постой 1 секунду и покажи картинку. Потом вернись ко входу.",
+        "kk": "1, 2 және 3-экспонаттарға бар: әрқайсысында 1 секунд тұрып, сурет көрсет. Содан кейін кіреберіске қайт.",
+        "en": "Visit exhibits 1, 2 and 3: wait 1 second and show a picture at each. Then go back to the entrance."
+      },
+      "field": {
+        "width": 1300,
+        "height": 900,
+        "start": {
+          "x": 200,
+          "y": 200,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "entrance",
+            "x": 90,
+            "y": 90,
+            "w": 280,
+            "h": 220,
+            "kind": "target",
+            "label": {
+              "ru": "Вход",
+              "kk": "Кіреберіс",
+              "en": "Entrance"
+            }
+          },
+          {
+            "id": "ex1",
+            "x": 630,
+            "y": 130,
+            "w": 140,
+            "h": 140,
+            "kind": "target",
+            "label": {
+              "ru": "Экспонат 1",
+              "kk": "1-экспонат",
+              "en": "Exhibit 1"
+            }
+          },
+          {
+            "id": "ex2",
+            "x": 630,
+            "y": 530,
+            "w": 140,
+            "h": 140,
+            "kind": "target",
+            "label": {
+              "ru": "Экспонат 2",
+              "kk": "2-экспонат",
+              "en": "Exhibit 2"
+            }
+          },
+          {
+            "id": "ex3",
+            "x": 230,
+            "y": 530,
+            "w": 140,
+            "h": 140,
+            "kind": "target",
+            "label": {
+              "ru": "Экспонат 3",
+              "kk": "3-экспонат",
+              "en": "Exhibit 3"
+            }
+          }
+        ],
+        "points": [
+          {
+            "id": "e1",
+            "x": 700,
+            "y": 200,
+            "r": 60,
+            "label": {
+              "ru": "1",
+              "kk": "1",
+              "en": "1"
+            }
+          },
+          {
+            "id": "e2",
+            "x": 700,
+            "y": 600,
+            "r": 60,
+            "label": {
+              "ru": "2",
+              "kk": "2",
+              "en": "2"
+            }
+          },
+          {
+            "id": "e3",
+            "x": 300,
+            "y": 600,
+            "r": 60,
+            "label": {
+              "ru": "3",
+              "kk": "3",
+              "en": "3"
+            }
+          }
+        ],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn",
+        "wait",
+        "show_image",
+        "beep",
+        "set_speed"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "passPoints",
+          "points": [
+            "e1",
+            "e2",
+            "e3"
+          ]
+        },
+        {
+          "type": "waitInZone",
+          "zone": "ex1",
+          "seconds": 1
+        },
+        {
+          "type": "waitInZone",
+          "zone": "ex2",
+          "seconds": 1
+        },
+        {
+          "type": "waitInZone",
+          "zone": "ex3",
+          "seconds": 1
+        },
+        {
+          "type": "displayed"
+        },
+        {
+          "type": "finishInZone",
+          "zone": "entrance"
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Сделай сначала путь до первого экспоната с паузой и картинкой. Потом добавляй следующие.",
+          "kk": "Алдымен бірінші экспонатқа дейінгі жолды үзіліспен және суретпен жаса. Содан кейін келесілерін қос.",
+          "en": "First make the trip to exhibit 1 with a pause and a picture. Then add the next ones."
+        },
+        {
+          "ru": "Экспонат 1 — в 50 см прямо. Дальше каждый раз: налево 90° и вперёд 40 см.",
+          "kk": "1-экспонат — тура 50 см жерде. Әрі қарай әр жолы: солға 90° және 40 см алға.",
+          "en": "Exhibit 1 is 50 cm straight ahead. After that, each time: left 90° and forward 40 cm."
+        },
+        {
+          "ru": "Вперёд 50, ждать 1, показать; затем 3 раза: налево 90°, вперёд 40, ждать 1, показать — и в конце налево 90°, вперёд 40.",
+          "kk": "50 алға, 1 күту, көрсету; содан кейін 3 рет: солға 90°, 40 алға, 1 күту, көрсету — және соңында солға 90°, 40 алға.",
+          "en": "Forward 50, wait 1, show; then 3 times: left 90°, forward 40, wait 1, show — and finally left 90°, forward 40."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 50,
+          "unit": "cm"
+        },
+        {
+          "op": "wait",
+          "seconds": 1
+        },
+        {
+          "op": "show_image",
+          "image": "smile"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        },
+        {
+          "op": "wait",
+          "seconds": 1
+        },
+        {
+          "op": "show_image",
+          "image": "heart"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        },
+        {
+          "op": "wait",
+          "seconds": 1
+        },
+        {
+          "op": "show_image",
+          "image": "diamond"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "real",
+      "type": "real_robot",
+      "title": {
+        "ru": "Экскурсия по комнате",
+        "kk": "Бөлме бойынша экскурсия",
+        "en": "A tour of your room"
+      },
+      "task": {
+        "ru": "Есть набор? Поставь в комнате три «экспоната» (игрушки) и проведи настоящего робота по своему маршруту.",
+        "kk": "Жиынтық бар ма? Бөлмеге үш «экспонат» (ойыншық) қойып, нағыз роботты өз маршрутыңмен жүргіз.",
+        "en": "Have a kit? Set up three “exhibits” (toys) in your room and take the real robot on your tour."
+      },
+      "checklist": [
+        {
+          "ru": "Расставил экспонаты",
+          "kk": "Экспонаттарды қойдым",
+          "en": "I set up the exhibits"
+        },
+        {
+          "ru": "Подобрал расстояния",
+          "kk": "Қашықтықтарды таңдадым",
+          "en": "I adjusted the distances"
+        },
+        {
+          "ru": "Робот провёл экскурсию",
+          "kk": "Робот экскурсия жүргізді",
+          "en": "The robot gave the tour"
+        }
+      ],
+      "program": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 50,
+          "unit": "cm"
+        },
+        {
+          "op": "wait",
+          "seconds": 1
+        },
+        {
+          "op": "show_image",
+          "image": "smile"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        },
+        {
+          "op": "wait",
+          "seconds": 1
+        },
+        {
+          "op": "show_image",
+          "image": "heart"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        },
+        {
+          "op": "wait",
+          "seconds": 1
+        },
+        {
+          "op": "show_image",
+          "image": "diamond"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        }
+      ]
+    }
+  ]
+}

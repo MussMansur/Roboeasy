@@ -1,0 +1,1867 @@
+{
+  "tracks": [
+    {
+      "id": "start",
+      "title": {
+        "ru": "Старт",
+        "kk": "Бастау",
+        "en": "Start"
+      },
+      "description": {
+        "ru": "Что такое робот, хаб, моторы и датчики. Первые программы для виртуального робота.",
+        "kk": "Робот, хаб, моторлар және датчиктер деген не. Виртуалды роботқа алғашқы бағдарламалар.",
+        "en": "What a robot is: hub, motors and sensors. First programs for the virtual robot."
+      },
+      "icon": "Rocket",
+      "color": "var(--blk-events)",
+      "prerequisites": [],
+      "units": [
+        {
+          "id": "start-robot",
+          "title": {
+            "ru": "Знакомство с роботом",
+            "kk": "Роботпен танысу",
+            "en": "Meet the robot"
+          },
+          "lessons": [
+            {
+              "id": "start-01",
+              "title": {
+                "ru": "Что такое робот",
+                "kk": "Робот деген не",
+                "en": "What is a robot"
+              },
+              "status": "ready",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "start-02",
+              "title": {
+                "ru": "Хаб — мозг робота",
+                "kk": "Хаб — роботтың миы",
+                "en": "The hub — the robot’s brain"
+              },
+              "status": "ready",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "start-03",
+              "title": {
+                "ru": "Моторы",
+                "kk": "Моторлар",
+                "en": "Motors"
+              },
+              "status": "ready",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "start-04",
+              "title": {
+                "ru": "Датчики",
+                "kk": "Датчиктер",
+                "en": "Sensors"
+              },
+              "status": "ready",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "start-05",
+              "title": {
+                "ru": "Приложение SPIKE",
+                "kk": "SPIKE қолданбасы",
+                "en": "The SPIKE App"
+              },
+              "status": "ready",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "start-drive",
+          "title": {
+            "ru": "Первая поездка",
+            "kk": "Алғашқы сапар",
+            "en": "First drive"
+          },
+          "lessons": [
+            {
+              "id": "start-06",
+              "title": {
+                "ru": "Вперёд и назад",
+                "kk": "Алға және артқа",
+                "en": "Forward and back"
+              },
+              "status": "ready",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "start-07",
+              "title": {
+                "ru": "Повороты",
+                "kk": "Бұрылыстар",
+                "en": "Turns"
+              },
+              "status": "ready",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "start-08",
+              "title": {
+                "ru": "Проект «Доставка»",
+                "kk": "«Жеткізу» жобасы",
+                "en": "Project “Delivery”"
+              },
+              "status": "ready",
+              "project": true,
+              "kit": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "build",
+      "title": {
+        "ru": "Сборка",
+        "kk": "Құрастыру",
+        "en": "Building"
+      },
+      "description": {
+        "ru": "Детали и их названия, прочные конструкции, шестерни. Базовая тележка.",
+        "kk": "Бөлшектер мен олардың атаулары, берік құрылымдар, тісті доңғалақтар. Негізгі арба.",
+        "en": "Parts and their names, strong structures, gears. A basic driving base."
+      },
+      "icon": "Hammer",
+      "color": "var(--blk-control)",
+      "prerequisites": [
+        "start"
+      ],
+      "units": [
+        {
+          "id": "build-parts",
+          "title": {
+            "ru": "Детали и их названия",
+            "kk": "Бөлшектер мен атаулары",
+            "en": "Parts and their names"
+          },
+          "lessons": [
+            {
+              "id": "build-01",
+              "title": {
+                "ru": "Балки и рамы",
+                "kk": "Арқалықтар мен рамалар",
+                "en": "Beams and frames"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "build-02",
+              "title": {
+                "ru": "Оси и штифты",
+                "kk": "Осьтер мен штифтер",
+                "en": "Axles and pins"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "build-03",
+              "title": {
+                "ru": "Втулки и соединители",
+                "kk": "Втулкалар мен жалғағыштар",
+                "en": "Bushes and connectors"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "build-04",
+              "title": {
+                "ru": "Колёса и шины",
+                "kk": "Доңғалақтар мен шиналар",
+                "en": "Wheels and tyres"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "build-05",
+              "title": {
+                "ru": "Найди деталь",
+                "kk": "Бөлшекті тап",
+                "en": "Find the part"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "build-structures",
+          "title": {
+            "ru": "Прочные конструкции",
+            "kk": "Берік құрылымдар",
+            "en": "Strong structures"
+          },
+          "lessons": [
+            {
+              "id": "build-06",
+              "title": {
+                "ru": "Почему треугольник прочный",
+                "kk": "Үшбұрыш неге берік",
+                "en": "Why triangles are strong"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "build-07",
+              "title": {
+                "ru": "Двойные балки и упоры",
+                "kk": "Қос арқалықтар мен тіректер",
+                "en": "Double beams and braces"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "build-08",
+              "title": {
+                "ru": "Найди слабое место",
+                "kk": "Әлсіз жерді тап",
+                "en": "Find the weak spot"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "build-gears",
+          "title": {
+            "ru": "Шестерни",
+            "kk": "Тісті доңғалақтар",
+            "en": "Gears"
+          },
+          "lessons": [
+            {
+              "id": "build-09",
+              "title": {
+                "ru": "Как шестерни передают вращение",
+                "kk": "Тісті доңғалақтар айналымды қалай береді",
+                "en": "How gears pass on rotation"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "build-10",
+              "title": {
+                "ru": "Передаточное число",
+                "kk": "Беріліс саны",
+                "en": "Gear ratio"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "build-11",
+              "title": {
+                "ru": "Червячная передача",
+                "kk": "Бұрамалы беріліс",
+                "en": "The worm gear"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "build-12",
+              "title": {
+                "ru": "Куда и как быстро?",
+                "kk": "Қайда және қаншалықты жылдам?",
+                "en": "Which way and how fast?"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "build-base",
+          "title": {
+            "ru": "Базовая тележка",
+            "kk": "Негізгі арба",
+            "en": "The driving base"
+          },
+          "lessons": [
+            {
+              "id": "build-13",
+              "title": {
+                "ru": "Шасси",
+                "kk": "Шасси",
+                "en": "The chassis"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": true
+            },
+            {
+              "id": "build-14",
+              "title": {
+                "ru": "Моторы и колёса",
+                "kk": "Моторлар мен доңғалақтар",
+                "en": "Motors and wheels"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": true
+            },
+            {
+              "id": "build-15",
+              "title": {
+                "ru": "Хаб и провода",
+                "kk": "Хаб пен сымдар",
+                "en": "The hub and cables"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": true
+            },
+            {
+              "id": "build-16",
+              "title": {
+                "ru": "Собери и проверь",
+                "kk": "Құрастыр да тексер",
+                "en": "Build and test"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": true
+            }
+          ]
+        },
+        {
+          "id": "build-wheels",
+          "title": {
+            "ru": "Колёса и точность",
+            "kk": "Доңғалақтар және дәлдік",
+            "en": "Wheels and accuracy"
+          },
+          "lessons": [
+            {
+              "id": "build-17",
+              "title": {
+                "ru": "Диаметр колеса и расстояние",
+                "kk": "Доңғалақ диаметрі және қашықтық",
+                "en": "Wheel size and distance"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "build-18",
+              "title": {
+                "ru": "Итоговый проект",
+                "kk": "Қорытынды жоба",
+                "en": "Final project"
+              },
+              "status": "todo",
+              "project": true,
+              "kit": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "blocks",
+      "title": {
+        "ru": "Программирование блоками",
+        "kk": "Блоктармен бағдарламалау",
+        "en": "Block programming"
+      },
+      "description": {
+        "ru": "Последовательность, циклы, условия, переменные и свои блоки.",
+        "kk": "Реттілік, циклдер, шарттар, айнымалылар және өз блоктарың.",
+        "en": "Sequences, loops, conditions, variables and My Blocks."
+      },
+      "icon": "Blocks",
+      "color": "var(--blk-move)",
+      "prerequisites": [
+        "start"
+      ],
+      "units": [
+        {
+          "id": "blocks-sequence",
+          "title": {
+            "ru": "Последовательность и движение",
+            "kk": "Реттілік және қозғалыс",
+            "en": "Sequence and motion"
+          },
+          "lessons": [
+            {
+              "id": "blocks-01",
+              "title": {
+                "ru": "Порядок важен",
+                "kk": "Рет маңызды",
+                "en": "Order matters"
+              },
+              "status": "ready",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-02",
+              "title": {
+                "ru": "Скорость",
+                "kk": "Жылдамдық",
+                "en": "Speed"
+              },
+              "status": "ready",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-03",
+              "title": {
+                "ru": "Квадрат",
+                "kk": "Шаршы",
+                "en": "A square"
+              },
+              "status": "ready",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-04",
+              "title": {
+                "ru": "Ждать и сигналить",
+                "kk": "Күту және белгі беру",
+                "en": "Wait and signal"
+              },
+              "status": "ready",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-05",
+              "title": {
+                "ru": "Найди ошибку",
+                "kk": "Қатені тап",
+                "en": "Find the bug"
+              },
+              "status": "ready",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-06",
+              "title": {
+                "ru": "Проект «Экскурсия»",
+                "kk": "«Экскурсия» жобасы",
+                "en": "Project “Tour”"
+              },
+              "status": "ready",
+              "project": true,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "blocks-loops",
+          "title": {
+            "ru": "Циклы",
+            "kk": "Циклдер",
+            "en": "Loops"
+          },
+          "lessons": [
+            {
+              "id": "blocks-07",
+              "title": {
+                "ru": "Повторить N раз",
+                "kk": "N рет қайталау",
+                "en": "Repeat N times"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-08",
+              "title": {
+                "ru": "Квадрат короче",
+                "kk": "Қысқарақ шаршы",
+                "en": "A shorter square"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-09",
+              "title": {
+                "ru": "Всегда и «пока не»",
+                "kk": "Әрдайым және «болғанша»",
+                "en": "Forever and “until”"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-10",
+              "title": {
+                "ru": "Танец робота",
+                "kk": "Робот биі",
+                "en": "Robot dance"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-11",
+              "title": {
+                "ru": "Лишний повтор",
+                "kk": "Артық қайталау",
+                "en": "One repeat too many"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-12",
+              "title": {
+                "ru": "Проект «Узор»",
+                "kk": "«Өрнек» жобасы",
+                "en": "Project “Pattern”"
+              },
+              "status": "todo",
+              "project": true,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "blocks-conditions",
+          "title": {
+            "ru": "Условия",
+            "kk": "Шарттар",
+            "en": "Conditions"
+          },
+          "lessons": [
+            {
+              "id": "blocks-13",
+              "title": {
+                "ru": "Если… то",
+                "kk": "Егер… онда",
+                "en": "If… then"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-14",
+              "title": {
+                "ru": "Если… иначе",
+                "kk": "Егер… әйтпесе",
+                "en": "If… else"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-15",
+              "title": {
+                "ru": "Ждать, пока",
+                "kk": "Болғанша күту",
+                "en": "Wait until"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-16",
+              "title": {
+                "ru": "Робот-светофор",
+                "kk": "Робот-бағдаршам",
+                "en": "Traffic-light robot"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-17",
+              "title": {
+                "ru": "Проект «Умная остановка»",
+                "kk": "«Ақылды аялдама» жобасы",
+                "en": "Project “Smart stop”"
+              },
+              "status": "todo",
+              "project": true,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "blocks-variables",
+          "title": {
+            "ru": "Переменные",
+            "kk": "Айнымалылар",
+            "en": "Variables"
+          },
+          "lessons": [
+            {
+              "id": "blocks-18",
+              "title": {
+                "ru": "Что такое переменная",
+                "kk": "Айнымалы деген не",
+                "en": "What a variable is"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-19",
+              "title": {
+                "ru": "Счётчик",
+                "kk": "Санауыш",
+                "en": "A counter"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-20",
+              "title": {
+                "ru": "Скорость в переменной",
+                "kk": "Айнымалыдағы жылдамдық",
+                "en": "Speed in a variable"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-21",
+              "title": {
+                "ru": "Проект «Считаем круги»",
+                "kk": "«Айналымдарды санаймыз» жобасы",
+                "en": "Project “Counting laps”"
+              },
+              "status": "todo",
+              "project": true,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "blocks-functions",
+          "title": {
+            "ru": "Мои блоки",
+            "kk": "Менің блоктарым",
+            "en": "My Blocks"
+          },
+          "lessons": [
+            {
+              "id": "blocks-22",
+              "title": {
+                "ru": "Свой блок",
+                "kk": "Өз блогың",
+                "en": "Your own block"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-23",
+              "title": {
+                "ru": "Блок с параметром",
+                "kk": "Параметрі бар блок",
+                "en": "A block with a parameter"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-24",
+              "title": {
+                "ru": "Короче со своими блоками",
+                "kk": "Өз блоктарыңмен қысқарақ",
+                "en": "Shorter with My Blocks"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "blocks-25",
+              "title": {
+                "ru": "Проект «Робот-гид»",
+                "kk": "«Робот-гид» жобасы",
+                "en": "Project “Robot guide”"
+              },
+              "status": "todo",
+              "project": true,
+              "kit": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sensors",
+      "title": {
+        "ru": "Датчики",
+        "kk": "Датчиктер",
+        "en": "Sensors"
+      },
+      "description": {
+        "ru": "Цвет, расстояние, касание и гироскоп. Езда по линии.",
+        "kk": "Түс, қашықтық, жанасу және гироскоп. Сызық бойымен жүру.",
+        "en": "Colour, distance, touch and the gyro. Line following."
+      },
+      "icon": "Radar",
+      "color": "var(--blk-sensors)",
+      "prerequisites": [
+        "blocks"
+      ],
+      "units": [
+        {
+          "id": "sensors-color",
+          "title": {
+            "ru": "Цвет и отражение",
+            "kk": "Түс және шағылысу",
+            "en": "Colour and reflection"
+          },
+          "lessons": [
+            {
+              "id": "sensors-01",
+              "title": {
+                "ru": "Что видит датчик цвета",
+                "kk": "Түс датчигі не көреді",
+                "en": "What the colour sensor sees"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-02",
+              "title": {
+                "ru": "Стоп на чёрной линии",
+                "kk": "Қара сызықта тоқта",
+                "en": "Stop on the black line"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-03",
+              "title": {
+                "ru": "Считать линии",
+                "kk": "Сызықтарды санау",
+                "en": "Count the lines"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-04",
+              "title": {
+                "ru": "Отражение",
+                "kk": "Шағылысу",
+                "en": "Reflection"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-05",
+              "title": {
+                "ru": "Что покажет датчик?",
+                "kk": "Датчик не көрсетеді?",
+                "en": "What will the sensor show?"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "sensors-distance",
+          "title": {
+            "ru": "Расстояние",
+            "kk": "Қашықтық",
+            "en": "Distance"
+          },
+          "lessons": [
+            {
+              "id": "sensors-06",
+              "title": {
+                "ru": "Как датчик меряет расстояние",
+                "kk": "Датчик қашықтықты қалай өлшейді",
+                "en": "How the sensor measures distance"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-07",
+              "title": {
+                "ru": "Стоп перед стеной",
+                "kk": "Қабырға алдында тоқта",
+                "en": "Stop before the wall"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-08",
+              "title": {
+                "ru": "Держать дистанцию",
+                "kk": "Арақашықтықты сақтау",
+                "en": "Keep your distance"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-09",
+              "title": {
+                "ru": "Робот-парковщик",
+                "kk": "Робот-тұрақтаушы",
+                "en": "Parking robot"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "sensors-force",
+          "title": {
+            "ru": "Сила",
+            "kk": "Күш",
+            "en": "Force"
+          },
+          "lessons": [
+            {
+              "id": "sensors-10",
+              "title": {
+                "ru": "Кнопка-бампер",
+                "kk": "Бампер-түйме",
+                "en": "The bumper button"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-11",
+              "title": {
+                "ru": "Нажато, отпущено, сильно",
+                "kk": "Басылды, босатылды, қатты",
+                "en": "Pressed, released, hard"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-12",
+              "title": {
+                "ru": "Робот ищет стену",
+                "kk": "Робот қабырғаны іздейді",
+                "en": "The robot finds the wall"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "sensors-gyro",
+          "title": {
+            "ru": "Гироскоп",
+            "kk": "Гироскоп",
+            "en": "The gyro"
+          },
+          "lessons": [
+            {
+              "id": "sensors-13",
+              "title": {
+                "ru": "Угол поворота",
+                "kk": "Бұрылыс бұрышы",
+                "en": "The turn angle"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-14",
+              "title": {
+                "ru": "Точный поворот",
+                "kk": "Дәл бұрылыс",
+                "en": "An exact turn"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-15",
+              "title": {
+                "ru": "Сброс угла",
+                "kk": "Бұрышты нөлдеу",
+                "en": "Resetting the angle"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-16",
+              "title": {
+                "ru": "Наклон",
+                "kk": "Еңкею",
+                "en": "Tilt"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "sensors-line",
+          "title": {
+            "ru": "Езда по линии",
+            "kk": "Сызық бойымен жүру",
+            "en": "Line following"
+          },
+          "lessons": [
+            {
+              "id": "sensors-17",
+              "title": {
+                "ru": "Левее или правее",
+                "kk": "Солға ма, оңға ма",
+                "en": "Left or right"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-18",
+              "title": {
+                "ru": "Плавнее",
+                "kk": "Бірқалыпты",
+                "en": "Smoother"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-19",
+              "title": {
+                "ru": "Перекрёстки",
+                "kk": "Қиылыстар",
+                "en": "Crossings"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "sensors-20",
+              "title": {
+                "ru": "Проект «Линия и стена»",
+                "kk": "«Сызық пен қабырға» жобасы",
+                "en": "Project “Line and wall”"
+              },
+              "status": "todo",
+              "project": true,
+              "kit": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "navigation",
+      "title": {
+        "ru": "Навигация и точность",
+        "kk": "Навигация және дәлдік",
+        "en": "Navigation and accuracy"
+      },
+      "description": {
+        "ru": "Калибровка, точные повороты и регуляторы без страха.",
+        "kk": "Калибрлеу, дәл бұрылыстар және қорықпай реттегіштер.",
+        "en": "Calibration, precise turns and controllers without fear."
+      },
+      "icon": "Compass",
+      "color": "var(--blk-motor)",
+      "prerequisites": [
+        "sensors"
+      ],
+      "units": [
+        {
+          "id": "nav-errors",
+          "title": {
+            "ru": "Почему робот ошибается",
+            "kk": "Робот неге қателеседі",
+            "en": "Why robots miss"
+          },
+          "lessons": [
+            {
+              "id": "nav-01",
+              "title": {
+                "ru": "Проскальзывание и батарея",
+                "kk": "Тайғанау және батарея",
+                "en": "Slipping and the battery"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "nav-02",
+              "title": {
+                "ru": "Пять запусков подряд",
+                "kk": "Қатарынан бес іске қосу",
+                "en": "Five runs in a row"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "nav-calibration",
+          "title": {
+            "ru": "Калибровка",
+            "kk": "Калибрлеу",
+            "en": "Calibration"
+          },
+          "lessons": [
+            {
+              "id": "nav-03",
+              "title": {
+                "ru": "Тест 50 см",
+                "kk": "50 см тесті",
+                "en": "The 50 cm test"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "nav-04",
+              "title": {
+                "ru": "Тест поворота 360°",
+                "kk": "360° бұрылыс тесті",
+                "en": "The 360° turn test"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "nav-05",
+              "title": {
+                "ru": "Поправочные коэффициенты",
+                "kk": "Түзету коэффициенттері",
+                "en": "Correction factors"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "nav-06",
+              "title": {
+                "ru": "Калибровка настоящего робота",
+                "kk": "Нағыз роботты калибрлеу",
+                "en": "Calibrating the real robot"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": true
+            }
+          ]
+        },
+        {
+          "id": "nav-straight",
+          "title": {
+            "ru": "Ехать прямо",
+            "kk": "Тура жүру",
+            "en": "Driving straight"
+          },
+          "lessons": [
+            {
+              "id": "nav-07",
+              "title": {
+                "ru": "Прямо по гироскопу",
+                "kk": "Гироскоп бойынша тура",
+                "en": "Straight with the gyro"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "nav-08",
+              "title": {
+                "ru": "P-регулятор",
+                "kk": "P-реттегіш",
+                "en": "The P controller"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "nav-09",
+              "title": {
+                "ru": "Что делает коэффициент",
+                "kk": "Коэффициент не істейді",
+                "en": "What the gain does"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "nav-pid",
+          "title": {
+            "ru": "PID без страха",
+            "kk": "Қорықпай PID",
+            "en": "PID without fear"
+          },
+          "lessons": [
+            {
+              "id": "nav-10",
+              "title": {
+                "ru": "I и D на примерах",
+                "kk": "I және D мысалдармен",
+                "en": "I and D by example"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "nav-11",
+              "title": {
+                "ru": "Подбор коэффициентов",
+                "kk": "Коэффициенттерді таңдау",
+                "en": "Tuning the gains"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "nav-12",
+              "title": {
+                "ru": "Координаты поля",
+                "kk": "Алаң координаттары",
+                "en": "Field coordinates"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "nav-13",
+              "title": {
+                "ru": "Проект «Точный маршрут»",
+                "kk": "«Дәл маршрут» жобасы",
+                "en": "Project “Exact route”"
+              },
+              "status": "todo",
+              "project": true,
+              "kit": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "python",
+      "title": {
+        "ru": "Python",
+        "kk": "Python",
+        "en": "Python"
+      },
+      "description": {
+        "ru": "Те же задачи в коде: блоки и Python рядом.",
+        "kk": "Сол тапсырмалар кодта: блоктар мен Python қатар.",
+        "en": "The same tasks in code: blocks and Python side by side."
+      },
+      "icon": "Code2",
+      "color": "var(--blk-light)",
+      "prerequisites": [
+        "sensors"
+      ],
+      "units": [
+        {
+          "id": "python-bridge",
+          "title": {
+            "ru": "Блоки → код",
+            "kk": "Блоктар → код",
+            "en": "Blocks → code"
+          },
+          "lessons": [
+            {
+              "id": "python-01",
+              "title": {
+                "ru": "Квадрат в Python",
+                "kk": "Python-дағы шаршы",
+                "en": "A square in Python"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "python-02",
+              "title": {
+                "ru": "Отступы и комментарии",
+                "kk": "Шегіністер мен түсініктемелер",
+                "en": "Indents and comments"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "python-03",
+              "title": {
+                "ru": "Модули SPIKE 3",
+                "kk": "SPIKE 3 модульдері",
+                "en": "SPIKE 3 modules"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "python-async",
+          "title": {
+            "ru": "async и runloop",
+            "kk": "async және runloop",
+            "en": "async and runloop"
+          },
+          "lessons": [
+            {
+              "id": "python-04",
+              "title": {
+                "ru": "Зачем await",
+                "kk": "await не үшін керек",
+                "en": "Why await"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "python-05",
+              "title": {
+                "ru": "runloop.run(main())",
+                "kk": "runloop.run(main())",
+                "en": "runloop.run(main())"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "python-06",
+              "title": {
+                "ru": "Забыли await",
+                "kk": "await ұмытылды",
+                "en": "A forgotten await"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "python-flow",
+          "title": {
+            "ru": "Циклы и условия",
+            "kk": "Циклдер мен шарттар",
+            "en": "Loops and conditions"
+          },
+          "lessons": [
+            {
+              "id": "python-07",
+              "title": {
+                "ru": "for и while",
+                "kk": "for және while",
+                "en": "for and while"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "python-08",
+              "title": {
+                "ru": "if, elif, else",
+                "kk": "if, elif, else",
+                "en": "if, elif, else"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "python-09",
+              "title": {
+                "ru": "Датчики в Python",
+                "kk": "Python-дағы датчиктер",
+                "en": "Sensors in Python"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "python-functions",
+          "title": {
+            "ru": "Переменные и функции",
+            "kk": "Айнымалылар мен функциялар",
+            "en": "Variables and functions"
+          },
+          "lessons": [
+            {
+              "id": "python-10",
+              "title": {
+                "ru": "Переменные и типы",
+                "kk": "Айнымалылар мен типтер",
+                "en": "Variables and types"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "python-11",
+              "title": {
+                "ru": "def и параметры",
+                "kk": "def және параметрлер",
+                "en": "def and parameters"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "python-12",
+              "title": {
+                "ru": "Свои помощники",
+                "kk": "Өз көмекшілерің",
+                "en": "Your own helpers"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "python-project",
+          "title": {
+            "ru": "Проект",
+            "kk": "Жоба",
+            "en": "Project"
+          },
+          "lessons": [
+            {
+              "id": "python-13",
+              "title": {
+                "ru": "Езда по линии на Python",
+                "kk": "Python-да сызық бойымен жүру",
+                "en": "Line following in Python"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "python-14",
+              "title": {
+                "ru": "Точный поворот функцией",
+                "kk": "Функциямен дәл бұрылыс",
+                "en": "An exact turn as a function"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "python-15",
+              "title": {
+                "ru": "Итоговый проект",
+                "kk": "Қорытынды жоба",
+                "en": "Final project"
+              },
+              "status": "todo",
+              "project": true,
+              "kit": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mechanisms",
+      "title": {
+        "ru": "Механизмы и насадки",
+        "kk": "Механизмдер мен саптамалар",
+        "en": "Mechanisms and attachments"
+      },
+      "description": {
+        "ru": "Захват, подъёмник, толкатель. Насадка под задачу.",
+        "kk": "Қармағыш, көтергіш, итергіш. Тапсырмаға саптама.",
+        "en": "Grabber, lift, pusher. An attachment for the task."
+      },
+      "icon": "Cog",
+      "color": "var(--blk-sound)",
+      "prerequisites": [
+        "build",
+        "sensors"
+      ],
+      "units": [
+        {
+          "id": "mech-gripper",
+          "title": {
+            "ru": "Захват",
+            "kk": "Қармағыш",
+            "en": "The grabber"
+          },
+          "lessons": [
+            {
+              "id": "mech-01",
+              "title": {
+                "ru": "Как работает захват",
+                "kk": "Қармағыш қалай жұмыс істейді",
+                "en": "How a grabber works"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "mech-02",
+              "title": {
+                "ru": "Собери захват",
+                "kk": "Қармағышты құрастыр",
+                "en": "Build a grabber"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": true
+            },
+            {
+              "id": "mech-03",
+              "title": {
+                "ru": "Перенеси кубик",
+                "kk": "Текшені тасы",
+                "en": "Carry a cube"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "mech-lift",
+          "title": {
+            "ru": "Подъёмник и рычаг",
+            "kk": "Көтергіш пен иінтірек",
+            "en": "Lift and lever"
+          },
+          "lessons": [
+            {
+              "id": "mech-04",
+              "title": {
+                "ru": "Рычаг и шестерни",
+                "kk": "Иінтірек пен тісті доңғалақтар",
+                "en": "Levers and gears"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "mech-05",
+              "title": {
+                "ru": "Собери подъёмник",
+                "kk": "Көтергішті құрастыр",
+                "en": "Build a lift"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": true
+            },
+            {
+              "id": "mech-06",
+              "title": {
+                "ru": "Подними на угол",
+                "kk": "Бұрышқа көтер",
+                "en": "Lift to an angle"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "mech-pusher",
+          "title": {
+            "ru": "Толкатель",
+            "kk": "Итергіш",
+            "en": "The pusher"
+          },
+          "lessons": [
+            {
+              "id": "mech-07",
+              "title": {
+                "ru": "Толкатель и упор",
+                "kk": "Итергіш пен тірек",
+                "en": "Pusher and stop"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "mech-08",
+              "title": {
+                "ru": "Толкни в зону",
+                "kk": "Аймаққа итер",
+                "en": "Push into the zone"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "mech-design",
+          "title": {
+            "ru": "Проектирование",
+            "kk": "Жобалау",
+            "en": "Designing"
+          },
+          "lessons": [
+            {
+              "id": "mech-09",
+              "title": {
+                "ru": "Бриф задачи",
+                "kk": "Тапсырма брифі",
+                "en": "The task brief"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "mech-10",
+              "title": {
+                "ru": "Быстрая смена насадок",
+                "kk": "Саптамаларды жылдам ауыстыру",
+                "en": "Quick attachment changes"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "mech-11",
+              "title": {
+                "ru": "Проект «Своя насадка»",
+                "kk": "«Өз саптамаң» жобасы",
+                "en": "Project “Your attachment”"
+              },
+              "status": "todo",
+              "project": true,
+              "kit": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fll",
+      "title": {
+        "ru": "Соревнования FLL",
+        "kk": "FLL жарыстары",
+        "en": "FLL competitions"
+      },
+      "description": {
+        "ru": "Стратегия заездов, работа в команде и защита робота.",
+        "kk": "Заездер стратегиясы, командалық жұмыс және роботты қорғау.",
+        "en": "Run strategy, teamwork and presenting your robot."
+      },
+      "icon": "Trophy",
+      "color": "var(--blk-events)",
+      "prerequisites": [
+        "navigation",
+        "mechanisms"
+      ],
+      "units": [
+        {
+          "id": "fll-intro",
+          "title": {
+            "ru": "Что такое FLL",
+            "kk": "FLL деген не",
+            "en": "What FLL is"
+          },
+          "lessons": [
+            {
+              "id": "fll-01",
+              "title": {
+                "ru": "Четыре части FLL",
+                "kk": "FLL-дің төрт бөлігі",
+                "en": "The four parts of FLL"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "fll-02",
+              "title": {
+                "ru": "Правила Robot Game",
+                "kk": "Robot Game ережелері",
+                "en": "Robot Game rules"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "fll-strategy",
+          "title": {
+            "ru": "Стратегия",
+            "kk": "Стратегия",
+            "en": "Strategy"
+          },
+          "lessons": [
+            {
+              "id": "fll-03",
+              "title": {
+                "ru": "Очки за время",
+                "kk": "Уақытқа шаққандағы ұпай",
+                "en": "Points for time"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "fll-04",
+              "title": {
+                "ru": "Заезды с FLL-тренером",
+                "kk": "FLL-жаттықтырушымен заездер",
+                "en": "Runs with the FLL coach"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "fll-05",
+              "title": {
+                "ru": "Надёжность важнее рекорда",
+                "kk": "Сенімділік рекордтан маңызды",
+                "en": "Reliability beats records"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "fll-robot",
+          "title": {
+            "ru": "Робот и насадки",
+            "kk": "Робот пен саптамалар",
+            "en": "Robot and attachments"
+          },
+          "lessons": [
+            {
+              "id": "fll-06",
+              "title": {
+                "ru": "Смена насадок за секунды",
+                "kk": "Саптамаларды секундта ауыстыру",
+                "en": "Attachment swaps in seconds"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "fll-07",
+              "title": {
+                "ru": "Журнал заездов",
+                "kk": "Заездер журналы",
+                "en": "The run log"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "fll-team",
+          "title": {
+            "ru": "Команда",
+            "kk": "Команда",
+            "en": "Team"
+          },
+          "lessons": [
+            {
+              "id": "fll-08",
+              "title": {
+                "ru": "Роли в команде",
+                "kk": "Командадағы рөлдер",
+                "en": "Team roles"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "fll-09",
+              "title": {
+                "ru": "Core Values на практике",
+                "kk": "Core Values тәжірибеде",
+                "en": "Core Values in practice"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "fll-10",
+              "title": {
+                "ru": "Инженерная книга",
+                "kk": "Инженерлік кітап",
+                "en": "The engineering notebook"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            }
+          ]
+        },
+        {
+          "id": "fll-judging",
+          "title": {
+            "ru": "Защита",
+            "kk": "Қорғау",
+            "en": "Judging"
+          },
+          "lessons": [
+            {
+              "id": "fll-11",
+              "title": {
+                "ru": "Как рассказать о роботе",
+                "kk": "Робот туралы қалай айту керек",
+                "en": "How to present your robot"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "fll-12",
+              "title": {
+                "ru": "Пробная защита",
+                "kk": "Сынақ қорғау",
+                "en": "A practice judging session"
+              },
+              "status": "todo",
+              "project": false,
+              "kit": false
+            },
+            {
+              "id": "fll-13",
+              "title": {
+                "ru": "Проект «План сезона»",
+                "kk": "«Маусым жоспары» жобасы",
+                "en": "Project “Season plan”"
+              },
+              "status": "todo",
+              "project": true,
+              "kit": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

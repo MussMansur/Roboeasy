@@ -1,0 +1,362 @@
+{
+  "id": "start-04",
+  "track": "start",
+  "unit": "start-robot",
+  "minutes": 7,
+  "skills": [
+    "robot-basics",
+    "sensor-distance"
+  ],
+  "title": {
+    "ru": "Датчики",
+    "kk": "Датчиктер",
+    "en": "Sensors"
+  },
+  "goal": {
+    "ru": "Сегодня ты научишь робота останавливаться перед стеной сам.",
+    "kk": "Бүгін сен роботты қабырға алдында өзі тоқтауға үйретесің.",
+    "en": "Today you will teach the robot to stop in front of a wall by itself."
+  },
+  "summary": {
+    "ru": "Теперь ты знаешь, что чувствует каждый датчик, и умеешь ждать сигнала датчика расстояния.",
+    "kk": "Енді сен әр датчик не сезетінін білесің және қашықтық датчигінің белгісін күте аласың.",
+    "en": "Now you know what each sensor feels, and you can wait for the distance sensor."
+  },
+  "steps": [
+    {
+      "id": "sensors",
+      "type": "theory",
+      "illustration": "sensors",
+      "title": {
+        "ru": "Глаза и пальцы робота",
+        "kk": "Роботтың көзі мен саусақтары",
+        "en": "The robot’s eyes and fingers"
+      },
+      "body": {
+        "ru": "**Датчик цвета** смотрит вниз: видит цвет под собой и то, насколько поверхность светлая.\n\n**Датчик расстояния** смотрит вперёд и измеряет, сколько сантиметров до предмета.\n\n**Датчик силы** — это кнопка: он чувствует, что его нажали.\n\nА **гироскоп** спрятан в хабе и знает, насколько робот повернулся.",
+        "kk": "**Түс датчигі** төмен қарайды: астындағы түсті және беттің қаншалықты ашық екенін көреді.\n\n**Қашықтық датчигі** алға қарап, затқа дейін неше сантиметр екенін өлшейді.\n\n**Күш датчигі** — түйме: оны басқанын сезеді.\n\nАл **гироскоп** хабтың ішінде жасырылған және робот қаншалықты бұрылғанын біледі.",
+        "en": "The **colour sensor** looks down: it sees the colour under it and how light the surface is.\n\nThe **distance sensor** looks ahead and measures how many centimetres away an object is.\n\nThe **force sensor** is a button: it feels being pressed.\n\nAnd the **gyro** hides inside the hub and knows how far the robot has turned."
+      }
+    },
+    {
+      "id": "match",
+      "type": "quiz",
+      "kind": "match",
+      "skill": "robot-basics",
+      "question": {
+        "ru": "Какой датчик поможет?",
+        "kk": "Қай датчик көмектеседі?",
+        "en": "Which sensor will help?"
+      },
+      "pairs": [
+        {
+          "left": {
+            "ru": "Остановиться на чёрной линии",
+            "kk": "Қара сызықта тоқтау",
+            "en": "Stop on a black line"
+          },
+          "right": {
+            "ru": "Датчик цвета",
+            "kk": "Түс датчигі",
+            "en": "Colour sensor"
+          }
+        },
+        {
+          "left": {
+            "ru": "Не врезаться в стену",
+            "kk": "Қабырғаға соғылмау",
+            "en": "Not hit a wall"
+          },
+          "right": {
+            "ru": "Датчик расстояния",
+            "kk": "Қашықтық датчигі",
+            "en": "Distance sensor"
+          }
+        },
+        {
+          "left": {
+            "ru": "Понять, что робот упёрся",
+            "kk": "Робот тірелгенін түсіну",
+            "en": "Feel that the robot bumped into something"
+          },
+          "right": {
+            "ru": "Датчик силы",
+            "kk": "Күш датчигі",
+            "en": "Force sensor"
+          }
+        },
+        {
+          "left": {
+            "ru": "Повернуть ровно на 90°",
+            "kk": "Дәл 90°-қа бұрылу",
+            "en": "Turn exactly 90°"
+          },
+          "right": {
+            "ru": "Гироскоп",
+            "kk": "Гироскоп",
+            "en": "Gyro"
+          }
+        }
+      ],
+      "explanation": {
+        "ru": "У каждого датчика своя работа. Часто роботу нужны сразу несколько.",
+        "kk": "Әр датчиктің өз жұмысы бар. Көбіне роботқа бірнешеуі бірден керек.",
+        "en": "Each sensor has its own job. A robot often needs several at once."
+      }
+    },
+    {
+      "id": "predict-wall",
+      "type": "predict",
+      "skill": "sensor-distance",
+      "title": {
+        "ru": "Что сделает робот?",
+        "kk": "Робот не істейді?",
+        "en": "What will the robot do?"
+      },
+      "question": {
+        "ru": "Робот начинает ехать и ждёт, пока до стены станет меньше 10 см. Где он остановится?",
+        "kk": "Робот жүре бастайды және қабырғаға дейін 10 см-ден аз қалғанша күтеді. Ол қай жерде тоқтайды?",
+        "en": "The robot starts driving and waits until the wall is closer than 10 cm. Where will it stop?"
+      },
+      "field": {
+        "width": 1400,
+        "height": 600,
+        "start": {
+          "x": 200,
+          "y": 300,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [],
+        "points": [],
+        "walls": [
+          {
+            "x": 1100,
+            "y": 120,
+            "w": 40,
+            "h": 360
+          }
+        ],
+        "lines": []
+      },
+      "program": [
+        {
+          "op": "start_move",
+          "direction": "forward"
+        },
+        {
+          "op": "wait_until",
+          "condition": {
+            "sensor": "distance",
+            "port": "C",
+            "comparator": "<",
+            "value": 10,
+            "unit": "cm"
+          }
+        },
+        {
+          "op": "stop_move"
+        }
+      ],
+      "options": [
+        {
+          "label": {
+            "ru": "Перед стеной",
+            "kk": "Қабырғаның алдында",
+            "en": "In front of the wall"
+          },
+          "steps": [
+            {
+              "op": "start_move",
+              "direction": "forward"
+            },
+            {
+              "op": "wait_until",
+              "condition": {
+                "sensor": "distance",
+                "port": "C",
+                "comparator": "<",
+                "value": 10,
+                "unit": "cm"
+              }
+            },
+            {
+              "op": "stop_move"
+            }
+          ]
+        },
+        {
+          "label": {
+            "ru": "Врежется в стену",
+            "kk": "Қабырғаға соғылады",
+            "en": "It hits the wall"
+          },
+          "steps": [
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 120,
+              "unit": "cm"
+            }
+          ]
+        },
+        {
+          "label": {
+            "ru": "Сразу остановится",
+            "kk": "Бірден тоқтайды",
+            "en": "It stops right away"
+          },
+          "steps": [
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 5,
+              "unit": "cm"
+            }
+          ]
+        }
+      ],
+      "correct": 0,
+      "explanation": {
+        "ru": "Пока стена далеко, робот едет. Как только датчик видит, что до стены меньше 10 см, следующий блок останавливает робота.",
+        "kk": "Қабырға алыс болғанда робот жүреді. Датчик қабырғаға дейін 10 см-ден аз екенін көрген кезде келесі блок роботты тоқтатады.",
+        "en": "While the wall is far, the robot drives. As soon as the sensor sees the wall closer than 10 cm, the next block stops the robot."
+      }
+    },
+    {
+      "id": "stop-at-wall",
+      "type": "code",
+      "skill": "sensor-distance",
+      "title": {
+        "ru": "Стоп перед стеной",
+        "kk": "Қабырға алдында тоқта",
+        "en": "Stop before the wall"
+      },
+      "task": {
+        "ru": "Робот уже умеет начать ехать и остановиться, но останавливается сразу. Вставь между блоками «ждать, пока» с датчиком расстояния, чтобы робот остановился перед стеной и не коснулся её.",
+        "kk": "Робот жүре бастауды және тоқтауды біледі, бірақ бірден тоқтайды. Блоктардың арасына қашықтық датчигімен «болғанша күту» блогын қой, сонда робот қабырғаға тимей, оның алдында тоқтайды.",
+        "en": "The robot can already start and stop, but it stops right away. Put a “wait until” block with the distance sensor between them, so the robot stops in front of the wall without touching it."
+      },
+      "field": {
+        "width": 1400,
+        "height": 600,
+        "start": {
+          "x": 200,
+          "y": 300,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [],
+        "points": [],
+        "walls": [
+          {
+            "x": 1100,
+            "y": 120,
+            "w": 40,
+            "h": 360
+          }
+        ],
+        "lines": []
+      },
+      "toolbox": [
+        "start_move",
+        "wait_until",
+        "stop_move"
+      ],
+      "start": [
+        {
+          "op": "start_move",
+          "direction": "forward"
+        },
+        {
+          "op": "stop_move"
+        }
+      ],
+      "checks": [
+        {
+          "type": "usesSensor",
+          "sensor": "distance"
+        },
+        {
+          "type": "stopBeforeWall",
+          "maxMm": 200
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Что должно случиться между «начать движение» и «остановить»?",
+          "kk": "«Қозғалысты бастау» мен «тоқтатудың» арасында не болуы керек?",
+          "en": "What has to happen between “start moving” and “stop”?"
+        },
+        {
+          "ru": "Блок «ждать, пока» держит программу, пока условие не станет верным. Вставь в него зелёный блок датчика расстояния.",
+          "kk": "«Болғанша күту» блогы шарт орындалғанша бағдарламаны ұстап тұрады. Оған қашықтық датчигінің жасыл блогын сал.",
+          "en": "The “wait until” block holds the program until the condition is true. Put the green distance-sensor block into it."
+        },
+        {
+          "ru": "«ждать, пока C расстояние < 10 см» между двумя блоками.",
+          "kk": "Екі блоктың арасына «C қашықтық < 10 см болғанша күту».",
+          "en": "“wait until C distance < 10 cm” between the two blocks."
+        }
+      ],
+      "reference": [
+        {
+          "op": "start_move",
+          "direction": "forward"
+        },
+        {
+          "op": "wait_until",
+          "condition": {
+            "sensor": "distance",
+            "port": "C",
+            "comparator": "<",
+            "value": 10,
+            "unit": "cm"
+          }
+        },
+        {
+          "op": "stop_move"
+        }
+      ]
+    },
+    {
+      "id": "line-sensor",
+      "type": "quiz",
+      "kind": "choice",
+      "skill": "robot-basics",
+      "question": {
+        "ru": "Какой датчик нужен, чтобы ехать по чёрной линии?",
+        "kk": "Қара сызық бойымен жүру үшін қай датчик керек?",
+        "en": "Which sensor do you need to follow a black line?"
+      },
+      "options": [
+        {
+          "ru": "Датчик цвета",
+          "kk": "Түс датчигі",
+          "en": "Colour sensor"
+        },
+        {
+          "ru": "Датчик силы",
+          "kk": "Күш датчигі",
+          "en": "Force sensor"
+        },
+        {
+          "ru": "Датчик расстояния",
+          "kk": "Қашықтық датчигі",
+          "en": "Distance sensor"
+        }
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": {
+        "ru": "Датчик цвета смотрит вниз и отличает тёмную линию от светлого поля.",
+        "kk": "Түс датчигі төмен қарап, қараңғы сызықты ашық алаңнан ажыратады.",
+        "en": "The colour sensor looks down and tells a dark line from the light mat."
+      }
+    }
+  ]
+}

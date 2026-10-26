@@ -1,0 +1,458 @@
+{
+  "id": "blocks-03",
+  "track": "blocks",
+  "unit": "blocks-sequence",
+  "minutes": 8,
+  "skills": [
+    "sequence",
+    "turns"
+  ],
+  "title": {
+    "ru": "Квадрат",
+    "kk": "Шаршы",
+    "en": "A square"
+  },
+  "goal": {
+    "ru": "Сегодня ты научишь робота проезжать квадрат.",
+    "kk": "Бүгін сен роботты шаршы бойымен жүруге үйретесің.",
+    "en": "Today you will teach the robot to drive a square."
+  },
+  "summary": {
+    "ru": "Теперь ты умеешь собирать фигуру из движений и поворотов.",
+    "kk": "Енді сен қозғалыстар мен бұрылыстардан фигура құрастыра аласың.",
+    "en": "Now you can build a shape out of drives and turns."
+  },
+  "steps": [
+    {
+      "id": "square",
+      "type": "theory",
+      "illustration": "square",
+      "title": {
+        "ru": "Четыре стороны, четыре угла",
+        "kk": "Төрт қабырға, төрт бұрыш",
+        "en": "Four sides, four corners"
+      },
+      "body": {
+        "ru": "У квадрата **4 одинаковые стороны** и **4 угла по 90°**.\n\nЗначит, робот должен четыре раза сделать одно и то же: проехать сторону и повернуть на 90°. В конце он вернётся туда, откуда начал.",
+        "kk": "Шаршының **4 бірдей қабырғасы** және **90°-тан 4 бұрышы** бар.\n\nДемек, робот бір нәрсені төрт рет істеуі керек: қабырғаны жүріп өтіп, 90°-қа бұрылу. Соңында ол бастаған жеріне қайтады.",
+        "en": "A square has **4 equal sides** and **4 corners of 90°**.\n\nSo the robot has to do the same thing four times: drive one side and turn 90°. At the end it is back where it started."
+      }
+    },
+    {
+      "id": "predict-square",
+      "type": "predict",
+      "skill": "turns",
+      "title": {
+        "ru": "Какая фигура получится?",
+        "kk": "Қандай фигура шығады?",
+        "en": "Which shape will it be?"
+      },
+      "question": {
+        "ru": "Робот 4 раза проезжает 30 см и поворачивает налево на 90°. Какой путь?",
+        "kk": "Робот 4 рет 30 см жүріп, солға 90°-қа бұрылады. Қандай жол?",
+        "en": "The robot drives 30 cm and turns left 90° four times. Which path?"
+      },
+      "field": {
+        "width": 1000,
+        "height": 900,
+        "start": {
+          "x": 300,
+          "y": 300,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "program": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        }
+      ],
+      "options": [
+        {
+          "label": {
+            "ru": "Квадрат",
+            "kk": "Шаршы",
+            "en": "Square"
+          },
+          "steps": [
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "left",
+              "degrees": 90
+            },
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "left",
+              "degrees": 90
+            },
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "left",
+              "degrees": 90
+            },
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "left",
+              "degrees": 90
+            }
+          ]
+        },
+        {
+          "label": {
+            "ru": "Ступеньки",
+            "kk": "Баспалдақ",
+            "en": "Steps"
+          },
+          "steps": [
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "left",
+              "degrees": 90
+            },
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "right",
+              "degrees": 90
+            },
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "left",
+              "degrees": 90
+            },
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "right",
+              "degrees": 90
+            }
+          ]
+        },
+        {
+          "label": {
+            "ru": "Треугольник",
+            "kk": "Үшбұрыш",
+            "en": "Triangle"
+          },
+          "steps": [
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "left",
+              "degrees": 120
+            },
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "left",
+              "degrees": 120
+            },
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "left",
+              "degrees": 120
+            }
+          ]
+        }
+      ],
+      "correct": 0,
+      "explanation": {
+        "ru": "Все повороты в одну сторону на 90° — робот обходит квадрат и возвращается на старт.",
+        "kk": "Барлық бұрылыстар бір жаққа 90°-тан — робот шаршыны айналып, стартқа қайтады.",
+        "en": "All the turns go the same way by 90° — the robot goes round a square and comes back to the start."
+      }
+    },
+    {
+      "id": "drive-square",
+      "type": "code",
+      "skill": "sequence",
+      "title": {
+        "ru": "Проедь квадрат",
+        "kk": "Шаршыны жүріп өт",
+        "en": "Drive a square"
+      },
+      "task": {
+        "ru": "Проедь квадрат со стороной 30 см через углы 2, 3 и 4 и вернись на старт.",
+        "kk": "Қабырғасы 30 см шаршыны 2, 3 және 4 бұрыштар арқылы жүріп өтіп, стартқа қайт.",
+        "en": "Drive a square with 30 cm sides through corners 2, 3 and 4 and come back to the start."
+      },
+      "field": {
+        "width": 1000,
+        "height": 900,
+        "start": {
+          "x": 300,
+          "y": 250,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "home",
+            "x": 200,
+            "y": 150,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Старт",
+              "kk": "Бастау",
+              "en": "Start"
+            }
+          }
+        ],
+        "points": [
+          {
+            "id": "c2",
+            "x": 600,
+            "y": 250,
+            "r": 60,
+            "label": {
+              "ru": "2",
+              "kk": "2",
+              "en": "2"
+            }
+          },
+          {
+            "id": "c3",
+            "x": 600,
+            "y": 550,
+            "r": 60,
+            "label": {
+              "ru": "3",
+              "kk": "3",
+              "en": "3"
+            }
+          },
+          {
+            "id": "c4",
+            "x": 300,
+            "y": 550,
+            "r": 60,
+            "label": {
+              "ru": "4",
+              "kk": "4",
+              "en": "4"
+            }
+          }
+        ],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "passPoints",
+          "points": [
+            "c2",
+            "c3",
+            "c4"
+          ]
+        },
+        {
+          "type": "finishInZone",
+          "zone": "home"
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Начни с одной стороны и одного поворота. Работает? Повтори.",
+          "kk": "Бір қабырға мен бір бұрылыстан баста. Жұмыс істей ме? Қайтала.",
+          "en": "Start with one side and one turn. Does it work? Repeat it."
+        },
+        {
+          "ru": "Угол 2 справа, угол 3 сверху — повороты налево.",
+          "kk": "2-бұрыш оңда, 3-бұрыш жоғарыда — солға бұрылыстар.",
+          "en": "Corner 2 is to the right, corner 3 is above — left turns."
+        },
+        {
+          "ru": "4 раза: «вперёд 30 см», «налево 90°».",
+          "kk": "4 рет: «30 см алға», «солға 90°».",
+          "en": "4 times: “forward 30 cm”, “left 90°”."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        }
+      ]
+    },
+    {
+      "id": "degrees",
+      "type": "quiz",
+      "kind": "number",
+      "skill": "turns",
+      "question": {
+        "ru": "Сколько всего градусов повернёт робот, объехав квадрат?",
+        "kk": "Шаршыны айналып шыққанда робот барлығы неше градусқа бұрылады?",
+        "en": "How many degrees does the robot turn in total going round the square?"
+      },
+      "answer": 360,
+      "tolerance": 0,
+      "unit": {
+        "ru": "градусов",
+        "kk": "градус",
+        "en": "degrees"
+      },
+      "explanation": {
+        "ru": "4 поворота по 90°: 4 × 90 = 360° — полный круг.",
+        "kk": "90°-тан 4 бұрылыс: 4 × 90 = 360° — толық шеңбер.",
+        "en": "4 turns of 90°: 4 × 90 = 360° — a full circle."
+      }
+    }
+  ]
+}

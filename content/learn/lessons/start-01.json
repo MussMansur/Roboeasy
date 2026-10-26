@@ -1,0 +1,235 @@
+{
+  "id": "start-01",
+  "track": "start",
+  "unit": "start-robot",
+  "minutes": 6,
+  "skills": [
+    "robot-basics",
+    "sequence"
+  ],
+  "title": {
+    "ru": "Что такое робот",
+    "kk": "Робот деген не",
+    "en": "What is a robot"
+  },
+  "goal": {
+    "ru": "Сегодня ты узнаешь, из чего состоит робот, и напишешь свою первую программу.",
+    "kk": "Бүгін сен робот неден тұратынын біліп, алғашқы бағдарламаңды жазасың.",
+    "en": "Today you will find out what a robot is made of and write your first program."
+  },
+  "summary": {
+    "ru": "Теперь ты знаешь: робот чувствует, думает и действует, а программа — это команды по порядку.",
+    "kk": "Енді сен білесің: робот сезеді, ойлайды және әрекет етеді, ал бағдарлама — ретімен берілген командалар.",
+    "en": "Now you know: a robot senses, thinks and acts, and a program is a list of commands in order."
+  },
+  "steps": [
+    {
+      "id": "what",
+      "type": "theory",
+      "illustration": "robot-parts",
+      "title": {
+        "ru": "Робот чувствует, думает и действует",
+        "kk": "Робот сезеді, ойлайды және әрекет етеді",
+        "en": "A robot senses, thinks and acts"
+      },
+      "body": {
+        "ru": "Робот — это машина, которая умеет три вещи.\n\n**Чувствует** — датчиками: видит цвет, замечает стену, понимает, что его нажали.\n\n**Думает** — хабом. Это маленький компьютер, в котором живёт программа.\n\n**Действует** — моторами: крутит колёса, поднимает руку, толкает предметы.",
+        "kk": "Робот — үш нәрсені істей алатын машина.\n\n**Сезеді** — датчиктермен: түсті көреді, қабырғаны байқайды, оны басқанын түсінеді.\n\n**Ойлайды** — хабпен. Бұл ішінде бағдарлама тұратын кішкентай компьютер.\n\n**Әрекет етеді** — моторлармен: доңғалақтарды айналдырады, қолын көтереді, заттарды итереді.",
+        "en": "A robot is a machine that can do three things.\n\n**Sense** — with sensors: it sees colours, notices a wall, feels a press.\n\n**Think** — with the hub. It is a small computer where the program lives.\n\n**Act** — with motors: it turns wheels, lifts an arm, pushes things."
+      }
+    },
+    {
+      "id": "match-parts",
+      "type": "quiz",
+      "kind": "match",
+      "skill": "robot-basics",
+      "question": {
+        "ru": "Соедини часть робота с тем, что она делает.",
+        "kk": "Робот бөлігін оның атқаратын ісімен сәйкестендір.",
+        "en": "Match each part of the robot to what it does."
+      },
+      "pairs": [
+        {
+          "left": {
+            "ru": "Датчик",
+            "kk": "Датчик",
+            "en": "Sensor"
+          },
+          "right": {
+            "ru": "Чувствует",
+            "kk": "Сезеді",
+            "en": "Senses"
+          }
+        },
+        {
+          "left": {
+            "ru": "Хаб",
+            "kk": "Хаб",
+            "en": "Hub"
+          },
+          "right": {
+            "ru": "Думает",
+            "kk": "Ойлайды",
+            "en": "Thinks"
+          }
+        },
+        {
+          "left": {
+            "ru": "Мотор",
+            "kk": "Мотор",
+            "en": "Motor"
+          },
+          "right": {
+            "ru": "Действует",
+            "kk": "Әрекет етеді",
+            "en": "Acts"
+          }
+        }
+      ],
+      "explanation": {
+        "ru": "Датчики собирают информацию, хаб решает, что делать, моторы выполняют.",
+        "kk": "Датчиктер ақпарат жинайды, хаб не істеу керегін шешеді, моторлар орындайды.",
+        "en": "Sensors collect information, the hub decides what to do, motors do it."
+      }
+    },
+    {
+      "id": "program",
+      "type": "theory",
+      "example": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 20,
+          "unit": "cm"
+        }
+      ],
+      "title": {
+        "ru": "Программа — это список команд",
+        "kk": "Бағдарлама — командалар тізімі",
+        "en": "A program is a list of commands"
+      },
+      "body": {
+        "ru": "Хаб ничего не делает сам. Ему нужна **программа** — команды, которые выполняются по порядку, сверху вниз.\n\nКаждая команда — это **блок**. Блоки соединяются друг под другом, как детали конструктора. Первым всегда стоит блок «когда программа запускается».",
+        "kk": "Хаб өздігінен ештеңе істемейді. Оған **бағдарлама** керек — жоғарыдан төменге ретімен орындалатын командалар.\n\nӘр команда — **блок**. Блоктар конструктор бөлшектері сияқты бірінің астына бірі жалғанады. Бірінші әрқашан «бағдарлама басталғанда» блогы тұрады.",
+        "en": "The hub does nothing by itself. It needs a **program** — commands that run in order, from top to bottom.\n\nEach command is a **block**. Blocks snap together one under another, like building pieces. The first one is always “when program starts”."
+      }
+    },
+    {
+      "id": "first-program",
+      "type": "code",
+      "skill": "motion",
+      "title": {
+        "ru": "Твоя первая программа",
+        "kk": "Алғашқы бағдарламаң",
+        "en": "Your first program"
+      },
+      "task": {
+        "ru": "Собери программу: робот должен доехать до жёлтой зоны «Финиш». Перетащи блок «ехать» под стартовый блок и запусти.",
+        "kk": "Бағдарлама құрастыр: робот сары «Мәре» аймағына жетуі керек. «Жүру» блогын бастапқы блоктың астына сүйреп апарып, іске қос.",
+        "en": "Build a program: the robot should reach the yellow “Finish” zone. Drag a “move” block under the start block and run it."
+      },
+      "field": {
+        "width": 1200,
+        "height": 600,
+        "start": {
+          "x": 200,
+          "y": 300,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "finish",
+            "x": 520,
+            "y": 200,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Финиш",
+              "kk": "Мәре",
+              "en": "Finish"
+            }
+          }
+        ],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "finishInZone",
+          "zone": "finish"
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Какой блок заставляет робота ехать?",
+          "kk": "Қай блок роботты жүргізеді?",
+          "en": "Which block makes the robot drive?"
+        },
+        {
+          "ru": "Посмотри на сетку поля: до зоны примерно 40 см.",
+          "kk": "Алаң торына қара: аймаққа дейін шамамен 40 см.",
+          "en": "Look at the grid: the zone is about 40 cm away."
+        },
+        {
+          "ru": "Поставь блок «ехать вперёд на 40 см» под стартовый блок.",
+          "kk": "«40 см алға жүру» блогын бастапқы блоктың астына қой.",
+          "en": "Put “move forward 40 cm” under the start block."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "after-end",
+      "type": "quiz",
+      "kind": "choice",
+      "skill": "sequence",
+      "question": {
+        "ru": "Что делает робот, когда команды в программе закончились?",
+        "kk": "Бағдарламадағы командалар біткенде робот не істейді?",
+        "en": "What does the robot do when the program runs out of commands?"
+      },
+      "options": [
+        {
+          "ru": "Останавливается",
+          "kk": "Тоқтайды",
+          "en": "It stops"
+        },
+        {
+          "ru": "Едет дальше сам",
+          "kk": "Өздігінен әрі қарай жүреді",
+          "en": "It keeps driving on its own"
+        },
+        {
+          "ru": "Начинает программу заново",
+          "kk": "Бағдарламаны қайта бастайды",
+          "en": "It starts the program again"
+        }
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": {
+        "ru": "Робот делает только то, что написано в программе. Команды кончились — робот остановился.",
+        "kk": "Робот тек бағдарламада жазылғанды ғана істейді. Командалар бітті — робот тоқтады.",
+        "en": "A robot only does what the program says. No more commands — the robot stops."
+      }
+    }
+  ]
+}

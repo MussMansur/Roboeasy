@@ -1,0 +1,387 @@
+{
+  "id": "start-07",
+  "track": "start",
+  "unit": "start-drive",
+  "minutes": 8,
+  "skills": [
+    "turns",
+    "sequence"
+  ],
+  "title": {
+    "ru": "Повороты",
+    "kk": "Бұрылыстар",
+    "en": "Turns"
+  },
+  "goal": {
+    "ru": "Сегодня ты научишь робота поворачивать на нужный угол.",
+    "kk": "Бүгін сен роботты керекті бұрышқа бұрылуға үйретесің.",
+    "en": "Today you will teach the robot to turn by the right angle."
+  },
+  "summary": {
+    "ru": "Теперь ты умеешь поворачивать робота налево и направо на нужный угол.",
+    "kk": "Енді сен роботты керекті бұрышқа солға және оңға бұра аласың.",
+    "en": "Now you can turn the robot left and right by the angle you need."
+  },
+  "steps": [
+    {
+      "id": "turn",
+      "type": "theory",
+      "illustration": "turn",
+      "title": {
+        "ru": "Поворот на месте",
+        "kk": "Орнында бұрылу",
+        "en": "Turning on the spot"
+      },
+      "body": {
+        "ru": "Чтобы повернуть на месте, робот крутит одно колесо вперёд, а другое назад.\n\nУгол задаётся в **градусах**: 90° — четверть круга (поворот «за угол»), 180° — разворот кругом.\n\nГироскоп в хабе следит за углом, поэтому поворот получается точным.",
+        "kk": "Орнында бұрылу үшін робот бір доңғалақты алға, ал екіншісін артқа айналдырады.\n\nБұрыш **градуспен** беріледі: 90° — шеңбердің төрттен бірі («бұрышқа» бұрылу), 180° — толық кері бұрылу.\n\nХабтағы гироскоп бұрышты қадағалайды, сондықтан бұрылыс дәл шығады.",
+        "en": "To turn on the spot, the robot spins one wheel forward and the other backward.\n\nThe angle is in **degrees**: 90° is a quarter of a circle (turning “around a corner”), 180° turns all the way round.\n\nThe gyro in the hub watches the angle, so the turn is precise."
+      }
+    },
+    {
+      "id": "which-way",
+      "type": "quiz",
+      "kind": "choice",
+      "skill": "turns",
+      "question": {
+        "ru": "Робот смотрит вправо и поворачивает налево на 90°. Куда он теперь смотрит на экране?",
+        "kk": "Робот оңға қарап тұр және солға 90°-қа бұрылады. Енді ол экранда қайда қарайды?",
+        "en": "The robot faces right and turns left by 90°. Which way does it face on the screen now?"
+      },
+      "options": [
+        {
+          "ru": "Вверх",
+          "kk": "Жоғары",
+          "en": "Up"
+        },
+        {
+          "ru": "Вниз",
+          "kk": "Төмен",
+          "en": "Down"
+        },
+        {
+          "ru": "Влево",
+          "kk": "Солға",
+          "en": "Left"
+        }
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": {
+        "ru": "Поворот налево — против часовой стрелки: из «вправо» робот поворачивается «вверх».",
+        "kk": "Солға бұрылу — сағат тіліне қарсы: «оңнан» робот «жоғары» бұрылады.",
+        "en": "A left turn is counterclockwise: from “right” the robot turns to “up”."
+      }
+    },
+    {
+      "id": "predict-l",
+      "type": "predict",
+      "skill": "turns",
+      "title": {
+        "ru": "По какому пути поедет робот?",
+        "kk": "Робот қай жолмен жүреді?",
+        "en": "Which path will the robot take?"
+      },
+      "question": {
+        "ru": "Робот проедет 30 см, повернёт налево на 90° и проедет ещё 20 см. Какой путь правильный?",
+        "kk": "Робот 30 см жүріп, солға 90°-қа бұрылып, тағы 20 см жүреді. Қай жол дұрыс?",
+        "en": "The robot drives 30 cm, turns left 90° and drives another 20 cm. Which path is right?"
+      },
+      "field": {
+        "width": 1000,
+        "height": 800,
+        "start": {
+          "x": 250,
+          "y": 400,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "program": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 20,
+          "unit": "cm"
+        }
+      ],
+      "options": [
+        {
+          "label": {
+            "ru": "Путь A",
+            "kk": "A жолы",
+            "en": "Path A"
+          },
+          "steps": [
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "left",
+              "degrees": 90
+            },
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 20,
+              "unit": "cm"
+            }
+          ]
+        },
+        {
+          "label": {
+            "ru": "Путь B",
+            "kk": "B жолы",
+            "en": "Path B"
+          },
+          "steps": [
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 30,
+              "unit": "cm"
+            },
+            {
+              "op": "turn",
+              "direction": "right",
+              "degrees": 90
+            },
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 20,
+              "unit": "cm"
+            }
+          ]
+        },
+        {
+          "label": {
+            "ru": "Путь C",
+            "kk": "C жолы",
+            "en": "Path C"
+          },
+          "steps": [
+            {
+              "op": "move",
+              "direction": "forward",
+              "value": 50,
+              "unit": "cm"
+            }
+          ]
+        }
+      ],
+      "correct": 0,
+      "explanation": {
+        "ru": "Сначала прямо, потом поворот против часовой стрелки — вверх, и ещё немного вперёд.",
+        "kk": "Алдымен тура, содан кейін сағат тіліне қарсы бұрылыс — жоғары, және тағы аздап алға.",
+        "en": "First straight, then a counterclockwise turn — up — and a bit more forward."
+      }
+    },
+    {
+      "id": "to-flag",
+      "type": "code",
+      "skill": "turns",
+      "title": {
+        "ru": "Повернись к флажку",
+        "kk": "Жалаушаға бұрыл",
+        "en": "Face the flag"
+      },
+      "task": {
+        "ru": "Флажок стоит выше робота. Поверни робота и доедь до флажка.",
+        "kk": "Жалауша роботтан жоғары тұр. Роботты бұрып, жалаушаға дейін жүр.",
+        "en": "The flag is above the robot. Turn the robot and drive to the flag."
+      },
+      "field": {
+        "width": 1000,
+        "height": 800,
+        "start": {
+          "x": 300,
+          "y": 250,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [],
+        "points": [
+          {
+            "id": "flag",
+            "x": 300,
+            "y": 550,
+            "r": 60,
+            "label": {
+              "ru": "Флажок",
+              "kk": "Жалауша",
+              "en": "Flag"
+            }
+          }
+        ],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "passPoints",
+          "points": [
+            "flag"
+          ]
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Сначала повернуть, потом ехать.",
+          "kk": "Алдымен бұрылу, содан кейін жүру.",
+          "en": "First turn, then drive."
+        },
+        {
+          "ru": "Флажок вверху — значит, поворот налево на 90°. До него 30 см.",
+          "kk": "Жалауша жоғарыда — демек, солға 90°-қа бұрылу. Оған дейін 30 см.",
+          "en": "The flag is up — so a left turn of 90°. It is 30 cm away."
+        },
+        {
+          "ru": "«развернуться влево на 90°», потом «ехать вперёд 30 см».",
+          "kk": "«солға 90°-қа бұрылу», содан кейін «30 см алға жүру».",
+          "en": "“turn left 90°”, then “move forward 30 cm”."
+        }
+      ],
+      "reference": [
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "u-turn",
+      "type": "code",
+      "skill": "turns",
+      "title": {
+        "ru": "Разворот",
+        "kk": "Кері бұрылу",
+        "en": "U-turn"
+      },
+      "task": {
+        "ru": "Проедь 40 см, развернись кругом и вернись в гараж передом.",
+        "kk": "40 см жүріп, толық кері бұрылып, гаражға алдымен қайт.",
+        "en": "Drive 40 cm, turn all the way round and come back into the garage nose first."
+      },
+      "field": {
+        "width": 1200,
+        "height": 600,
+        "start": {
+          "x": 250,
+          "y": 300,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "garage",
+            "x": 130,
+            "y": 200,
+            "w": 240,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Гараж",
+              "kk": "Гараж",
+              "en": "Garage"
+            }
+          }
+        ],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "usesOp",
+          "op": "turn"
+        },
+        {
+          "type": "finishInZone",
+          "zone": "garage"
+        },
+        {
+          "type": "heading",
+          "degrees": 180,
+          "tolerance": 10
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Разворот кругом — это сколько градусов?",
+          "kk": "Толық кері бұрылу — неше градус?",
+          "en": "How many degrees is a full U-turn?"
+        },
+        {
+          "ru": "Поворот на 180°, потом снова вперёд на 40 см.",
+          "kk": "180°-қа бұрылу, содан кейін қайтадан 40 см алға.",
+          "en": "A 180° turn, then forward 40 cm again."
+        },
+        {
+          "ru": "«вперёд 40 см», «развернуться на 180°», «вперёд 40 см».",
+          "kk": "«40 см алға», «180°-қа бұрылу», «40 см алға».",
+          "en": "“forward 40 cm”, “turn 180°”, “forward 40 cm”."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 180
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "id": "blocks-02",
+  "track": "blocks",
+  "unit": "blocks-sequence",
+  "minutes": 6,
+  "skills": [
+    "motion"
+  ],
+  "title": {
+    "ru": "Скорость",
+    "kk": "Жылдамдық",
+    "en": "Speed"
+  },
+  "goal": {
+    "ru": "Сегодня ты научишь робота ехать быстрее или медленнее.",
+    "kk": "Бүгін сен роботты жылдамырақ немесе баяуырақ жүруге үйретесің.",
+    "en": "Today you will teach the robot to drive faster or slower."
+  },
+  "summary": {
+    "ru": "Теперь ты умеешь менять скорость: быстро — экономит время, медленно — точнее.",
+    "kk": "Енді сен жылдамдықты өзгерте аласың: жылдам — уақытты үнемдейді, баяу — дәлірек.",
+    "en": "Now you can change the speed: fast saves time, slow is more precise."
+  },
+  "steps": [
+    {
+      "id": "speed",
+      "type": "theory",
+      "illustration": "speed",
+      "title": {
+        "ru": "Быстрее или точнее",
+        "kk": "Жылдамырақ па, дәлірек пе",
+        "en": "Faster or more precise"
+      },
+      "body": {
+        "ru": "Блок **«скорость движения»** задаёт, как быстро едет робот: от 1 до 100 %.\n\nОн действует на все блоки движения **после него**. Поэтому ставь его в начале.\n\nБыстро — экономит время. Медленно — робот меньше проскальзывает и точнее останавливается.",
+        "kk": "**«Қозғалыс жылдамдығы»** блогы роботтың қаншалықты жылдам жүретінін береді: 1-ден 100 %-ға дейін.\n\nОл **өзінен кейінгі** барлық қозғалыс блоктарына әсер етеді. Сондықтан оны басына қой.\n\nЖылдам — уақытты үнемдейді. Баяу — робот азырақ тайғанайды және дәлірек тоқтайды.",
+        "en": "The **“set movement speed”** block sets how fast the robot drives: from 1 to 100 %.\n\nIt affects all move blocks **after it**. So put it at the beginning.\n\nFast saves time. Slow makes the robot slip less and stop more precisely."
+      }
+    },
+    {
+      "id": "where",
+      "type": "quiz",
+      "kind": "choice",
+      "skill": "motion",
+      "question": {
+        "ru": "Куда поставить блок «скорость движения»?",
+        "kk": "«Қозғалыс жылдамдығы» блогын қайда қою керек?",
+        "en": "Where should the “set movement speed” block go?"
+      },
+      "options": [
+        {
+          "ru": "Перед блоками движения",
+          "kk": "Қозғалыс блоктарының алдына",
+          "en": "Before the move blocks"
+        },
+        {
+          "ru": "В самый конец",
+          "kk": "Ең соңына",
+          "en": "At the very end"
+        },
+        {
+          "ru": "Неважно",
+          "kk": "Маңызды емес",
+          "en": "It does not matter"
+        }
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": {
+        "ru": "Скорость меняется с того места, где стоит блок. После последнего движения он уже ничего не изменит.",
+        "kk": "Жылдамдық блок тұрған жерден бастап өзгереді. Соңғы қозғалыстан кейін ол ештеңені өзгертпейді.",
+        "en": "The speed changes from where the block is. After the last move it changes nothing."
+      }
+    },
+    {
+      "id": "hurry",
+      "type": "code",
+      "skill": "motion",
+      "title": {
+        "ru": "Успей за 2,5 секунды",
+        "kk": "2,5 секундта үлгер",
+        "en": "Make it in 2.5 seconds"
+      },
+      "task": {
+        "ru": "Доедь до финиша быстрее чем за 2,5 секунды. На обычной скорости робот не успевает.",
+        "kk": "Мәреге 2,5 секундтан жылдам жет. Әдеттегі жылдамдықта робот үлгермейді.",
+        "en": "Reach the finish in less than 2.5 seconds. At the normal speed the robot is too slow."
+      },
+      "field": {
+        "width": 1400,
+        "height": 500,
+        "start": {
+          "x": 200,
+          "y": 250,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "finish",
+            "x": 900,
+            "y": 150,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Финиш",
+              "kk": "Мәре",
+              "en": "Finish"
+            }
+          }
+        ],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "set_speed",
+        "move"
+      ],
+      "start": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 80,
+          "unit": "cm"
+        }
+      ],
+      "checks": [
+        {
+          "type": "finishInZone",
+          "zone": "finish"
+        },
+        {
+          "type": "timeLimit",
+          "seconds": 2.5
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Запусти: сколько секунд едет робот сейчас?",
+          "kk": "Іске қос: робот қазір неше секунд жүреді?",
+          "en": "Run it: how many seconds does the robot take now?"
+        },
+        {
+          "ru": "Добавь блок «скорость движения» перед блоком «ехать».",
+          "kk": "«Жүру» блогының алдына «қозғалыс жылдамдығы» блогын қос.",
+          "en": "Add a “set movement speed” block before the “move” block."
+        },
+        {
+          "ru": "Скорость 80 % или больше — и робот успеет.",
+          "kk": "80 % немесе одан көп жылдамдық — робот үлгереді.",
+          "en": "A speed of 80 % or more — and the robot makes it."
+        }
+      ],
+      "reference": [
+        {
+          "op": "set_speed",
+          "speed": 80
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 80,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "time",
+      "type": "quiz",
+      "kind": "number",
+      "skill": "motion",
+      "question": {
+        "ru": "Робот проезжает 25 см за секунду. За сколько секунд он проедет 1 метр?",
+        "kk": "Робот секундына 25 см жүреді. Ол 1 метрді неше секундта жүреді?",
+        "en": "The robot drives 25 cm per second. How many seconds does it need for 1 metre?"
+      },
+      "answer": 4,
+      "tolerance": 0,
+      "unit": {
+        "ru": "секунд",
+        "kk": "секунд",
+        "en": "seconds"
+      },
+      "explanation": {
+        "ru": "1 метр = 100 см. 100 : 25 = 4 секунды.",
+        "kk": "1 метр = 100 см. 100 : 25 = 4 секунд.",
+        "en": "1 metre = 100 cm. 100 ÷ 25 = 4 seconds."
+      }
+    }
+  ]
+}

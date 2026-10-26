@@ -1,0 +1,330 @@
+{
+  "id": "blocks-05",
+  "track": "blocks",
+  "unit": "blocks-sequence",
+  "minutes": 8,
+  "skills": [
+    "sequence",
+    "turns"
+  ],
+  "title": {
+    "ru": "Найди ошибку",
+    "kk": "Қатені тап",
+    "en": "Find the bug"
+  },
+  "goal": {
+    "ru": "Сегодня ты научишься находить и исправлять ошибки в программе.",
+    "kk": "Бүгін сен бағдарламадағы қателерді тауып, түзетуді үйренесің.",
+    "en": "Today you will learn to find and fix mistakes in a program."
+  },
+  "summary": {
+    "ru": "Теперь ты знаешь, как искать ошибку: запусти, посмотри, где робот ошибается, исправь этот блок.",
+    "kk": "Енді сен қатені қалай іздеу керегін білесің: іске қос, робот қай жерде қателесетінін қара, сол блокты түзет.",
+    "en": "Now you know how to find a bug: run it, watch where the robot goes wrong, fix that block."
+  },
+  "steps": [
+    {
+      "id": "bugs",
+      "type": "theory",
+      "illustration": "debug",
+      "title": {
+        "ru": "Ошибки — это нормально",
+        "kk": "Қателер — қалыпты нәрсе",
+        "en": "Bugs are normal"
+      },
+      "body": {
+        "ru": "Ошибки в программах есть у всех, даже у инженеров. Их называют **багами**, а поиск — **отладкой**.\n\n1. Запусти программу и смотри внимательно.\n2. Найди место, где робот делает не то.\n3. Исправь блок, который за это отвечает, и запусти снова.",
+        "kk": "Бағдарламалардағы қателер барлығында болады, тіпті инженерлерде де. Оларды **баг** деп, ал іздеуді **жөндеу** деп атайды.\n\n1. Бағдарламаны іске қосып, мұқият қара.\n2. Робот қате істейтін жерді тап.\n3. Соған жауапты блокты түзетіп, қайта іске қос.",
+        "en": "Everyone has bugs in their programs, even engineers. Finding them is called **debugging**.\n\n1. Run the program and watch closely.\n2. Find where the robot does the wrong thing.\n3. Fix the block responsible and run it again."
+      }
+    },
+    {
+      "id": "wrong-turn",
+      "type": "debug",
+      "skill": "turns",
+      "title": {
+        "ru": "Не тот поворот",
+        "kk": "Қате бұрылыс",
+        "en": "The wrong turn"
+      },
+      "task": {
+        "ru": "Робот должен проехать через угол и финишировать в зоне «Цель». Но он сворачивает не туда. Найди и исправь ошибку.",
+        "kk": "Робот бұрыш арқылы өтіп, «Нысана» аймағында мәреге жетуі керек. Бірақ ол басқа жаққа бұрылады. Қатені тауып, түзет.",
+        "en": "The robot should pass the corner and finish in the “Target” zone. But it turns the wrong way. Find and fix the bug."
+      },
+      "field": {
+        "width": 1100,
+        "height": 800,
+        "start": {
+          "x": 300,
+          "y": 250,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "target",
+            "x": 600,
+            "y": 500,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Цель",
+              "kk": "Нысана",
+              "en": "Target"
+            }
+          }
+        ],
+        "points": [
+          {
+            "id": "corner",
+            "x": 700,
+            "y": 250,
+            "r": 60,
+            "label": {
+              "ru": "Угол",
+              "kk": "Бұрыш",
+              "en": "Corner"
+            }
+          }
+        ],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn"
+      ],
+      "start": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "right",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        }
+      ],
+      "checks": [
+        {
+          "type": "passPoints",
+          "points": [
+            "corner"
+          ]
+        },
+        {
+          "type": "finishInZone",
+          "zone": "target"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Запусти и посмотри, куда робот едет после угла.",
+          "kk": "Іске қосып, робот бұрыштан кейін қайда жүретінін қара.",
+          "en": "Run it and watch where the robot goes after the corner."
+        },
+        {
+          "ru": "Цель вверху, а робот едет вниз. Какой блок отвечает за направление?",
+          "kk": "Нысана жоғарыда, ал робот төмен жүреді. Бағытқа қай блок жауап береді?",
+          "en": "The target is up, but the robot goes down. Which block decides the direction?"
+        },
+        {
+          "ru": "В блоке поворота поменяй «вправо» на «влево».",
+          "kk": "Бұрылыс блогында «оңға» дегенді «солға» деп ауыстыр.",
+          "en": "In the turn block change “right” to “left”."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "too-short",
+      "type": "debug",
+      "skill": "motion",
+      "title": {
+        "ru": "Не доезжает",
+        "kk": "Жетпейді",
+        "en": "Not far enough"
+      },
+      "task": {
+        "ru": "Теперь робот поворачивает правильно, но не доезжает до угла. Исправь программу.",
+        "kk": "Енді робот дұрыс бұрылады, бірақ бұрышқа жетпейді. Бағдарламаны түзет.",
+        "en": "Now the robot turns the right way, but it stops short of the corner. Fix the program."
+      },
+      "field": {
+        "width": 1100,
+        "height": 800,
+        "start": {
+          "x": 300,
+          "y": 250,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "target",
+            "x": 600,
+            "y": 500,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Цель",
+              "kk": "Нысана",
+              "en": "Target"
+            }
+          }
+        ],
+        "points": [
+          {
+            "id": "corner",
+            "x": 700,
+            "y": 250,
+            "r": 60,
+            "label": {
+              "ru": "Угол",
+              "kk": "Бұрыш",
+              "en": "Corner"
+            }
+          }
+        ],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn"
+      ],
+      "start": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 20,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        }
+      ],
+      "checks": [
+        {
+          "type": "passPoints",
+          "points": [
+            "corner"
+          ]
+        },
+        {
+          "type": "finishInZone",
+          "zone": "target"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Где робот поворачивает? А где угол?",
+          "kk": "Робот қай жерде бұрылады? Ал бұрыш қайда?",
+          "en": "Where does the robot turn? And where is the corner?"
+        },
+        {
+          "ru": "До угла 40 см, а робот едет меньше.",
+          "kk": "Бұрышқа дейін 40 см, ал робот азырақ жүреді.",
+          "en": "The corner is 40 cm away, but the robot drives less."
+        },
+        {
+          "ru": "В первом блоке поставь 40 см.",
+          "kk": "Бірінші блокқа 40 см қой.",
+          "en": "Put 40 cm in the first block."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "first-thing",
+      "type": "quiz",
+      "kind": "choice",
+      "skill": "sequence",
+      "question": {
+        "ru": "Робот поехал не туда. Что сделать первым делом?",
+        "kk": "Робот басқа жаққа жүрді. Ең алдымен не істеу керек?",
+        "en": "The robot went the wrong way. What should you do first?"
+      },
+      "options": [
+        {
+          "ru": "Запустить ещё раз и посмотреть, где он ошибается",
+          "kk": "Қайта іске қосып, оның қай жерде қателесетінін қарау",
+          "en": "Run it again and watch where it goes wrong"
+        },
+        {
+          "ru": "Удалить всю программу",
+          "kk": "Бүкіл бағдарламаны өшіру",
+          "en": "Delete the whole program"
+        },
+        {
+          "ru": "Нажимать «Проверить», пока не получится",
+          "kk": "Шыққанша «Тексеруді» басу",
+          "en": "Keep pressing “Check” until it works"
+        }
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": {
+        "ru": "Сначала понять, где ошибка, — потом исправлять один блок. Так быстрее, чем начинать заново.",
+        "kk": "Алдымен қате қайда екенін түсіну — содан кейін бір блокты түзету. Бұл қайта бастағаннан жылдамырақ.",
+        "en": "First understand where the bug is, then fix that one block. It is faster than starting over."
+      }
+    }
+  ]
+}

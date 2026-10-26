@@ -1,0 +1,295 @@
+{
+  "id": "blocks-04",
+  "track": "blocks",
+  "unit": "blocks-sequence",
+  "minutes": 7,
+  "skills": [
+    "sequence"
+  ],
+  "title": {
+    "ru": "Ждать и сигналить",
+    "kk": "Күту және белгі беру",
+    "en": "Wait and signal"
+  },
+  "goal": {
+    "ru": "Сегодня ты научишь робота делать паузы, подавать сигналы и показывать картинки.",
+    "kk": "Бүгін сен роботты үзіліс жасауға, белгі беруге және сурет көрсетуге үйретесің.",
+    "en": "Today you will teach the robot to pause, beep and show pictures."
+  },
+  "summary": {
+    "ru": "Теперь ты умеешь управлять временем: пауза, звук и картинка в нужный момент.",
+    "kk": "Енді сен уақытты басқара аласың: керекті сәтте үзіліс, дыбыс және сурет.",
+    "en": "Now you can control time: a pause, a sound and a picture at the right moment."
+  },
+  "steps": [
+    {
+      "id": "wait",
+      "type": "theory",
+      "title": {
+        "ru": "Пауза, звук и свет",
+        "kk": "Үзіліс, дыбыс және жарық",
+        "en": "Pause, sound and light"
+      },
+      "body": {
+        "ru": "Блок **«ждать»** — это пауза: робот стоит и ничего не делает столько секунд, сколько ты скажешь.\n\nБлок **«сигнал»** играет ноту. Число — высота ноты, секунды — длина.\n\nБлок **«показать»** зажигает картинку на экране хаба. Вместе получается настоящий робот-автобус!",
+        "kk": "**«Күту»** блогы — үзіліс: робот сен айтқан секунд бойы тұрып, ештеңе істемейді.\n\n**«Дыбыс»** блогы нота ойнайды. Сан — нотаның биіктігі, секунд — ұзақтығы.\n\n**«Көрсету»** блогы хаб экранында сурет жағады. Бірге нағыз робот-автобус шығады!",
+        "en": "The **“wait”** block is a pause: the robot stands still for as many seconds as you say.\n\nThe **“beep”** block plays a note. The number is the pitch, the seconds are the length.\n\nThe **“show”** block lights up a picture on the hub’s screen. Together they make a real robot bus!"
+      }
+    },
+    {
+      "id": "bus",
+      "type": "code",
+      "skill": "sequence",
+      "title": {
+        "ru": "Робот-автобус",
+        "kk": "Робот-автобус",
+        "en": "Robot bus"
+      },
+      "task": {
+        "ru": "Доедь до остановки, постой там 2 секунды, подай сигнал и поезжай до конечной.",
+        "kk": "Аялдамаға жетіп, онда 2 секунд тұр, белгі бер және соңғы аялдамаға жүр.",
+        "en": "Drive to the bus stop, wait there 2 seconds, beep and drive on to the terminal."
+      },
+      "field": {
+        "width": 1400,
+        "height": 500,
+        "start": {
+          "x": 150,
+          "y": 250,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "stop",
+            "x": 450,
+            "y": 150,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Остановка",
+              "kk": "Аялдама",
+              "en": "Bus stop"
+            }
+          },
+          {
+            "id": "terminal",
+            "x": 1000,
+            "y": 150,
+            "w": 220,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Конечная",
+              "kk": "Соңғы аялдама",
+              "en": "Terminal"
+            }
+          }
+        ],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "wait",
+        "beep",
+        "show_image"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "waitInZone",
+          "zone": "stop",
+          "seconds": 2
+        },
+        {
+          "type": "beeped"
+        },
+        {
+          "type": "finishInZone",
+          "zone": "terminal"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Раздели путь на части: до остановки, пауза, дальше.",
+          "kk": "Жолды бөліктерге бөл: аялдамаға дейін, үзіліс, әрі қарай.",
+          "en": "Split the trip into parts: to the stop, a pause, onward."
+        },
+        {
+          "ru": "До середины остановки 40 см, от неё до конечной ещё около 55 см.",
+          "kk": "Аялдаманың ортасына дейін 40 см, одан соңғы аялдамаға дейін тағы шамамен 55 см.",
+          "en": "The middle of the stop is 40 cm away, the terminal about 55 cm further."
+        },
+        {
+          "ru": "Вперёд 40 см, ждать 2 с, сигнал, вперёд 55 см.",
+          "kk": "40 см алға, 2 с күту, дыбыс, 55 см алға.",
+          "en": "Forward 40 cm, wait 2 s, beep, forward 55 cm."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        },
+        {
+          "op": "wait",
+          "seconds": 2
+        },
+        {
+          "op": "beep",
+          "note": 72,
+          "seconds": 0.3
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 55,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "two-waits",
+      "type": "quiz",
+      "kind": "choice",
+      "skill": "sequence",
+      "question": {
+        "ru": "Два блока «ждать 1 с» стоят подряд. Сколько будет стоять робот?",
+        "kk": "Қатар тұрған екі «1 с күту» блогы. Робот қанша тұрады?",
+        "en": "Two “wait 1 s” blocks are in a row. How long will the robot stand?"
+      },
+      "options": [
+        {
+          "ru": "2 секунды",
+          "kk": "2 секунд",
+          "en": "2 seconds"
+        },
+        {
+          "ru": "1 секунду",
+          "kk": "1 секунд",
+          "en": "1 second"
+        },
+        {
+          "ru": "Нисколько",
+          "kk": "Мүлдем тұрмайды",
+          "en": "Not at all"
+        }
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": {
+        "ru": "Блоки выполняются по очереди: 1 с + 1 с = 2 с.",
+        "kk": "Блоктар кезекпен орындалады: 1 с + 1 с = 2 с.",
+        "en": "Blocks run one after another: 1 s + 1 s = 2 s."
+      }
+    },
+    {
+      "id": "arrows",
+      "type": "code",
+      "skill": "sequence",
+      "title": {
+        "ru": "Поворотники",
+        "kk": "Бұрылыс шамдары",
+        "en": "Turn signals"
+      },
+      "task": {
+        "ru": "Перед поворотом налево покажи на экране стрелку влево, потом поверни и доедь до флажка. На финише покажи сердце.",
+        "kk": "Солға бұрылар алдында экранда солға нұсқар көрсет, содан кейін бұрылып, жалаушаға жет. Мәреде жүрек көрсет.",
+        "en": "Before turning left, show a left arrow on the screen, then turn and drive to the flag. Show a heart at the finish."
+      },
+      "field": {
+        "width": 1000,
+        "height": 800,
+        "start": {
+          "x": 300,
+          "y": 250,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [],
+        "points": [
+          {
+            "id": "flag",
+            "x": 300,
+            "y": 600,
+            "r": 60,
+            "label": {
+              "ru": "Флажок",
+              "kk": "Жалауша",
+              "en": "Flag"
+            }
+          }
+        ],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn",
+        "show_image",
+        "wait"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "displayed",
+          "image": "arrow_left"
+        },
+        {
+          "type": "passPoints",
+          "points": [
+            "flag"
+          ]
+        },
+        {
+          "type": "displayed",
+          "image": "heart"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Нужны картинки в двух местах программы: до поворота и в конце.",
+          "kk": "Суреттер бағдарламаның екі жерінде керек: бұрылысқа дейін және соңында.",
+          "en": "You need pictures in two places: before the turn and at the end."
+        },
+        {
+          "ru": "Флажок вверху, до него 35 см.",
+          "kk": "Жалауша жоғарыда, оған дейін 35 см.",
+          "en": "The flag is up, 35 cm away."
+        },
+        {
+          "ru": "«показать стрелку влево», «налево 90°», «вперёд 35 см», «показать сердце».",
+          "kk": "«солға нұсқар көрсету», «солға 90°», «35 см алға», «жүрек көрсету».",
+          "en": "“show arrow left”, “left 90°”, “forward 35 cm”, “show heart”."
+        }
+      ],
+      "reference": [
+        {
+          "op": "show_image",
+          "image": "arrow_left"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 35,
+          "unit": "cm"
+        },
+        {
+          "op": "show_image",
+          "image": "heart"
+        }
+      ]
+    }
+  ]
+}
