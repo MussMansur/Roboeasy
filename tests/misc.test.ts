@@ -7,7 +7,7 @@ describe('rateLimit', () => {
   it('allows bursts up to the limit, then asks to wait', () => {
     const key = `test-${Math.random()}`
     for (let i = 0; i < 3; i++) expect(rateLimit(key, 3, 60_000, 1_000 + i).ok).toBe(true)
-    expect(rateLimit(key, 3, 60_000, 2_000)).toEqual({ ok: false, retryAfterSeconds: 59 })
+    expect(rateLimit(key, 3, 60_000, 2_000)).toMatchObject({ ok: false, retryAfterSeconds: 59, remaining: 0 })
     expect(rateLimit(key, 3, 60_000, 61_001).ok).toBe(true)
   })
 })

@@ -260,6 +260,8 @@
   }
 }
 
+/* Component and page styles: in a layer, so Tailwind utilities on the same elements win. */
+@layer components {
 /* One focus style everywhere: a blue ring outside the outline. */
 :focus-visible {
   outline: 3px solid var(--focus);
@@ -2687,6 +2689,35 @@
   margin: var(--space-2) 0 0;
 }
 
+/* ───────────────────────── Blockly (lesson editor) ───────────────────────── */
+
+.re-blockly .blocklyMainBackground {
+  stroke: none;
+}
+.re-blockly .blocklyFlyoutBackground {
+  fill: var(--surface);
+  fill-opacity: 1;
+}
+.re-blockly .blocklyText,
+.re-blockly .blocklyDropdownText {
+  fill: #14110a !important;
+}
+.re-blockly .blocklyEditableText > .blocklyText {
+  fill: #14110a !important;
+}
+.re-blockly .blocklyScrollbarHandle {
+  fill: var(--border-strong);
+}
+.re-blockly .blocklyZoom > image,
+.re-blockly .blocklyTrash > image {
+  opacity: 0.6;
+}
+.blocklyDropDownDiv,
+.blocklyWidgetDiv .blocklyMenu {
+  font-family: var(--font-body), sans-serif !important;
+  font-weight: 700;
+}
+
 /* ───────────────────────── Motion ───────────────────────── */
 
 @keyframes pulse {
@@ -2740,4 +2771,5 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
 }
