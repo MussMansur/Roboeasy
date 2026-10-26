@@ -37,8 +37,8 @@ export type Profile = z.infer<typeof profileSchema>
 const skill = z.enum(SKILLS)
 
 export const eventSchema = z.discriminatedUnion('kind', [
-  /** A step finished. `firstTry`: solved without failed checks or hints. */
-  z.object({ id: z.string(), at: z.number(), kind: z.literal('step_done'), lesson: z.string(), step: z.string(), stepType: z.string(), firstTry: z.boolean(), hints: z.int().check(z.nonnegative()), blocks: z.optional(z.number()), referenceBlocks: z.optional(z.number()), skill: z.optional(skill) }),
+  /** A step finished. `firstTry`: solved without failed checks or hints. `program`: the solution of a code step (teachers see it in their class). */
+  z.object({ id: z.string(), at: z.number(), kind: z.literal('step_done'), lesson: z.string(), step: z.string(), stepType: z.string(), firstTry: z.boolean(), hints: z.int().check(z.nonnegative()), blocks: z.optional(z.number()), referenceBlocks: z.optional(z.number()), skill: z.optional(skill), program: z.optional(z.array(z.unknown())) }),
   /** A failed check or a wrong answer (feeds review and the "where students get stuck" stats). */
   z.object({ id: z.string(), at: z.number(), kind: z.literal('mistake'), lesson: z.string(), step: z.string(), skill: z.optional(skill) }),
   z.object({ id: z.string(), at: z.number(), kind: z.literal('lesson_done'), lesson: z.string(), track: z.string(), unit: z.string(), project: z.boolean(), seconds: z.number().check(z.nonnegative()) }),

@@ -82,7 +82,7 @@ export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker
     setResult(r.sim)
     setPanel('robot')
     if (r.ok) {
-      if (!solved) onDone({ firstTry: failures === 0 && hintsShown === 0, hints: hintsShown, blocks: r.blocks })
+      if (!solved) onDone({ firstTry: failures === 0 && hintsShown === 0, hints: hintsShown, blocks: r.blocks, program: program.steps })
       setSolved(true)
     } else {
       setFailures((f) => f + 1)

@@ -77,6 +77,7 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
           blocks: d.blocks,
           referenceBlocks: 'referenceBlocks' in step ? step.referenceBlocks : undefined,
           skill: 'skill' in step ? step.skill : undefined,
+          program: d.program,
         },
       ]
       if (d.real) events.push({ kind: 'real_robot', lesson: lesson.id, step: step.id })

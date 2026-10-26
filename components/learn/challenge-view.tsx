@@ -32,7 +32,7 @@ export function ChallengeView({ lang, t, app, blocksT, challenges }: { lang: Lan
   const onDone = useCallback(
     (d: StepDone) => {
       record([
-        { kind: 'step_done', lesson: `challenge-${week}`, step: challenge.id, stepType: 'code', firstTry: d.firstTry, hints: d.hints, blocks: d.blocks, referenceBlocks: challenge.referenceBlocks },
+        { kind: 'step_done', lesson: `challenge-${week}`, step: challenge.id, stepType: 'code', firstTry: d.firstTry, hints: d.hints, blocks: d.blocks, referenceBlocks: challenge.referenceBlocks, program: d.program },
         { kind: 'challenge_done', week, challenge: challenge.id },
       ])
     },

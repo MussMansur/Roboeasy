@@ -22,6 +22,8 @@ export interface StepDone {
   blocks?: number
   /** For real_robot: the learner did it on a real robot (not skipped). */
   real?: boolean
+  /** The solution of a code step. */
+  program?: Step[]
 }
 
 export async function downloadProgram(name: string, steps: Step[]) {
