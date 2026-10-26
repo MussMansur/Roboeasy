@@ -41,6 +41,8 @@ export const eventSchema = z.discriminatedUnion('kind', [
   z.object({ id: z.string(), at: z.number(), kind: z.literal('real_robot'), lesson: z.string(), step: z.string() }),
   /** Active practice time (for the "15 minutes a day" goal). */
   z.object({ id: z.string(), at: z.number(), kind: z.literal('time'), seconds: z.number().nonnegative() }),
+  /** A lesson was opened and started (lesson funnel: started → steps → finished). */
+  z.object({ id: z.string(), at: z.number(), kind: z.literal('lesson_start'), lesson: z.string() }),
   /** Lessons and units marked as known (placement or "I know this" test). */
   z.object({ id: z.string(), at: z.number(), kind: z.literal('known'), lessons: z.array(z.string()), skills: z.array(skill), source: z.enum(['placement', 'unit']).optional() }),
   z.object({ id: z.string(), at: z.number(), kind: z.literal('review_done'), skills: z.array(skill), correct: z.number().int(), total: z.number().int() }),

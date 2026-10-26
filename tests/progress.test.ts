@@ -162,3 +162,29 @@ describe('answer order', () => {
     expect(dueSkills(s, COURSE, t0 + 2 * DAY)).toEqual(['robot-basics'])
   })
 })
+
+describe('analytics and flags', () => {
+  it('builds the lesson funnel and stuck points across learners', async () => {
+    const { lessonFunnels, stuckPoints } = await import('@/lib/learn/analytics')
+    const a = appendEvents(EMPTY_STATE, [
+      { kind: 'lesson_start', lesson: 'start-01' },
+      { kind: 'mistake', lesson: 'start-01', step: 'first-program' },
+      { kind: 'mistake', lesson: 'start-01', step: 'first-program' },
+      { kind: 'step_done', lesson: 'start-01', step: 'first-program', stepType: 'code', firstTry: false, hints: 1 },
+      lessonDone('start-01', 1),
+    ]).events
+    const b = appendEvents(EMPTY_STATE, [{ kind: 'lesson_start', lesson: 'start-01' }]).events
+    const [f] = lessonFunnels([a, b])
+    expect(f).toMatchObject({ lesson: 'start-01', started: 2, finished: 1, medianSeconds: 60 })
+    expect(stuckPoints([f])[0]).toMatchObject({ step: 'first-program', mistakesPerLearner: 2 })
+  })
+
+  it('keeps a learner in the same A/B variant and honours overrides', async () => {
+    const { variantFor } = await import('@/lib/flags')
+    expect(variantFor('path-cta', 'anon_1')).toBe(variantFor('path-cta', 'anon_1'))
+    expect(variantFor('path-cta', null)).toBe('continue')
+    expect(variantFor('path-cta', 'anon_1', 'path-cta:lesson-name')).toBe('lesson-name')
+    const seen = new Set(Array.from({ length: 40 }, (_, i) => variantFor('auto-hint', `anon_${i}`)))
+    expect(seen.size).toBe(2)
+  })
+})

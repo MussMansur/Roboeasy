@@ -59,6 +59,7 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
   const begin = () => {
     started.current = Date.now()
     xpBefore.current = totalXp(learn)
+    record([{ kind: 'lesson_start', lesson: lesson.id }])
     const firstOpen = lesson.steps.findIndex((s) => !done.has(s.id))
     setIndex(firstOpen === -1 || lessonDone ? 0 : firstOpen)
   }

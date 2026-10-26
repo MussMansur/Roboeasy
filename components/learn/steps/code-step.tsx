@@ -13,6 +13,7 @@ import { buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { tabTriggerClass } from '@/components/ui/tabs'
 import type { ReadResult } from '@/lib/blockly/convert'
+import { variantFor } from '@/lib/flags'
 import { programToPython } from '@/lib/dsl/compile-python'
 import { DEFAULT_ROBOT, countSteps } from '@/lib/dsl/types'
 import { fill } from '@/lib/i18n/config'
@@ -20,6 +21,7 @@ import type { LearnText } from '@/lib/i18n/learn'
 import type { Dictionary } from '@/lib/i18n/ru'
 import { type CheckReport, runChecks } from '@/lib/learn/checks'
 import type { ClientStep } from '@/lib/learn/content'
+import { useLearn } from '@/lib/learn/store'
 import { type SimResult, simulate } from '@/lib/sim/interpreter'
 import { cn } from '@/lib/utils'
 
@@ -60,6 +62,7 @@ export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker
   const [failures, setFailures] = useState(0)
   const [panel, setPanel] = useState<'task' | 'code' | 'robot'>('task')
   const [solved, setSolved] = useState(done)
+  const autoHint = variantFor('auto-hint', useLearn().profile?.anonId) === 'after-first-fail'
 
   const zoneLabel = useCallback((id: string) => step.field.zones.find((z) => z.id === id)?.label?.[lang] ?? id, [step.field.zones, lang])
   const python = useMemo(
@@ -83,12 +86,49 @@ export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker
       setSolved(true)
     } else {
       setFailures((f) => f + 1)
+      if (autoHint) setHintsShown((n) => Math.max(n, 1))
       onMistake()
     }
   }
 
   const failed = report?.results.filter((r) => !r.ok) ?? []
   const shorter = report?.ok && step.referenceBlocks !== undefined && report.blocks < step.referenceBlocks
+
+  const reportBox = report && (
+    <div
+      className={cn(
+        'grid gap-2 rounded-(--radius-md) border-(length:--stroke-thin) p-3',
+        report.ok ? 'border-(--success) bg-(--ok-bg)' : 'border-outline bg-card',
+      )}
+      role="status"
+      aria-live="polite"
+    >
+      <p className="m-0 flex items-center gap-2 font-extrabold">
+        {report.ok ? <Check className="size-5 text-success" aria-hidden="true" /> : <X className="size-5 text-destructive" aria-hidden="true" />}
+        {report.ok ? t.lesson.passed : t.lesson.almost}
+      </p>
+      <ul className="m-0 grid list-none gap-1 p-0 text-sm">
+        {report.results.map((r, i) => (
+          <li key={i} className={cn('flex gap-2', r.ok ? 'text-success' : 'text-destructive')}>
+            <span aria-hidden="true">{r.ok ? '✓' : '✗'}</span>
+            <span className="text-foreground">{r.message}</span>
+          </li>
+        ))}
+      </ul>
+      {failed[0]?.hint && (
+        <p className="m-0 flex gap-2 text-sm font-bold">
+          <Lightbulb className="size-4 shrink-0" aria-hidden="true" />
+          {failed[0].hint}
+        </p>
+      )}
+      {shorter && (
+        <p className="m-0 flex items-center gap-2 font-extrabold">
+          <Sparkles className="size-4" aria-hidden="true" />
+          {t.lesson.shorter}
+        </p>
+      )}
+    </div>
+  )
 
   return (
     <div className="grid gap-4">
@@ -133,41 +173,7 @@ export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker
             </p>
           )}
 
-          {report && (
-            <div
-              className={cn(
-                'grid gap-2 rounded-(--radius-md) border-(length:--stroke-thin) p-3',
-                report.ok ? 'border-(--success) bg-(--ok-bg)' : 'border-outline bg-card',
-              )}
-              role="status"
-              aria-live="polite"
-            >
-              <p className="m-0 flex items-center gap-2 font-extrabold">
-                {report.ok ? <Check className="size-5 text-success" aria-hidden="true" /> : <X className="size-5 text-destructive" aria-hidden="true" />}
-                {report.ok ? t.lesson.passed : t.lesson.almost}
-              </p>
-              <ul className="m-0 grid list-none gap-1 p-0 text-sm">
-                {report.results.map((r, i) => (
-                  <li key={i} className={cn('flex gap-2', r.ok ? 'text-success' : 'text-destructive')}>
-                    <span aria-hidden="true">{r.ok ? '✓' : '✗'}</span>
-                    <span className="text-foreground">{r.message}</span>
-                  </li>
-                ))}
-              </ul>
-              {failed[0]?.hint && (
-                <p className="m-0 flex gap-2 text-sm font-bold">
-                  <Lightbulb className="size-4 shrink-0" aria-hidden="true" />
-                  {failed[0].hint}
-                </p>
-              )}
-              {shorter && (
-                <p className="m-0 flex items-center gap-2 font-extrabold">
-                  <Sparkles className="size-4" aria-hidden="true" />
-                  {t.lesson.shorter}
-                </p>
-              )}
-            </div>
-          )}
+          <div className="max-lg:hidden">{reportBox}</div>
 
           {mentor && (
             <Mentor
@@ -244,7 +250,7 @@ export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker
             <button
               type="button"
               className={buttonVariants({ variant: 'ghost' })}
-              onClick={() => setHintsShown((n) => Math.min(step.hints.length, n + 1))}
+              onClick={() => (setHintsShown((n) => Math.min(step.hints.length, n + 1)), setPanel('task'))}
               disabled={hintsShown >= step.hints.length}
             >
               <Lightbulb aria-hidden="true" />
@@ -268,6 +274,8 @@ export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker
               {t.lesson.download}
             </button>
           </div>
+          {/* Phones and tablets: results right under the buttons, whichever tab is open */}
+          <div className="lg:hidden">{reportBox}</div>
         </div>
       </div>
     </div>

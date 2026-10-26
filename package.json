@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "e2e": "playwright test",
     "reference": "tsx scripts/extract-reference.ts",
     "audit:capture": "tsx scripts/audit/capture.ts",
     "audit:directions": "tsx scripts/audit/directions-shots.mts"

@@ -13,6 +13,7 @@ import { Card, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { fill } from '@/lib/i18n/config'
 import type { LearnAppText } from '@/lib/i18n/learn-app'
+import { variantFor } from '@/lib/flags'
 import { ACHIEVEMENTS, recordedAchievements } from '@/lib/learn/achievements'
 import { COURSE } from '@/lib/learn/course'
 import { nextLesson, skillRadar, trackHasContent, trackProgress } from '@/lib/learn/progress'
@@ -100,7 +101,7 @@ export function PathHome({ lang, app, challengeTitles }: { lang: Lang; app: Lear
               <h2 className="m-0 text-3xl">{next.title[lang]}</h2>
             </div>
             <Link className={buttonVariants({ variant: 'secondary', size: 'lg' })} href={`/${lang}/learn/${next.track.id}/${next.id}`}>
-              {p.done.size === 0 ? t.startFirst : t.continue}
+              {p.done.size === 0 ? t.startFirst : variantFor('path-cta', profile.anonId) === 'lesson-name' ? fill(app.placement.startFrom, { lesson: next.title[lang] }) : t.continue}
               <ArrowRight aria-hidden="true" />
             </Link>
           </>

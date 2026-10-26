@@ -14,3 +14,7 @@ node_modules
 .next/
 .DS_Store
 *.tsbuildinfo
+
+# Playwright
+/test-results/
+/playwright-report/
