@@ -42,10 +42,11 @@ export const eventSchema = z.discriminatedUnion('kind', [
   /** Active practice time (for the "15 minutes a day" goal). */
   z.object({ id: z.string(), at: z.number(), kind: z.literal('time'), seconds: z.number().nonnegative() }),
   /** Lessons and units marked as known (placement or "I know this" test). */
-  z.object({ id: z.string(), at: z.number(), kind: z.literal('known'), lessons: z.array(z.string()), skills: z.array(skill) }),
+  z.object({ id: z.string(), at: z.number(), kind: z.literal('known'), lessons: z.array(z.string()), skills: z.array(skill), source: z.enum(['placement', 'unit']).optional() }),
   z.object({ id: z.string(), at: z.number(), kind: z.literal('review_done'), skills: z.array(skill), correct: z.number().int(), total: z.number().int() }),
-  z.object({ id: z.string(), at: z.number(), kind: z.literal('challenge_done'), week: z.string() }),
+  z.object({ id: z.string(), at: z.number(), kind: z.literal('challenge_done'), week: z.string(), challenge: z.string().optional() }),
   z.object({ id: z.string(), at: z.number(), kind: z.literal('certificate'), track: z.string(), code: z.string() }),
+  z.object({ id: z.string(), at: z.number(), kind: z.literal('achievement'), achievement: z.string() }),
 ])
 export type LearnEvent = z.infer<typeof eventSchema>
 export type EventKind = LearnEvent['kind']
@@ -84,6 +85,8 @@ export function eventId(e: NewEvent): string {
       return `challenge:${e.week}`
     case 'certificate':
       return `cert:${e.track}`
+    case 'achievement':
+      return `ach:${e.achievement}`
     default:
       return randomId(e.kind)
   }

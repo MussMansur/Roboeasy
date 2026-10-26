@@ -7,22 +7,13 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import courseJson from '../../content/learn/course.json'
 import { countSteps } from '../dsl/types'
-import { type Course, type Lesson, type LessonRef, courseSchema, lessonSchema } from './schema'
+import { COURSE, findLessonRef } from './course'
+import { type Lesson, lessonSchema } from './schema'
+
+export { COURSE, findLessonRef }
 
 const LESSONS_DIR = path.join(process.cwd(), 'content', 'learn', 'lessons')
-
-export const COURSE: Course = courseSchema.parse(courseJson)
-
-export function findLessonRef(id: string): { track: Course['tracks'][number]; unit: Course['tracks'][number]['units'][number]; ref: LessonRef } | null {
-  for (const track of COURSE.tracks)
-    for (const unit of track.units) {
-      const ref = unit.lessons.find((l) => l.id === id)
-      if (ref) return { track, unit, ref }
-    }
-  return null
-}
 
 export function readyLessonIds(): string[] {
   return COURSE.tracks.flatMap((t) => t.units.flatMap((u) => u.lessons.filter((l) => l.status === 'ready').map((l) => l.id)))
@@ -57,4 +48,30 @@ export function toClientLesson(lesson: Lesson): ClientLesson {
       return s
     }) as ClientStep[],
   }
+}
+
+// ── Practice items: quiz and predict steps reused by tests and review ──
+
+export interface PracticeItem {
+  /** `${lesson}/${step}` */
+  key: string
+  lesson: string
+  skills: Lesson['skills']
+  step: Extract<Lesson['steps'][number], { type: 'quiz' | 'predict' }>
+}
+
+export function practiceItems(lessonIds: string[] = readyLessonIds()): PracticeItem[] {
+  return lessonIds.flatMap((id) => {
+    const lesson = readLesson(id)
+    if (!lesson) return []
+    return lesson.steps.flatMap((step) =>
+      step.type === 'quiz' || step.type === 'predict' ? [{ key: `${id}/${step.id}`, lesson: id, skills: step.skill ? [step.skill] : lesson.skills, step }] : [],
+    )
+  })
+}
+
+/** Up to `max` items spread evenly over the list (the same every time). */
+export function spread<T>(items: T[], max: number): T[] {
+  if (items.length <= max) return items
+  return Array.from({ length: max }, (_, i) => items[Math.floor((i * items.length) / max)])
 }

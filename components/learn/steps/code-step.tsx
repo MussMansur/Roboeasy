@@ -41,12 +41,15 @@ interface CodeStepProps {
   blocksT: Dictionary['blocks']
   robotColor: string
   sticker: string
+  wheels?: string
+  /** The AI mentor needs a lesson to read; weekly challenges go without it. */
+  mentor?: boolean
   done: boolean
   onDone: (d: StepDone) => void
   onMistake: () => void
 }
 
-export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker, done, onDone, onMistake }: CodeStepProps) {
+export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker, wheels, mentor = true, done, onDone, onMistake }: CodeStepProps) {
   const [program, setProgram] = useState<ReadResult>({ steps: step.start, ids: {}, detached: 0, missingConditions: 0 })
   const [resetKey, setResetKey] = useState(0)
   const [view, setView] = useState<'blocks' | 'python'>('blocks')
@@ -59,7 +62,10 @@ export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker
   const [solved, setSolved] = useState(done)
 
   const zoneLabel = useCallback((id: string) => step.field.zones.find((z) => z.id === id)?.label?.[lang] ?? id, [step.field.zones, lang])
-  const python = useMemo(() => (view === 'python' ? programToPython({ title: step.title[lang], description: '', steps: program.steps }, DEFAULT_ROBOT) : ''), [view, program.steps])
+  const python = useMemo(
+    () => (view === 'python' ? programToPython({ title: step.title[lang], description: '', steps: program.steps }, DEFAULT_ROBOT) : ''),
+    [view, program.steps],
+  )
 
   const run = () => {
     setReport(null)
@@ -128,7 +134,14 @@ export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker
           )}
 
           {report && (
-            <div className={cn('grid gap-2 rounded-(--radius-md) border-(length:--stroke-thin) p-3', report.ok ? 'border-(--success) bg-(--ok-bg)' : 'border-outline bg-card')} role="status" aria-live="polite">
+            <div
+              className={cn(
+                'grid gap-2 rounded-(--radius-md) border-(length:--stroke-thin) p-3',
+                report.ok ? 'border-(--success) bg-(--ok-bg)' : 'border-outline bg-card',
+              )}
+              role="status"
+              aria-live="polite"
+            >
               <p className="m-0 flex items-center gap-2 font-extrabold">
                 {report.ok ? <Check className="size-5 text-success" aria-hidden="true" /> : <X className="size-5 text-destructive" aria-hidden="true" />}
                 {report.ok ? t.lesson.passed : t.lesson.almost}
@@ -156,14 +169,16 @@ export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker
             </div>
           )}
 
-          <Mentor
-            lessonId={lessonId}
-            stepId={step.id}
-            lang={lang}
-            t={t}
-            lessonHints={step.hints.map((h) => h[lang])}
-            getContext={() => ({ steps: program.steps, failed: failed.map((f) => f.message) })}
-          />
+          {mentor && (
+            <Mentor
+              lessonId={lessonId}
+              stepId={step.id}
+              lang={lang}
+              t={t}
+              lessonHints={step.hints.map((h) => h[lang])}
+              getContext={() => ({ steps: program.steps, failed: failed.map((f) => f.message) })}
+            />
+          )}
         </section>
 
         {/* Editor and simulator */}
@@ -179,8 +194,22 @@ export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker
               </div>
               <Badge>{fill(t.lesson.blocksCount, { n: countSteps(program.steps) })}</Badge>
             </div>
-            <div className={cn('h-[360px] overflow-hidden rounded-(--radius-md) border-(length:--stroke-thin) border-outline bg-surface-2', view !== 'blocks' && 'hidden')}>
-              <BlocklyEditor lang={lang} t={blocksT} toolbox={step.toolbox} initial={step.start} resetKey={resetKey} highlight={highlight} onChange={setProgram} label={t.lesson.blocks} />
+            <div
+              className={cn(
+                'h-[360px] overflow-hidden rounded-(--radius-md) border-(length:--stroke-thin) border-outline bg-surface-2',
+                view !== 'blocks' && 'hidden',
+              )}
+            >
+              <BlocklyEditor
+                lang={lang}
+                t={blocksT}
+                toolbox={step.toolbox}
+                initial={step.start}
+                resetKey={resetKey}
+                highlight={highlight}
+                onChange={setProgram}
+                label={t.lesson.blocks}
+              />
             </div>
             {view === 'python' && (
               <div className="grid gap-2">
@@ -191,7 +220,16 @@ export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker
           </section>
 
           <section className={cn(panel !== 'robot' && 'max-lg:hidden')} aria-label={t.sim.time}>
-            <SimView field={step.field} result={result} lang={lang} robotColor={robotColor} sticker={sticker} labels={t.sim} onStep={setHighlight} />
+            <SimView
+              field={step.field}
+              result={result}
+              lang={lang}
+              robotColor={robotColor}
+              sticker={sticker}
+              wheels={wheels}
+              labels={t.sim}
+              onStep={setHighlight}
+            />
           </section>
 
           <div className="flex flex-wrap gap-2">
@@ -203,15 +241,29 @@ export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker
               <Check aria-hidden="true" />
               {t.lesson.checkCode}
             </button>
-            <button type="button" className={buttonVariants({ variant: 'ghost' })} onClick={() => setHintsShown((n) => Math.min(step.hints.length, n + 1))} disabled={hintsShown >= step.hints.length}>
+            <button
+              type="button"
+              className={buttonVariants({ variant: 'ghost' })}
+              onClick={() => setHintsShown((n) => Math.min(step.hints.length, n + 1))}
+              disabled={hintsShown >= step.hints.length}
+            >
               <Lightbulb aria-hidden="true" />
               {t.lesson.hint}
             </button>
-            <button type="button" className={buttonVariants({ variant: 'ghost' })} onClick={() => (setResetKey((k) => k + 1), setResult(null), setReport(null))}>
+            <button
+              type="button"
+              className={buttonVariants({ variant: 'ghost' })}
+              onClick={() => (setResetKey((k) => k + 1), setResult(null), setReport(null))}
+            >
               <RotateCcw aria-hidden="true" />
               {t.lesson.reset}
             </button>
-            <button type="button" className={buttonVariants({ variant: 'ghost', className: 'ml-auto' })} onClick={() => void downloadProgram(step.title[lang], program.steps)} disabled={program.steps.length === 0}>
+            <button
+              type="button"
+              className={buttonVariants({ variant: 'ghost', className: 'ml-auto' })}
+              onClick={() => void downloadProgram(step.title[lang], program.steps)}
+              disabled={program.steps.length === 0}
+            >
               <FileDown aria-hidden="true" />
               {t.lesson.download}
             </button>
@@ -221,4 +273,3 @@ export function CodeStep({ lessonId, step, lang, t, blocksT, robotColor, sticker
     </div>
   )
 }
-

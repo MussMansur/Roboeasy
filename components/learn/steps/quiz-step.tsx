@@ -14,20 +14,25 @@ import type { StepDone } from './simple-steps'
 
 type Lang = 'ru' | 'kk' | 'en'
 
-/** Deterministic shuffle (same on server and client), never the original order. */
-export function shuffled<T>(items: T[], seed: string): T[] {
+/**
+ * Deterministic shuffle (same on server and client). By default never the
+ * original order (for "put in order" tasks); `allowSame` for answer options,
+ * where any order is fine but must not always put the right one first.
+ */
+export function shuffled<T>(items: T[], seed: string, allowSame = false): T[] {
   let h = 2166136261
   for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619)
   const out = items.map((item, i) => ({ item, k: (Math.imul(h ^ (i + 1) * 2654435761, 2246822519) >>> 0) / 4294967296 }))
   out.sort((a, b) => a.k - b.k)
   const res = out.map((o) => o.item)
-  if (res.length > 1 && res.every((v, i) => v === items[i])) res.push(res.shift() as T)
+  if (!allowSame && res.length > 1 && res.every((v, i) => v === items[i])) res.push(res.shift() as T)
   return res
 }
 
-export function QuizStep({ step, lang, t, done, onDone, onMistake }: { step: Quiz; lang: Lang; t: LearnText; done: boolean; onDone: (d: StepDone) => void; onMistake: () => void }) {
+/** `once`: a test question (placement, review) — one attempt, then the right answer is shown. */
+export function QuizStep({ step, lang, t, done, once = false, onDone, onMistake }: { step: Quiz; lang: Lang; t: LearnText; done: boolean; once?: boolean; onDone: (d: StepDone) => void; onMistake: () => void }) {
   const [wrong, setWrong] = useState(0)
-  const [status, setStatus] = useState<'idle' | 'wrong' | 'correct' | 'revealed'>(done ? 'correct' : 'idle')
+  const [status, setStatus] = useState<'idle' | 'wrong' | 'correct' | 'revealed' | 'missed'>(done ? 'correct' : 'idle')
   // Answers per kind
   const [picked, setPicked] = useState<number[]>([])
   const orderStart = useMemo(() => (step.kind === 'order' ? shuffled(step.items.map((_, i) => i), step.id) : []), [step])
@@ -35,8 +40,10 @@ export function QuizStep({ step, lang, t, done, onDone, onMistake }: { step: Qui
   const rights = useMemo(() => (step.kind === 'match' ? shuffled(step.pairs.map((_, i) => i), step.id) : []), [step])
   const [matches, setMatches] = useState<(number | null)[]>(() => (step.kind === 'match' ? step.pairs.map(() => null) : []))
   const [numberText, setNumberText] = useState('')
+  // Options are authored with the right answer anywhere; shown in a stable mixed order.
+  const choiceOrder = useMemo(() => (step.kind === 'choice' ? shuffled(step.options.map((_, i) => i), `${step.id}:options`, true) : []), [step])
 
-  const finished = status === 'correct' || status === 'revealed'
+  const finished = status === 'correct' || status === 'revealed' || status === 'missed'
 
   const isCorrect = (): boolean => {
     switch (step.kind) {
@@ -57,6 +64,11 @@ export function QuizStep({ step, lang, t, done, onDone, onMistake }: { step: Qui
     if (isCorrect()) {
       setStatus('correct')
       onDone({ firstTry: wrong === 0, hints: 0 })
+    } else if (once) {
+      onMistake()
+      showAnswer()
+      setStatus('missed')
+      onDone({ firstTry: false, hints: 0 })
     } else {
       setWrong((w) => w + 1)
       setStatus('wrong')
@@ -64,11 +76,15 @@ export function QuizStep({ step, lang, t, done, onDone, onMistake }: { step: Qui
     }
   }
 
-  const reveal = () => {
+  const showAnswer = () => {
     if (step.kind === 'choice') setPicked(step.correct)
     if (step.kind === 'order') setOrder(step.items.map((_, i) => i))
     if (step.kind === 'match') setMatches(step.pairs.map((_, i) => i))
     if (step.kind === 'number') setNumberText(String(step.answer))
+  }
+
+  const reveal = () => {
+    showAnswer()
     setStatus('revealed')
     onDone({ firstTry: false, hints: 1 })
   }
@@ -85,7 +101,8 @@ export function QuizStep({ step, lang, t, done, onDone, onMistake }: { step: Qui
 
       {step.kind === 'choice' && (
         <div role={multi ? 'group' : 'radiogroup'} className="grid gap-2">
-          {step.options.map((o, i) => {
+          {choiceOrder.map((i, pos) => {
+            const o = step.options[i]
             const on = picked.includes(i)
             return (
               <button
@@ -104,7 +121,7 @@ export function QuizStep({ step, lang, t, done, onDone, onMistake }: { step: Qui
                   finished && step.correct.includes(i) && 'bg-(--ok-bg) text-success',
                 )}
               >
-                <span className="grid size-8 shrink-0 place-items-center rounded-full border-(length:--stroke-thin) border-outline bg-card font-display text-foreground">{String.fromCharCode(65 + i)}</span>
+                <span className="grid size-8 shrink-0 place-items-center rounded-full border-(length:--stroke-thin) border-outline bg-card font-display text-foreground">{String.fromCharCode(65 + pos)}</span>
                 {o[lang]}
               </button>
             )
@@ -190,9 +207,9 @@ export function QuizStep({ step, lang, t, done, onDone, onMistake }: { step: Qui
           </p>
         )}
         {finished && (
-          <div className="alert alert-ok m-0 grid gap-1" role="status">
+          <div className={cn('alert m-0 grid gap-1', status !== 'missed' && 'alert-ok')} role="status">
             <span className="flex items-center gap-2 font-extrabold">
-              <Check size={18} aria-hidden="true" />
+              {status === 'missed' ? <X size={18} aria-hidden="true" /> : <Check size={18} aria-hidden="true" />}
               {status === 'correct' ? t.lesson.correct : t.lesson.answer}
             </span>
             <RichText text={step.explanation[lang]} className="font-medium text-foreground" />

@@ -100,3 +100,14 @@ export function clearLearnState() {
 export function useLearn(): LearnState {
   return useSyncExternalStore(subscribeLearn, getLearnState, () => EMPTY_STATE)
 }
+
+const noopSubscribe = () => () => {}
+
+/** False on the server and while hydrating, then true: lets pages show a skeleton instead of an empty state. */
+export function useHydrated(): boolean {
+  return useSyncExternalStore(
+    noopSubscribe,
+    () => true,
+    () => false,
+  )
+}

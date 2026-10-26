@@ -31,6 +31,10 @@
                 "kk": "Робот деген не",
                 "en": "What is a robot"
               },
+              "skills": [
+                "robot-basics",
+                "sequence"
+              ],
               "status": "ready",
               "project": false,
               "kit": false
@@ -42,6 +46,9 @@
                 "kk": "Хаб — роботтың миы",
                 "en": "The hub — the robot’s brain"
               },
+              "skills": [
+                "robot-basics"
+              ],
               "status": "ready",
               "project": false,
               "kit": false
@@ -53,6 +60,10 @@
                 "kk": "Моторлар",
                 "en": "Motors"
               },
+              "skills": [
+                "robot-basics",
+                "motion"
+              ],
               "status": "ready",
               "project": false,
               "kit": false
@@ -64,6 +75,10 @@
                 "kk": "Датчиктер",
                 "en": "Sensors"
               },
+              "skills": [
+                "robot-basics",
+                "sensor-distance"
+              ],
               "status": "ready",
               "project": false,
               "kit": false
@@ -75,6 +90,9 @@
                 "kk": "SPIKE қолданбасы",
                 "en": "The SPIKE App"
               },
+              "skills": [
+                "robot-basics"
+              ],
               "status": "ready",
               "project": false,
               "kit": false
@@ -96,6 +114,10 @@
                 "kk": "Алға және артқа",
                 "en": "Forward and back"
               },
+              "skills": [
+                "motion",
+                "sequence"
+              ],
               "status": "ready",
               "project": false,
               "kit": false
@@ -107,6 +129,10 @@
                 "kk": "Бұрылыстар",
                 "en": "Turns"
               },
+              "skills": [
+                "turns",
+                "sequence"
+              ],
               "status": "ready",
               "project": false,
               "kit": false
@@ -118,6 +144,11 @@
                 "kk": "«Жеткізу» жобасы",
                 "en": "Project “Delivery”"
               },
+              "skills": [
+                "motion",
+                "turns",
+                "sequence"
+              ],
               "status": "ready",
               "project": true,
               "kit": false
@@ -159,6 +190,9 @@
                 "kk": "Арқалықтар мен рамалар",
                 "en": "Beams and frames"
               },
+              "skills": [
+                "parts"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -170,6 +204,9 @@
                 "kk": "Осьтер мен штифтер",
                 "en": "Axles and pins"
               },
+              "skills": [
+                "parts"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -181,6 +218,9 @@
                 "kk": "Втулкалар мен жалғағыштар",
                 "en": "Bushes and connectors"
               },
+              "skills": [
+                "parts"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -192,6 +232,9 @@
                 "kk": "Доңғалақтар мен шиналар",
                 "en": "Wheels and tyres"
               },
+              "skills": [
+                "parts"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -203,6 +246,9 @@
                 "kk": "Бөлшекті тап",
                 "en": "Find the part"
               },
+              "skills": [
+                "parts"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -224,6 +270,9 @@
                 "kk": "Үшбұрыш неге берік",
                 "en": "Why triangles are strong"
               },
+              "skills": [
+                "structures"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -235,6 +284,9 @@
                 "kk": "Қос арқалықтар мен тіректер",
                 "en": "Double beams and braces"
               },
+              "skills": [
+                "structures"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -246,6 +298,9 @@
                 "kk": "Әлсіз жерді тап",
                 "en": "Find the weak spot"
               },
+              "skills": [
+                "structures"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -267,6 +322,9 @@
                 "kk": "Тісті доңғалақтар айналымды қалай береді",
                 "en": "How gears pass on rotation"
               },
+              "skills": [
+                "gears"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -278,6 +336,9 @@
                 "kk": "Беріліс саны",
                 "en": "Gear ratio"
               },
+              "skills": [
+                "gears"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -289,6 +350,9 @@
                 "kk": "Бұрамалы беріліс",
                 "en": "The worm gear"
               },
+              "skills": [
+                "gears"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -300,6 +364,9 @@
                 "kk": "Қайда және қаншалықты жылдам?",
                 "en": "Which way and how fast?"
               },
+              "skills": [
+                "gears"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -321,6 +388,10 @@
                 "kk": "Шасси",
                 "en": "The chassis"
               },
+              "skills": [
+                "structures",
+                "parts"
+              ],
               "status": "todo",
               "project": false,
               "kit": true
@@ -332,6 +403,10 @@
                 "kk": "Моторлар мен доңғалақтар",
                 "en": "Motors and wheels"
               },
+              "skills": [
+                "structures",
+                "parts"
+              ],
               "status": "todo",
               "project": false,
               "kit": true
@@ -343,6 +418,10 @@
                 "kk": "Хаб пен сымдар",
                 "en": "The hub and cables"
               },
+              "skills": [
+                "structures",
+                "parts"
+              ],
               "status": "todo",
               "project": false,
               "kit": true
@@ -354,6 +433,10 @@
                 "kk": "Құрастыр да тексер",
                 "en": "Build and test"
               },
+              "skills": [
+                "structures",
+                "parts"
+              ],
               "status": "todo",
               "project": false,
               "kit": true
@@ -375,6 +458,10 @@
                 "kk": "Доңғалақ диаметрі және қашықтық",
                 "en": "Wheel size and distance"
               },
+              "skills": [
+                "mechanisms",
+                "motion"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -386,6 +473,10 @@
                 "kk": "Қорытынды жоба",
                 "en": "Final project"
               },
+              "skills": [
+                "mechanisms",
+                "motion"
+              ],
               "status": "todo",
               "project": true,
               "kit": true
@@ -427,6 +518,9 @@
                 "kk": "Рет маңызды",
                 "en": "Order matters"
               },
+              "skills": [
+                "sequence"
+              ],
               "status": "ready",
               "project": false,
               "kit": false
@@ -438,6 +532,9 @@
                 "kk": "Жылдамдық",
                 "en": "Speed"
               },
+              "skills": [
+                "motion"
+              ],
               "status": "ready",
               "project": false,
               "kit": false
@@ -449,6 +546,10 @@
                 "kk": "Шаршы",
                 "en": "A square"
               },
+              "skills": [
+                "sequence",
+                "turns"
+              ],
               "status": "ready",
               "project": false,
               "kit": false
@@ -460,6 +561,9 @@
                 "kk": "Күту және белгі беру",
                 "en": "Wait and signal"
               },
+              "skills": [
+                "sequence"
+              ],
               "status": "ready",
               "project": false,
               "kit": false
@@ -471,6 +575,10 @@
                 "kk": "Қатені тап",
                 "en": "Find the bug"
               },
+              "skills": [
+                "sequence",
+                "turns"
+              ],
               "status": "ready",
               "project": false,
               "kit": false
@@ -482,6 +590,11 @@
                 "kk": "«Экскурсия» жобасы",
                 "en": "Project “Tour”"
               },
+              "skills": [
+                "sequence",
+                "motion",
+                "turns"
+              ],
               "status": "ready",
               "project": true,
               "kit": false
@@ -503,6 +616,9 @@
                 "kk": "N рет қайталау",
                 "en": "Repeat N times"
               },
+              "skills": [
+                "loops"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -514,6 +630,9 @@
                 "kk": "Қысқарақ шаршы",
                 "en": "A shorter square"
               },
+              "skills": [
+                "loops"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -525,6 +644,9 @@
                 "kk": "Әрдайым және «болғанша»",
                 "en": "Forever and “until”"
               },
+              "skills": [
+                "loops"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -536,6 +658,9 @@
                 "kk": "Робот биі",
                 "en": "Robot dance"
               },
+              "skills": [
+                "loops"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -547,6 +672,9 @@
                 "kk": "Артық қайталау",
                 "en": "One repeat too many"
               },
+              "skills": [
+                "loops"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -558,6 +686,9 @@
                 "kk": "«Өрнек» жобасы",
                 "en": "Project “Pattern”"
               },
+              "skills": [
+                "loops"
+              ],
               "status": "todo",
               "project": true,
               "kit": false
@@ -579,6 +710,9 @@
                 "kk": "Егер… онда",
                 "en": "If… then"
               },
+              "skills": [
+                "conditions"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -590,6 +724,9 @@
                 "kk": "Егер… әйтпесе",
                 "en": "If… else"
               },
+              "skills": [
+                "conditions"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -601,6 +738,9 @@
                 "kk": "Болғанша күту",
                 "en": "Wait until"
               },
+              "skills": [
+                "conditions"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -612,6 +752,9 @@
                 "kk": "Робот-бағдаршам",
                 "en": "Traffic-light robot"
               },
+              "skills": [
+                "conditions"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -623,6 +766,9 @@
                 "kk": "«Ақылды аялдама» жобасы",
                 "en": "Project “Smart stop”"
               },
+              "skills": [
+                "conditions"
+              ],
               "status": "todo",
               "project": true,
               "kit": false
@@ -644,6 +790,9 @@
                 "kk": "Айнымалы деген не",
                 "en": "What a variable is"
               },
+              "skills": [
+                "variables"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -655,6 +804,9 @@
                 "kk": "Санауыш",
                 "en": "A counter"
               },
+              "skills": [
+                "variables"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -666,6 +818,9 @@
                 "kk": "Айнымалыдағы жылдамдық",
                 "en": "Speed in a variable"
               },
+              "skills": [
+                "variables"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -677,6 +832,9 @@
                 "kk": "«Айналымдарды санаймыз» жобасы",
                 "en": "Project “Counting laps”"
               },
+              "skills": [
+                "variables"
+              ],
               "status": "todo",
               "project": true,
               "kit": false
@@ -698,6 +856,9 @@
                 "kk": "Өз блогың",
                 "en": "Your own block"
               },
+              "skills": [
+                "functions"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -709,6 +870,9 @@
                 "kk": "Параметрі бар блок",
                 "en": "A block with a parameter"
               },
+              "skills": [
+                "functions"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -720,6 +884,9 @@
                 "kk": "Өз блоктарыңмен қысқарақ",
                 "en": "Shorter with My Blocks"
               },
+              "skills": [
+                "functions"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -731,6 +898,9 @@
                 "kk": "«Робот-гид» жобасы",
                 "en": "Project “Robot guide”"
               },
+              "skills": [
+                "functions"
+              ],
               "status": "todo",
               "project": true,
               "kit": false
@@ -772,6 +942,9 @@
                 "kk": "Түс датчигі не көреді",
                 "en": "What the colour sensor sees"
               },
+              "skills": [
+                "sensor-color"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -783,6 +956,9 @@
                 "kk": "Қара сызықта тоқта",
                 "en": "Stop on the black line"
               },
+              "skills": [
+                "sensor-color"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -794,6 +970,9 @@
                 "kk": "Сызықтарды санау",
                 "en": "Count the lines"
               },
+              "skills": [
+                "sensor-color"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -805,6 +984,9 @@
                 "kk": "Шағылысу",
                 "en": "Reflection"
               },
+              "skills": [
+                "sensor-color"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -816,6 +998,9 @@
                 "kk": "Датчик не көрсетеді?",
                 "en": "What will the sensor show?"
               },
+              "skills": [
+                "sensor-color"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -837,6 +1022,9 @@
                 "kk": "Датчик қашықтықты қалай өлшейді",
                 "en": "How the sensor measures distance"
               },
+              "skills": [
+                "sensor-distance"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -848,6 +1036,9 @@
                 "kk": "Қабырға алдында тоқта",
                 "en": "Stop before the wall"
               },
+              "skills": [
+                "sensor-distance"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -859,6 +1050,9 @@
                 "kk": "Арақашықтықты сақтау",
                 "en": "Keep your distance"
               },
+              "skills": [
+                "sensor-distance"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -870,6 +1064,9 @@
                 "kk": "Робот-тұрақтаушы",
                 "en": "Parking robot"
               },
+              "skills": [
+                "sensor-distance"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -891,6 +1088,9 @@
                 "kk": "Бампер-түйме",
                 "en": "The bumper button"
               },
+              "skills": [
+                "sensor-force"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -902,6 +1102,9 @@
                 "kk": "Басылды, босатылды, қатты",
                 "en": "Pressed, released, hard"
               },
+              "skills": [
+                "sensor-force"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -913,6 +1116,9 @@
                 "kk": "Робот қабырғаны іздейді",
                 "en": "The robot finds the wall"
               },
+              "skills": [
+                "sensor-force"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -934,6 +1140,9 @@
                 "kk": "Бұрылыс бұрышы",
                 "en": "The turn angle"
               },
+              "skills": [
+                "gyro"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -945,6 +1154,9 @@
                 "kk": "Дәл бұрылыс",
                 "en": "An exact turn"
               },
+              "skills": [
+                "gyro"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -956,6 +1168,9 @@
                 "kk": "Бұрышты нөлдеу",
                 "en": "Resetting the angle"
               },
+              "skills": [
+                "gyro"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -967,6 +1182,9 @@
                 "kk": "Еңкею",
                 "en": "Tilt"
               },
+              "skills": [
+                "gyro"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -988,6 +1206,9 @@
                 "kk": "Солға ма, оңға ма",
                 "en": "Left or right"
               },
+              "skills": [
+                "line-follow"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -999,6 +1220,9 @@
                 "kk": "Бірқалыпты",
                 "en": "Smoother"
               },
+              "skills": [
+                "line-follow"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1010,6 +1234,9 @@
                 "kk": "Қиылыстар",
                 "en": "Crossings"
               },
+              "skills": [
+                "line-follow"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1021,6 +1248,9 @@
                 "kk": "«Сызық пен қабырға» жобасы",
                 "en": "Project “Line and wall”"
               },
+              "skills": [
+                "line-follow"
+              ],
               "status": "todo",
               "project": true,
               "kit": false
@@ -1062,6 +1292,9 @@
                 "kk": "Тайғанау және батарея",
                 "en": "Slipping and the battery"
               },
+              "skills": [
+                "control"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1073,6 +1306,9 @@
                 "kk": "Қатарынан бес іске қосу",
                 "en": "Five runs in a row"
               },
+              "skills": [
+                "control"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1094,6 +1330,9 @@
                 "kk": "50 см тесті",
                 "en": "The 50 cm test"
               },
+              "skills": [
+                "calibration"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1105,6 +1344,9 @@
                 "kk": "360° бұрылыс тесті",
                 "en": "The 360° turn test"
               },
+              "skills": [
+                "calibration"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1116,6 +1358,9 @@
                 "kk": "Түзету коэффициенттері",
                 "en": "Correction factors"
               },
+              "skills": [
+                "calibration"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1127,6 +1372,9 @@
                 "kk": "Нағыз роботты калибрлеу",
                 "en": "Calibrating the real robot"
               },
+              "skills": [
+                "calibration"
+              ],
               "status": "todo",
               "project": false,
               "kit": true
@@ -1148,6 +1396,10 @@
                 "kk": "Гироскоп бойынша тура",
                 "en": "Straight with the gyro"
               },
+              "skills": [
+                "control",
+                "gyro"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1159,6 +1411,10 @@
                 "kk": "P-реттегіш",
                 "en": "The P controller"
               },
+              "skills": [
+                "control",
+                "gyro"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1170,6 +1426,10 @@
                 "kk": "Коэффициент не істейді",
                 "en": "What the gain does"
               },
+              "skills": [
+                "control",
+                "gyro"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1191,6 +1451,10 @@
                 "kk": "I және D мысалдармен",
                 "en": "I and D by example"
               },
+              "skills": [
+                "control",
+                "line-follow"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1202,6 +1466,10 @@
                 "kk": "Коэффициенттерді таңдау",
                 "en": "Tuning the gains"
               },
+              "skills": [
+                "control",
+                "line-follow"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1213,6 +1481,10 @@
                 "kk": "Алаң координаттары",
                 "en": "Field coordinates"
               },
+              "skills": [
+                "control",
+                "line-follow"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1224,6 +1496,10 @@
                 "kk": "«Дәл маршрут» жобасы",
                 "en": "Project “Exact route”"
               },
+              "skills": [
+                "control",
+                "line-follow"
+              ],
               "status": "todo",
               "project": true,
               "kit": false
@@ -1265,6 +1541,9 @@
                 "kk": "Python-дағы шаршы",
                 "en": "A square in Python"
               },
+              "skills": [
+                "python"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1276,6 +1555,9 @@
                 "kk": "Шегіністер мен түсініктемелер",
                 "en": "Indents and comments"
               },
+              "skills": [
+                "python"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1287,6 +1569,9 @@
                 "kk": "SPIKE 3 модульдері",
                 "en": "SPIKE 3 modules"
               },
+              "skills": [
+                "python"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1308,6 +1593,9 @@
                 "kk": "await не үшін керек",
                 "en": "Why await"
               },
+              "skills": [
+                "python"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1319,6 +1607,9 @@
                 "kk": "runloop.run(main())",
                 "en": "runloop.run(main())"
               },
+              "skills": [
+                "python"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1330,6 +1621,9 @@
                 "kk": "await ұмытылды",
                 "en": "A forgotten await"
               },
+              "skills": [
+                "python"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1351,6 +1645,11 @@
                 "kk": "for және while",
                 "en": "for and while"
               },
+              "skills": [
+                "python",
+                "loops",
+                "conditions"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1362,6 +1661,11 @@
                 "kk": "if, elif, else",
                 "en": "if, elif, else"
               },
+              "skills": [
+                "python",
+                "loops",
+                "conditions"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1373,6 +1677,11 @@
                 "kk": "Python-дағы датчиктер",
                 "en": "Sensors in Python"
               },
+              "skills": [
+                "python",
+                "loops",
+                "conditions"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1394,6 +1703,11 @@
                 "kk": "Айнымалылар мен типтер",
                 "en": "Variables and types"
               },
+              "skills": [
+                "python",
+                "variables",
+                "functions"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1405,6 +1719,11 @@
                 "kk": "def және параметрлер",
                 "en": "def and parameters"
               },
+              "skills": [
+                "python",
+                "variables",
+                "functions"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1416,6 +1735,11 @@
                 "kk": "Өз көмекшілерің",
                 "en": "Your own helpers"
               },
+              "skills": [
+                "python",
+                "variables",
+                "functions"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1437,6 +1761,9 @@
                 "kk": "Python-да сызық бойымен жүру",
                 "en": "Line following in Python"
               },
+              "skills": [
+                "python"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1448,6 +1775,9 @@
                 "kk": "Функциямен дәл бұрылыс",
                 "en": "An exact turn as a function"
               },
+              "skills": [
+                "python"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1459,6 +1789,9 @@
                 "kk": "Қорытынды жоба",
                 "en": "Final project"
               },
+              "skills": [
+                "python"
+              ],
               "status": "todo",
               "project": true,
               "kit": false
@@ -1501,6 +1834,9 @@
                 "kk": "Қармағыш қалай жұмыс істейді",
                 "en": "How a grabber works"
               },
+              "skills": [
+                "mechanisms"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1512,6 +1848,9 @@
                 "kk": "Қармағышты құрастыр",
                 "en": "Build a grabber"
               },
+              "skills": [
+                "mechanisms"
+              ],
               "status": "todo",
               "project": false,
               "kit": true
@@ -1523,6 +1862,9 @@
                 "kk": "Текшені тасы",
                 "en": "Carry a cube"
               },
+              "skills": [
+                "mechanisms"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1544,6 +1886,10 @@
                 "kk": "Иінтірек пен тісті доңғалақтар",
                 "en": "Levers and gears"
               },
+              "skills": [
+                "mechanisms",
+                "gears"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1555,6 +1901,10 @@
                 "kk": "Көтергішті құрастыр",
                 "en": "Build a lift"
               },
+              "skills": [
+                "mechanisms",
+                "gears"
+              ],
               "status": "todo",
               "project": false,
               "kit": true
@@ -1566,6 +1916,10 @@
                 "kk": "Бұрышқа көтер",
                 "en": "Lift to an angle"
               },
+              "skills": [
+                "mechanisms",
+                "gears"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1587,6 +1941,9 @@
                 "kk": "Итергіш пен тірек",
                 "en": "Pusher and stop"
               },
+              "skills": [
+                "mechanisms"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1598,6 +1955,9 @@
                 "kk": "Аймаққа итер",
                 "en": "Push into the zone"
               },
+              "skills": [
+                "mechanisms"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1619,6 +1979,10 @@
                 "kk": "Тапсырма брифі",
                 "en": "The task brief"
               },
+              "skills": [
+                "mechanisms",
+                "structures"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1630,6 +1994,10 @@
                 "kk": "Саптамаларды жылдам ауыстыру",
                 "en": "Quick attachment changes"
               },
+              "skills": [
+                "mechanisms",
+                "structures"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1641,6 +2009,10 @@
                 "kk": "«Өз саптамаң» жобасы",
                 "en": "Project “Your attachment”"
               },
+              "skills": [
+                "mechanisms",
+                "structures"
+              ],
               "status": "todo",
               "project": true,
               "kit": true
@@ -1683,6 +2055,9 @@
                 "kk": "FLL-дің төрт бөлігі",
                 "en": "The four parts of FLL"
               },
+              "skills": [
+                "strategy"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1694,6 +2069,9 @@
                 "kk": "Robot Game ережелері",
                 "en": "Robot Game rules"
               },
+              "skills": [
+                "strategy"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1715,6 +2093,9 @@
                 "kk": "Уақытқа шаққандағы ұпай",
                 "en": "Points for time"
               },
+              "skills": [
+                "strategy"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1726,6 +2107,9 @@
                 "kk": "FLL-жаттықтырушымен заездер",
                 "en": "Runs with the FLL coach"
               },
+              "skills": [
+                "strategy"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1737,6 +2121,9 @@
                 "kk": "Сенімділік рекордтан маңызды",
                 "en": "Reliability beats records"
               },
+              "skills": [
+                "strategy"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1758,6 +2145,10 @@
                 "kk": "Саптамаларды секундта ауыстыру",
                 "en": "Attachment swaps in seconds"
               },
+              "skills": [
+                "mechanisms",
+                "strategy"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1769,6 +2160,10 @@
                 "kk": "Заездер журналы",
                 "en": "The run log"
               },
+              "skills": [
+                "mechanisms",
+                "strategy"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1790,6 +2185,9 @@
                 "kk": "Командадағы рөлдер",
                 "en": "Team roles"
               },
+              "skills": [
+                "teamwork"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1801,6 +2199,9 @@
                 "kk": "Core Values тәжірибеде",
                 "en": "Core Values in practice"
               },
+              "skills": [
+                "teamwork"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1812,6 +2213,9 @@
                 "kk": "Инженерлік кітап",
                 "en": "The engineering notebook"
               },
+              "skills": [
+                "teamwork"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1833,6 +2237,9 @@
                 "kk": "Робот туралы қалай айту керек",
                 "en": "How to present your robot"
               },
+              "skills": [
+                "teamwork"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1844,6 +2251,9 @@
                 "kk": "Сынақ қорғау",
                 "en": "A practice judging session"
               },
+              "skills": [
+                "teamwork"
+              ],
               "status": "todo",
               "project": false,
               "kit": false
@@ -1855,6 +2265,9 @@
                 "kk": "«Маусым жоспары» жобасы",
                 "en": "Project “Season plan”"
               },
+              "skills": [
+                "teamwork"
+              ],
               "status": "todo",
               "project": true,
               "kit": false

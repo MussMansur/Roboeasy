@@ -5,6 +5,7 @@ import { Check, Play, X } from 'lucide-react'
 
 import { BlockStack } from '@/components/block-stack'
 import { RichText } from '@/components/learn/rich-text'
+import { shuffled } from '@/components/learn/steps/quiz-step'
 import { SimView } from '@/components/sim/sim-view'
 import { buttonVariants } from '@/components/ui/button'
 import { DEFAULT_ROBOT } from '@/lib/dsl/types'
@@ -25,6 +26,9 @@ export function PredictStep({ step, lang, t, blocksT, robotColor, done, onDone, 
   const [choice, setChoice] = useState<number | null>(done ? step.correct : null)
   const [result, setResult] = useState<SimResult | null>(null)
   const [revealed, setRevealed] = useState(done)
+  // Display position of each option (authored order puts the right one anywhere).
+  const order = useMemo(() => shuffled(step.options.map((_, i) => i), `${step.id}:options`, true), [step])
+  const pos = (i: number) => order.indexOf(i)
 
   const run = () => {
     if (choice === null) return
@@ -35,7 +39,7 @@ export function PredictStep({ step, lang, t, blocksT, robotColor, done, onDone, 
     onDone({ firstTry: right, hints: 0 })
   }
 
-  const label = (i: number) => String.fromCharCode(65 + i)
+  const label = (i: number) => String.fromCharCode(65 + pos(i))
   return (
     <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
       <div className="grid gap-3">
@@ -52,10 +56,10 @@ export function PredictStep({ step, lang, t, blocksT, robotColor, done, onDone, 
           lang={lang}
           robotColor={robotColor}
           labels={t.sim}
-          paths={step.options.map((o, i) => ({ points: paths[i], color: COLORS[i % COLORS.length], label: label(i), active: revealed ? i === step.correct : choice === null || choice === i }))}
+          paths={step.options.map((o, i) => ({ points: paths[i], color: COLORS[pos(i) % COLORS.length], label: label(i), active: revealed ? i === step.correct : choice === null || choice === i }))}
         />
         <div role="radiogroup" aria-label={t.lesson.choosePath} className="flex flex-wrap gap-2">
-          {step.options.map((o, i) => (
+          {order.map((i) => (
             <button
               key={i}
               type="button"
@@ -69,10 +73,10 @@ export function PredictStep({ step, lang, t, blocksT, robotColor, done, onDone, 
                 revealed && i === step.correct && 'bg-(--ok-bg)',
               )}
             >
-              <span className="grid size-7 place-items-center rounded-full font-display font-extrabold text-white" style={{ background: COLORS[i % COLORS.length] }}>
+              <span className="grid size-7 place-items-center rounded-full font-display font-extrabold text-white" style={{ background: COLORS[pos(i) % COLORS.length] }}>
                 {label(i)}
               </span>
-              {o.label[lang]}
+              {step.options[i].label[lang]}
             </button>
           ))}
         </div>

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Bot, Clock, PartyPopper, RotateCcw, Target, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Bot, Clock, Lock, PartyPopper, RotateCcw, Target, X } from 'lucide-react'
 import { motion } from 'motion/react'
 
 import { RichText } from '@/components/learn/rich-text'
@@ -14,10 +14,13 @@ import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { fill } from '@/lib/i18n/config'
 import type { LearnText } from '@/lib/i18n/learn'
+import type { LearnAppText } from '@/lib/i18n/learn-app'
 import type { Dictionary } from '@/lib/i18n/ru'
 import type { ClientLesson } from '@/lib/learn/content'
-import { doneSteps } from '@/lib/learn/state'
-import { record, useLearn } from '@/lib/learn/store'
+import { COURSE } from '@/lib/learn/course'
+import { lessonStates, trackLessons } from '@/lib/learn/progress'
+import { completedLessons, doneSteps } from '@/lib/learn/state'
+import { record, useHydrated, useLearn } from '@/lib/learn/store'
 import { totalXp } from '@/lib/learn/xp'
 import { cn } from '@/lib/utils'
 
@@ -33,10 +36,13 @@ interface PlayerProps {
   isProject: boolean
   next: { href: string; title: string } | null
   mapHref: string
+  lockedT: LearnAppText['locked']
 }
 
-export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, isProject, next, mapHref }: PlayerProps) {
+export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, isProject, next, mapHref, lockedT }: PlayerProps) {
   const learn = useLearn()
+  const hydrated = useHydrated()
+  const [forceOpen, setForceOpen] = useState(false)
   const done = useMemo(() => doneSteps(learn, lesson.id), [learn, lesson.id])
   const lessonDone = learn.events.some((e) => e.kind === 'lesson_done' && e.lesson === lesson.id)
   const [index, setIndex] = useState(-1)
@@ -104,11 +110,21 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
     if (index >= 0) window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [index])
 
+  // A locked lesson (opened by URL) suggests the lesson to do first; "open anyway" is allowed.
+  const track = COURSE.tracks.find((tr) => tr.id === lesson.track)
+  const states = track && hydrated ? lessonStates(completedLessons(learn), track, COURSE) : null
+  const firstOpen = track && states ? trackLessons(track).find(({ ref }) => states.get(ref.id) === 'current')?.ref : undefined
+  const locked = !forceOpen && states?.get(lesson.id) === 'locked' && firstOpen
+
   // ── Intro ───────────────────────────────────────────────────────────
   if (index < 0 && !finished)
     return (
       <div className="container grid min-h-[70vh] place-items-center py-10">
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="grid w-full max-w-xl gap-5 rounded-(--radius-xl) border-(length:--stroke) border-outline bg-card p-6 shadow-(--shadow-hard) sm:p-8">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="grid w-full max-w-xl gap-5 rounded-(--radius-xl) border-(length:--stroke) border-outline bg-card p-6 shadow-(--shadow-hard) sm:p-8"
+        >
           <Link href={mapHref} className="inline-flex items-center gap-1 text-sm font-bold text-muted-foreground">
             <ArrowLeft className="size-4" aria-hidden="true" />
             {trackTitle} · {unitTitle}
@@ -131,10 +147,29 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
               </Badge>
             )}
           </div>
-          <button type="button" className={buttonVariants({ variant: 'primary', size: 'lg' })} onClick={begin}>
-            {done.size > 0 && !lessonDone ? t.lesson.resume : t.lesson.start}
-            <ArrowRight aria-hidden="true" />
-          </button>
+          {locked ? (
+            <div className="grid gap-3 rounded-(--radius-md) border-(length:--stroke-thin) border-dashed border-outline bg-surface-2 p-4">
+              <p className="m-0 flex items-center gap-2 font-extrabold">
+                <Lock className="size-5" aria-hidden="true" />
+                {lockedT.title}
+              </p>
+              <p className="m-0">{fill(lockedT.text, { lesson: firstOpen.title[lang] })}</p>
+              <div className="flex flex-wrap gap-2">
+                <Link className={buttonVariants({ variant: 'primary' })} href={`/${lang}/learn/${lesson.track}/${firstOpen.id}`}>
+                  {fill(lockedT.go, { lesson: firstOpen.title[lang] })}
+                  <ArrowRight aria-hidden="true" />
+                </Link>
+                <button type="button" className={buttonVariants({ variant: 'ghost' })} onClick={() => setForceOpen(true)}>
+                  {lockedT.anyway}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button type="button" className={buttonVariants({ variant: 'primary', size: 'lg' })} onClick={begin}>
+              {done.size > 0 && !lessonDone ? t.lesson.resume : t.lesson.start}
+              <ArrowRight aria-hidden="true" />
+            </button>
+          )}
         </motion.div>
       </div>
     )
@@ -143,14 +178,22 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
   if (finished)
     return (
       <div className="container grid min-h-[70vh] place-items-center py-10">
-        <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} className="grid w-full max-w-xl justify-items-center gap-5 rounded-(--radius-xl) border-(length:--stroke) border-outline bg-card p-8 text-center shadow-(--shadow-hard)">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="grid w-full max-w-xl justify-items-center gap-5 rounded-(--radius-xl) border-(length:--stroke) border-outline bg-card p-8 text-center shadow-(--shadow-hard)"
+        >
           <span className="grid size-20 place-items-center rounded-full border-(length:--stroke) border-outline bg-primary text-primary-foreground shadow-(--shadow-hard-sm)">
             <PartyPopper className="size-10" aria-hidden="true" />
           </span>
           <h1 className="m-0 text-(length:--text-3xl)">{t.lesson.done}</h1>
           <RichText text={lesson.summary[lang]} className="text-lg [&>p]:my-0" />
           {xpGained > 0 && (
-            <motion.span initial={{ scale: 0.6 }} animate={{ scale: 1 }} className="rounded-full border-(length:--stroke-thin) border-outline bg-(--ok-bg) px-4 py-1.5 font-display text-2xl font-extrabold text-success">
+            <motion.span
+              initial={{ scale: 0.6 }}
+              animate={{ scale: 1 }}
+              className="rounded-full border-(length:--stroke-thin) border-outline bg-(--ok-bg) px-4 py-1.5 font-display text-2xl font-extrabold text-success"
+            >
               {fill(t.lesson.xp, { xp: xpGained })}
             </motion.span>
           )}
@@ -188,7 +231,10 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
               <li key={s.id} className="flex-1">
                 <button
                   type="button"
-                  className={cn('block h-3.5 w-full cursor-pointer rounded-full border-(length:--stroke-thin) border-outline', done.has(s.id) ? 'bg-success' : i === index ? 'bg-primary' : 'bg-surface-2')}
+                  className={cn(
+                    'block h-3.5 w-full cursor-pointer rounded-full border-(length:--stroke-thin) border-outline',
+                    done.has(s.id) ? 'bg-success' : i === index ? 'bg-primary' : 'bg-surface-2',
+                  )}
                   aria-label={`${i + 1}. ${t.lesson.stepTypes[s.type]}`}
                   aria-current={i === index ? 'step' : undefined}
                   disabled={!done.has(s.id) && i !== index && !(i > 0 && done.has(lesson.steps[i - 1].id))}
@@ -211,10 +257,35 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
           {step!.type === 'theory' && <TheoryStep step={step!} lang={lang} blocksT={blocksT} onDone={onDone} />}
           {step!.type === 'build' && <BuildStep step={step!} lang={lang} t={t} onDone={onDone} />}
           {step!.type === 'quiz' && <QuizStep key={step!.id} step={step!} lang={lang} t={t} done={stepDone} onDone={onDone} onMistake={onMistake} />}
-          {step!.type === 'predict' && <PredictStep key={step!.id} step={step!} lang={lang} t={t} blocksT={blocksT} robotColor={cosmetics.color} done={stepDone} onDone={onDone} onMistake={onMistake} />}
+          {step!.type === 'predict' && (
+            <PredictStep
+              key={step!.id}
+              step={step!}
+              lang={lang}
+              t={t}
+              blocksT={blocksT}
+              robotColor={cosmetics.color}
+              done={stepDone}
+              onDone={onDone}
+              onMistake={onMistake}
+            />
+          )}
           {step!.type === 'real_robot' && <RealRobotStep key={step!.id} step={step!} lang={lang} t={t} done={stepDone} onDone={onDone} />}
           {(step!.type === 'code' || step!.type === 'debug' || step!.type === 'project') && (
-            <CodeStep key={step!.id} lessonId={lesson.id} step={step!} lang={lang} t={t} blocksT={blocksT} robotColor={cosmetics.color} sticker={cosmetics.sticker} done={stepDone} onDone={onDone} onMistake={onMistake} />
+            <CodeStep
+              key={step!.id}
+              lessonId={lesson.id}
+              step={step!}
+              lang={lang}
+              t={t}
+              blocksT={blocksT}
+              robotColor={cosmetics.color}
+              sticker={cosmetics.sticker}
+              wheels={cosmetics.wheels}
+              done={stepDone}
+              onDone={onDone}
+              onMistake={onMistake}
+            />
           )}
         </motion.div>
       </main>

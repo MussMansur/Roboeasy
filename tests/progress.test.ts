@@ -1,0 +1,164 @@
+import { describe, expect, it } from 'vitest'
+
+import { ACHIEVEMENTS, earnedAchievements, newAchievements } from '@/lib/learn/achievements'
+import { CHALLENGES } from '@/lib/learn/challenge'
+import { runChecks } from '@/lib/learn/checks'
+import { COURSE, practiceItems, readLesson, spread } from '@/lib/learn/content'
+import { COSMETICS, isUnlocked } from '@/lib/learn/cosmetics'
+import { PLACEMENT, PLACEMENT_ITEMS, placementResult } from '@/lib/learn/placement'
+import { dueSkills, lessonStates, nextLesson, skillMemory, skillRadar, trackProgress, trackUnlocked } from '@/lib/learn/progress'
+import { EMPTY_STATE, type NewEvent, appendEvents, completedLessons } from '@/lib/learn/state'
+
+const DAY = 86400_000
+const track = (id: string) => COURSE.tracks.find((t) => t.id === id)!
+const done = (...ids: string[]) => new Set(ids)
+const lessonDone = (id: string, at: number, trackId = 'start'): NewEvent => ({ kind: 'lesson_done', lesson: id, track: trackId, unit: 'u', project: false, seconds: 60, at })
+
+describe('unlocking', () => {
+  it('starts with the first lesson of Start and nothing else', () => {
+    const states = lessonStates(done(), track('start'), COURSE)
+    expect(states.get('start-01')).toBe('current')
+    expect(states.get('start-02')).toBe('locked')
+    expect(trackUnlocked(done(), track('blocks'), COURSE)).toBe(false)
+    expect(nextLesson(done(), COURSE)?.id).toBe('start-01')
+  })
+
+  it('opens lessons one by one', () => {
+    const states = lessonStates(done('start-01'), track('start'), COURSE)
+    expect(states.get('start-01')).toBe('done')
+    expect(states.get('start-02')).toBe('current')
+    expect(states.get('start-03')).toBe('locked')
+  })
+
+  it('opens the next track when the prerequisites are finished', () => {
+    const start = track('start').units.flatMap((u) => u.lessons.map((l) => l.id))
+    expect(trackUnlocked(done(...start), track('blocks'), COURSE)).toBe(true)
+    expect(nextLesson(done(...start), COURSE)?.id).toBe('blocks-01')
+    expect(trackProgress(done(...start), track('start'), COURSE)).toMatchObject({ complete: true, done: 8, ready: 8 })
+  })
+
+  it('opens a track early when one of its lessons is known (test)', () => {
+    expect(trackUnlocked(done('blocks-01'), track('blocks'), COURSE)).toBe(true)
+  })
+
+  it('shows planned lessons as "soon" without blocking', () => {
+    const states = lessonStates(done(), track('build'), COURSE)
+    expect([...states.values()].every((s) => s === 'soon')).toBe(true)
+  })
+
+  it('counts "known" lessons as done', () => {
+    const s = appendEvents(EMPTY_STATE, [{ kind: 'known', lessons: ['start-01', 'start-02'], skills: ['robot-basics'], source: 'unit' }])
+    expect(lessonStates(completedLessons(s), track('start'), COURSE).get('start-03')).toBe('current')
+  })
+})
+
+describe('skills', () => {
+  it('lists every lesson ref skill as in the lesson file', () => {
+    for (const t of COURSE.tracks)
+      for (const u of t.units)
+        for (const l of u.lessons) if (l.status === 'ready') expect(l.skills, l.id).toEqual(readLesson(l.id)!.skills)
+  })
+
+  it('fills the radar as lessons get done', () => {
+    const before = skillRadar(done(), COURSE)
+    const after = skillRadar(done('start-01', 'start-02'), COURSE)
+    expect(before.every((g) => g.value === 0)).toBe(true)
+    expect(after.find((g) => g.id === 'basics')!.value).toBeGreaterThan(0)
+    expect(after).toHaveLength(8)
+  })
+
+  it('schedules review: mistakes come back sooner, good reviews later', () => {
+    const t0 = Date.parse('2026-10-01T10:00:00Z')
+    const s = appendEvents(EMPTY_STATE, [lessonDone('start-02', t0), { kind: 'mistake', lesson: 'start-06', step: 'x', at: t0 }, lessonDone('start-06', t0)])
+    const mem = skillMemory(s, COURSE)
+    expect(mem.get('robot-basics')!.box).toBe(2)
+    expect(mem.get('motion')!.box).toBe(1)
+    expect(dueSkills(s, COURSE, t0 + DAY)).toEqual(expect.arrayContaining(['motion', 'sequence']))
+    expect(dueSkills(s, COURSE, t0 + DAY)).not.toContain('robot-basics')
+    const reviewed = appendEvents(s, [{ kind: 'review_done', skills: ['motion'], correct: 5, total: 5, at: t0 + DAY }])
+    expect(skillMemory(reviewed, COURSE).get('motion')!.box).toBe(2)
+    expect(dueSkills(reviewed, COURSE, t0 + 2 * DAY)).not.toContain('motion')
+    const weak = appendEvents(s, [{ kind: 'review_done', skills: ['robot-basics'], correct: 1, total: 4, at: t0 + 2 * DAY }])
+    expect(skillMemory(weak, COURSE).get('robot-basics')!.box).toBe(1)
+  })
+})
+
+describe('placement and practice items', () => {
+  const keys = new Set(practiceItems().map((i) => i.key))
+
+  it('uses questions that exist, 8–12 of them', () => {
+    expect(PLACEMENT_ITEMS.length).toBeGreaterThanOrEqual(8)
+    expect(PLACEMENT_ITEMS.length).toBeLessThanOrEqual(12)
+    for (const k of PLACEMENT_ITEMS) expect(keys.has(k), k).toBe(true)
+  })
+
+  it('passes levels in order and allows one mistake per level', () => {
+    const [l1, l2, l3] = PLACEMENT
+    expect(placementResult(new Set()).passed).toHaveLength(0)
+    expect(placementResult(new Set(l1.items.slice(1))).lessons).toEqual(l1.lessons)
+    // Level 3 right but level 2 wrong: only level 1 counts.
+    expect(placementResult(new Set([...l1.items, ...l3.items])).passed.map((l) => l.id)).toEqual([l1.id])
+    expect(placementResult(new Set(PLACEMENT_ITEMS)).passed).toHaveLength(3)
+    expect(placementResult(new Set([...l1.items, ...l2.items])).skills).toEqual(expect.arrayContaining(['robot-basics', 'motion', 'turns']))
+  })
+
+  it('spreads a long list evenly', () => {
+    expect(spread([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 5)).toEqual([1, 3, 5, 7, 9])
+    expect(spread([1, 2], 5)).toEqual([1, 2])
+  })
+})
+
+describe('weekly challenges', () => {
+  it.each(CHALLENGES.map((c) => [c.id, c] as const))('%s: the reference passes and an empty program does not', (_, c) => {
+    expect(runChecks(c.reference, c.field, c.checks, 'ru').ok).toBe(true)
+    expect(runChecks(c.start, c.field, c.checks, 'ru').ok).toBe(false)
+    for (const step of c.reference) expect(c.toolbox).toContain(step.op)
+  })
+})
+
+describe('achievements', () => {
+  it('earns visible and hidden ones from events, once', () => {
+    const t0 = Date.parse('2026-10-01T10:00:00Z')
+    let s = appendEvents(EMPTY_STATE, [lessonDone('start-01', t0)])
+    expect(newAchievements(s, COURSE, t0)).toEqual(['first-lesson'])
+    s = appendEvents(s, [{ kind: 'achievement', achievement: 'first-lesson', at: t0 }])
+    expect(newAchievements(s, COURSE, t0)).toEqual([])
+    s = appendEvents(s, [lessonDone('start-02', t0 + 9 * DAY)])
+    expect(earnedAchievements(s, COURSE, t0 + 9 * DAY)).toContain('comeback')
+    s = appendEvents(s, [{ kind: 'step_done', lesson: 'blocks-01', step: 'zigzag', stepType: 'code', firstTry: true, hints: 0, blocks: 3, referenceBlocks: 5 }])
+    expect(earnedAchievements(s, COURSE)).toContain('shorter')
+  })
+
+  it('has hidden ones and unique ids', () => {
+    expect(ACHIEVEMENTS.some((a) => a.hidden)).toBe(true)
+    expect(new Set(ACHIEVEMENTS.map((a) => a.id)).size).toBe(ACHIEVEMENTS.length)
+  })
+
+  it('unlocks cosmetics only through existing achievements or levels', () => {
+    const ids = new Set(ACHIEVEMENTS.map((a) => a.id))
+    for (const c of COSMETICS) if (c.unlock && 'achievement' in c.unlock) expect(ids.has(c.unlock.achievement), c.id).toBe(true)
+    const sky = COSMETICS.find((c) => c.id === 'leaf')!
+    expect(isUnlocked(sky, 0, new Set())).toBe(false)
+    expect(isUnlocked(sky, 1, new Set())).toBe(true)
+  })
+})
+
+describe('answer order', () => {
+  it('does not show the right answer in the same place every time', async () => {
+    const { shuffled } = await import('@/components/learn/steps/quiz-step')
+    const positions = practiceItems().flatMap(({ step }) => {
+      if (step.type === 'quiz' && step.kind === 'choice') return [shuffled(step.options.map((_, i) => i), `${step.id}:options`, true).indexOf(step.correct[0])]
+      if (step.type === 'predict') return [shuffled(step.options.map((_, i) => i), `${step.id}:options`, true).indexOf(step.correct)]
+      return []
+    })
+    const first = positions.filter((p) => p === 0).length
+    expect(first / positions.length).toBeLessThan(0.6)
+  })
+
+  it('schedules skills of known lessons for a check', () => {
+    const t0 = Date.parse('2026-10-01T10:00:00Z')
+    const s = appendEvents(EMPTY_STATE, [{ kind: 'known', lessons: ['start-01'], skills: ['robot-basics'], source: 'placement', at: t0 }])
+    expect(dueSkills(s, COURSE, t0 + DAY)).toEqual([])
+    expect(dueSkills(s, COURSE, t0 + 2 * DAY)).toEqual(['robot-basics'])
+  })
+})

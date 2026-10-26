@@ -128,6 +128,9 @@ const code = z.object({ ...codeBase, type: z.literal('code') })
 const debug = z.object({ ...codeBase, type: z.literal('debug') })
 const project = z.object({ ...codeBase, type: z.literal('project') })
 
+/** Weekly challenges (content/learn/challenges.json): code tasks outside lessons; a reference is required. */
+export const challengeFileSchema = z.object({ challenges: z.array(code.extend({ reference: dslSteps })).min(1) })
+
 const predict = z.object({
   ...base,
   type: z.literal('predict'),
@@ -210,6 +213,8 @@ export type Lesson = z.infer<typeof lessonSchema>
 const lessonRef = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   title: localized,
+  /** Same as the lesson file's skills (checked in tests); planned lessons get their unit's skills. */
+  skills: z.array(z.enum(SKILLS)).min(1),
   /** "ready" lessons have a content file; "todo" are planned. */
   status: z.enum(['ready', 'todo']),
   project: z.boolean().default(false),

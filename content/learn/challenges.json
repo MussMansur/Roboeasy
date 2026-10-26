@@ -1,0 +1,669 @@
+{
+  "challenges": [
+    {
+      "id": "snake",
+      "type": "code",
+      "skill": "turns",
+      "title": {
+        "ru": "Змейка",
+        "kk": "Жылан",
+        "en": "The snake"
+      },
+      "task": {
+        "ru": "Проведи робота через флажки 1, 2 и 3 по порядку и останови в зоне «Финиш».",
+        "kk": "Роботты 1, 2 және 3-жалаулар арқылы ретімен өткізіп, «Мәре» аймағында тоқтат.",
+        "en": "Drive the robot through flags 1, 2 and 3 in order and stop in the Finish zone."
+      },
+      "field": {
+        "width": 1000,
+        "height": 600,
+        "start": {
+          "x": 150,
+          "y": 150,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "finish",
+            "x": 650,
+            "y": 50,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Финиш",
+              "kk": "Мәре",
+              "en": "Finish"
+            }
+          }
+        ],
+        "points": [
+          {
+            "id": "f1",
+            "x": 450,
+            "y": 150,
+            "r": 60,
+            "label": {
+              "ru": "1",
+              "kk": "1",
+              "en": "1"
+            }
+          },
+          {
+            "id": "f2",
+            "x": 450,
+            "y": 450,
+            "r": 60,
+            "label": {
+              "ru": "2",
+              "kk": "2",
+              "en": "2"
+            }
+          },
+          {
+            "id": "f3",
+            "x": 750,
+            "y": 450,
+            "r": 60,
+            "label": {
+              "ru": "3",
+              "kk": "3",
+              "en": "3"
+            }
+          }
+        ],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "passPoints",
+          "points": [
+            "f1",
+            "f2",
+            "f3"
+          ]
+        },
+        {
+          "type": "finishInZone",
+          "zone": "finish"
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Одна клетка сетки — 10 см. Посчитай клетки до каждого флажка.",
+          "kk": "Тордың бір торы — 10 см. Әр жалауға дейінгі торларды сана.",
+          "en": "One grid square is 10 cm. Count the squares to each flag."
+        },
+        {
+          "ru": "Путь: вперёд, налево, вперёд, направо, вперёд, направо, вперёд. Все отрезки одинаковые.",
+          "kk": "Жол: алға, солға, алға, оңға, алға, оңға, алға. Барлық кесінділер бірдей.",
+          "en": "The path: forward, left, forward, right, forward, right, forward. All the legs are the same length."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "right",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "right",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "show",
+      "type": "code",
+      "skill": "sequence",
+      "title": {
+        "ru": "Праздничный сигнал",
+        "kk": "Мерекелік белгі",
+        "en": "Party signal"
+      },
+      "task": {
+        "ru": "Робот стоит на месте и празднует: подай 3 звуковых сигнала и покажи картинку на хабе.",
+        "kk": "Робот орнында тұрып тойлайды: 3 дыбыс белгісін беріп, хабта сурет көрсет.",
+        "en": "The robot stays in place and celebrates: play 3 beeps and show a picture on the hub."
+      },
+      "field": {
+        "width": 600,
+        "height": 500,
+        "start": {
+          "x": 300,
+          "y": 250,
+          "heading": 90
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "stage",
+            "x": 180,
+            "y": 130,
+            "w": 240,
+            "h": 240,
+            "kind": "target",
+            "label": {
+              "ru": "Сцена",
+              "kk": "Сахна",
+              "en": "Stage"
+            }
+          }
+        ],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "beep",
+        "show_image",
+        "wait"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "beeped",
+          "min": 3
+        },
+        {
+          "type": "displayed"
+        },
+        {
+          "type": "finishInZone",
+          "zone": "stage"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Тебе нужны два вида блоков: звук и картинка.",
+          "kk": "Саған екі түрлі блок керек: дыбыс және сурет.",
+          "en": "You need two kinds of blocks: sound and picture."
+        },
+        {
+          "ru": "Поставь блок звука три раза подряд, потом блок картинки.",
+          "kk": "Дыбыс блогын қатарынан үш рет қой, содан кейін сурет блогын.",
+          "en": "Put the sound block three times in a row, then the picture block."
+        }
+      ],
+      "reference": [
+        {
+          "op": "beep",
+          "note": 60,
+          "seconds": 0.3
+        },
+        {
+          "op": "beep",
+          "note": 64,
+          "seconds": 0.3
+        },
+        {
+          "op": "beep",
+          "note": 67,
+          "seconds": 0.3
+        },
+        {
+          "op": "show_image",
+          "image": "heart"
+        }
+      ]
+    },
+    {
+      "id": "reverse-park",
+      "type": "code",
+      "skill": "motion",
+      "title": {
+        "ru": "Парковка задом",
+        "kk": "Артпен тұрақтау",
+        "en": "Reverse parking"
+      },
+      "task": {
+        "ru": "Заедь в гараж задним ходом. Робот должен остаться смотреть вправо, как сейчас.",
+        "kk": "Гаражға артпен кір. Робот қазіргідей оңға қарап тұруы керек.",
+        "en": "Back into the garage. The robot must still face right, like now."
+      },
+      "field": {
+        "width": 1000,
+        "height": 600,
+        "start": {
+          "x": 700,
+          "y": 300,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "garage",
+            "x": 190,
+            "y": 190,
+            "w": 220,
+            "h": 220,
+            "kind": "target",
+            "label": {
+              "ru": "Гараж",
+              "kk": "Гараж",
+              "en": "Garage"
+            }
+          }
+        ],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "finishInZone",
+          "zone": "garage"
+        },
+        {
+          "type": "heading",
+          "degrees": 0,
+          "tolerance": 5
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Блок «ехать» умеет ехать не только вперёд.",
+          "kk": "«Жүру» блогы тек алға ғана жүрмейді.",
+          "en": "The drive block can go more than just forward."
+        },
+        {
+          "ru": "Выбери «назад» и посчитай клетки до середины гаража.",
+          "kk": "«Артқа» таңда да, гараждың ортасына дейінгі торларды сана.",
+          "en": "Pick “backward” and count the squares to the middle of the garage."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "back",
+          "value": 40,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "wall-signal",
+      "type": "code",
+      "skill": "sensor-distance",
+      "title": {
+        "ru": "Сигнал у стены",
+        "kk": "Қабырға жанындағы белгі",
+        "en": "Signal at the wall"
+      },
+      "task": {
+        "ru": "Робот едет к стене, останавливается перед ней (не касаясь!) и подаёт звуковой сигнал.",
+        "kk": "Робот қабырғаға қарай жүріп, оған тимей алдында тоқтайды және дыбыс белгісін береді.",
+        "en": "The robot drives to the wall, stops in front of it (without touching!) and beeps."
+      },
+      "field": {
+        "width": 1300,
+        "height": 500,
+        "start": {
+          "x": 200,
+          "y": 250,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [],
+        "points": [],
+        "walls": [
+          {
+            "x": 1050,
+            "y": 80,
+            "w": 40,
+            "h": 340
+          }
+        ],
+        "lines": []
+      },
+      "toolbox": [
+        "start_move",
+        "wait_until",
+        "stop_move",
+        "beep"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "usesSensor",
+          "sensor": "distance"
+        },
+        {
+          "type": "stopBeforeWall",
+          "maxMm": 250
+        },
+        {
+          "type": "beeped",
+          "min": 1
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Как в уроке про датчики: начать движение, ждать, остановиться.",
+          "kk": "Датчиктер туралы сабақтағыдай: қозғалысты бастау, күту, тоқтау.",
+          "en": "Like in the sensors lesson: start moving, wait, stop."
+        },
+        {
+          "ru": "В «ждать, пока» вставь датчик расстояния «меньше 10 см». Звук — в самом конце.",
+          "kk": "«Болғанша күту» ішіне «10 см-ден аз» қашықтық датчигін сал. Дыбыс — ең соңында.",
+          "en": "Put the distance sensor “less than 10 cm” into “wait until”. The sound goes at the very end."
+        }
+      ],
+      "reference": [
+        {
+          "op": "start_move",
+          "direction": "forward"
+        },
+        {
+          "op": "wait_until",
+          "condition": {
+            "sensor": "distance",
+            "port": "C",
+            "comparator": "<",
+            "value": 10,
+            "unit": "cm"
+          }
+        },
+        {
+          "op": "stop_move"
+        },
+        {
+          "op": "beep",
+          "note": 72,
+          "seconds": 0.3
+        }
+      ]
+    },
+    {
+      "id": "triangle",
+      "type": "code",
+      "skill": "turns",
+      "title": {
+        "ru": "Треугольник",
+        "kk": "Үшбұрыш",
+        "en": "The triangle"
+      },
+      "task": {
+        "ru": "Объедь треугольник через вершины 1 и 2 и вернись домой. Все стороны — по 30 см.",
+        "kk": "1 және 2-төбелер арқылы үшбұрышты айналып, үйге орал. Барлық қабырғалары — 30 см-ден.",
+        "en": "Drive a triangle through corners 1 and 2 and come back home. Every side is 30 cm."
+      },
+      "field": {
+        "width": 900,
+        "height": 700,
+        "start": {
+          "x": 300,
+          "y": 200,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "home",
+            "x": 200,
+            "y": 100,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Дом",
+              "kk": "Үй",
+              "en": "Home"
+            }
+          }
+        ],
+        "points": [
+          {
+            "id": "t1",
+            "x": 600,
+            "y": 200,
+            "r": 60,
+            "label": {
+              "ru": "1",
+              "kk": "1",
+              "en": "1"
+            }
+          },
+          {
+            "id": "t2",
+            "x": 450,
+            "y": 460,
+            "r": 60,
+            "label": {
+              "ru": "2",
+              "kk": "2",
+              "en": "2"
+            }
+          }
+        ],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "passPoints",
+          "points": [
+            "t1",
+            "t2"
+          ]
+        },
+        {
+          "type": "finishInZone",
+          "zone": "home"
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "У квадрата робот поворачивал на 90°. У треугольника угол поворота больше.",
+          "kk": "Шаршыда робот 90°-қа бұрылды. Үшбұрышта бұрылу бұрышы үлкенірек.",
+          "en": "For a square the robot turned 90°. For a triangle the turn is bigger."
+        },
+        {
+          "ru": "Три поворота должны дать полный круг: 360° / 3 = 120°.",
+          "kk": "Үш бұрылыс толық шеңбер беруі керек: 360° / 3 = 120°.",
+          "en": "Three turns must make a full circle: 360° / 3 = 120°."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 120
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 120
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        }
+      ]
+    },
+    {
+      "id": "postman",
+      "type": "code",
+      "skill": "sequence",
+      "title": {
+        "ru": "Почтальон",
+        "kk": "Пошташы",
+        "en": "The postman"
+      },
+      "task": {
+        "ru": "Доставь письмо: заедь на «Почту», постой там 2 секунды и отвези письмо к «Дому».",
+        "kk": "Хатты жеткіз: «Поштаға» кіріп, сонда 2 секунд тұр да, хатты «Үйге» апар.",
+        "en": "Deliver a letter: drive to the Post office, wait there 2 seconds, then take the letter to the House."
+      },
+      "field": {
+        "width": 1000,
+        "height": 800,
+        "start": {
+          "x": 150,
+          "y": 300,
+          "heading": 0
+        },
+        "border": true,
+        "zones": [
+          {
+            "id": "post",
+            "x": 450,
+            "y": 200,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Почта",
+              "kk": "Пошта",
+              "en": "Post office"
+            }
+          },
+          {
+            "id": "house",
+            "x": 450,
+            "y": 500,
+            "w": 200,
+            "h": 200,
+            "kind": "target",
+            "label": {
+              "ru": "Дом",
+              "kk": "Үй",
+              "en": "House"
+            }
+          }
+        ],
+        "points": [],
+        "walls": [],
+        "lines": []
+      },
+      "toolbox": [
+        "move",
+        "turn",
+        "wait"
+      ],
+      "start": [],
+      "checks": [
+        {
+          "type": "waitInZone",
+          "zone": "post",
+          "seconds": 2
+        },
+        {
+          "type": "finishInZone",
+          "zone": "house"
+        },
+        {
+          "type": "noCollision"
+        }
+      ],
+      "hints": [
+        {
+          "ru": "Три части: доехать до почты, подождать, доехать до дома.",
+          "kk": "Үш бөлік: поштаға жету, күту, үйге жету.",
+          "en": "Three parts: get to the post office, wait, get to the house."
+        },
+        {
+          "ru": "Почта — в 40 см прямо. Дом — над почтой, на 30 см выше.",
+          "kk": "Пошта — тура 40 см жерде. Үй — поштаның үстінде, 30 см жоғары.",
+          "en": "The post office is 40 cm straight ahead. The house is above it, 30 cm higher."
+        }
+      ],
+      "reference": [
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 40,
+          "unit": "cm"
+        },
+        {
+          "op": "wait",
+          "seconds": 2
+        },
+        {
+          "op": "turn",
+          "direction": "left",
+          "degrees": 90
+        },
+        {
+          "op": "move",
+          "direction": "forward",
+          "value": 30,
+          "unit": "cm"
+        }
+      ]
+    }
+  ]
+}

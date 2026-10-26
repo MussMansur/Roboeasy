@@ -6,6 +6,7 @@ import { Pause, Play, RotateCcw, Volume2 } from 'lucide-react'
 import { FieldFrame, Label } from '@/components/fll/field-shapes'
 import { buttonVariants } from '@/components/ui/button'
 import { svgPoints } from '@/lib/fll/geometry'
+import { stickerEmoji } from '@/lib/learn/cosmetics'
 import type { Point } from '@/lib/fll/season'
 import { ROBOT_SHAPE, type SimField } from '@/lib/sim/field'
 import { type SimResult, displayAt, poseAt, stepAt } from '@/lib/sim/interpreter'
@@ -59,12 +60,14 @@ interface SimViewProps {
   autoPlay?: boolean
   robotColor?: string
   sticker?: string
+  /** classic | offroad | racing (cosmetics, lib/learn/cosmetics.ts) */
+  wheels?: string
   labels: { play: string; pause: string; restart: string; speed: string; time: string }
   className?: string
 }
 
 /** Field, robot and playback of a simulator run. */
-export function SimView({ field, result, lang, paths = [], onStep, onEnd, autoPlay = true, robotColor = 'sun', sticker, labels, className }: SimViewProps) {
+export function SimView({ field, result, lang, paths = [], onStep, onEnd, autoPlay = true, robotColor = 'sun', sticker, wheels = 'classic', labels, className }: SimViewProps) {
   const [t, setT] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)
@@ -194,13 +197,24 @@ export function SimView({ field, result, lang, paths = [], onStep, onEnd, autoPl
 
             {/* Robot: body, wheels, colour sensor, heading arrow */}
             <g transform={`translate(${pose.x} ${pose.y}) rotate(${pose.heading})`}>
-              <rect x={-ROBOT_SHAPE.length / 2} y={-ROBOT_SHAPE.width / 2 - 18} width={70} height={22} rx="6" fill="#1b1f2a" />
-              <rect x={-ROBOT_SHAPE.length / 2} y={ROBOT_SHAPE.width / 2 - 4} width={70} height={22} rx="6" fill="#1b1f2a" />
+              {[-1, 1].map((side) => {
+                const big = wheels === 'offroad'
+                const w = big ? 84 : 70
+                const h = big ? 30 : 22
+                const y = side < 0 ? -ROBOT_SHAPE.width / 2 - h + 4 : ROBOT_SHAPE.width / 2 - 4
+                return (
+                  <g key={side}>
+                    <rect x={-ROBOT_SHAPE.length / 2 - (big ? 7 : 0)} y={y} width={w} height={h} rx="6" fill="#1b1f2a" />
+                    {big && <path d={Array.from({ length: 6 }, (_, i) => `M${-ROBOT_SHAPE.length / 2 + 4 + i * 13} ${y + 3}v${h - 6}`).join('')} stroke="#5b6275" strokeWidth="4" />}
+                    {wheels === 'racing' && <rect x={-ROBOT_SHAPE.length / 2 + 6} y={y + h / 2 - 3} width={w - 12} height={6} rx="3" fill="#ffc531" />}
+                  </g>
+                )
+              })}
               <rect x={-ROBOT_SHAPE.length / 2} y={-ROBOT_SHAPE.width / 2} width={ROBOT_SHAPE.length} height={ROBOT_SHAPE.width} rx="18" fill={color} stroke="#1b1f2a" strokeWidth="7" />
               <rect x={-30} y={-34} width={60} height={68} rx="10" fill="#fff7e8" stroke="#1b1f2a" strokeWidth="4" />
-              {sticker && sticker !== 'none' && (
+              {stickerEmoji(sticker ?? 'none') && (
                 <text x={-4} y={4} fontSize="40" textAnchor="middle" dominantBaseline="central" transform="scale(1 -1)">
-                  {sticker}
+                  {stickerEmoji(sticker ?? 'none')}
                 </text>
               )}
               <circle cx={ROBOT_SHAPE.colorSensorAhead} cy={0} r="10" fill="#2bb673" stroke="#1b1f2a" strokeWidth="4" />

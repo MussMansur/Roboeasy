@@ -1,12 +1,15 @@
-import { Check, Lock } from 'lucide-react'
+import Link from 'next/link'
+import { Check, Clock, Lock } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
-export type NodeState = 'done' | 'current' | 'open' | 'locked'
+export type NodeState = 'done' | 'current' | 'open' | 'locked' | 'soon'
 
 export interface TrailNode {
   label: string
   state: NodeState
+  /** Makes the node a link (done, current and open lessons). */
+  href?: string
 }
 
 /** Horizontal offsets of the winding trail (fractions of the half-width). */
@@ -19,7 +22,17 @@ const WIDTH = 320
  * station title. Pure markup, so it renders on the server; used as the
  * landing illustration now and as the track map later.
  */
-export function PathTrail({ nodes, station, className, stateLabels }: { nodes: TrailNode[]; station: string; className?: string; stateLabels?: Record<NodeState, string> }) {
+export function PathTrail({
+  nodes,
+  station,
+  className,
+  stateLabels,
+}: {
+  nodes: TrailNode[]
+  station?: string
+  className?: string
+  stateLabels?: Partial<Record<NodeState, string>>
+}) {
   const height = nodes.length * ROW + 40
   const points = nodes.map((_, i) => ({ x: WIDTH / 2 + SWING[i % SWING.length] * (WIDTH / 2 - 56), y: 72 + i * ROW }))
   const d = points.reduce((acc, p, i) => {
@@ -48,9 +61,11 @@ export function PathTrail({ nodes, station, className, stateLabels }: { nodes: T
         )}
       </svg>
 
-      <span className="absolute top-0 left-1/2 -translate-x-1/2 rounded-full border-(length:--stroke-thin) border-outline bg-primary px-3 py-1 font-display text-sm font-extrabold whitespace-nowrap text-primary-foreground shadow-(--shadow-press)">
-        {station}
-      </span>
+      {station && (
+        <span className="absolute top-0 left-1/2 -translate-x-1/2 rounded-full border-(length:--stroke-thin) border-outline bg-primary px-3 py-1 font-display text-sm font-extrabold whitespace-nowrap text-primary-foreground shadow-(--shadow-press)">
+          {station}
+        </span>
+      )}
 
       <ol className="m-0 list-none p-0">
         {nodes.map((n, i) => {
@@ -62,27 +77,70 @@ export function PathTrail({ nodes, station, className, stateLabels }: { nodes: T
               key={i}
               className="absolute flex -translate-x-1/2 -translate-y-1/2 items-center"
               style={{ left: `${(p.x / WIDTH) * 100}%`, top: `${(p.y / height) * 100}%` }}
-              aria-label={stateLabels ? `${n.label} — ${stateLabels[n.state]}` : n.label}
+              aria-label={n.href ? undefined : stateLabels?.[n.state] ? `${n.label} — ${stateLabels[n.state]}` : n.label}
             >
-              <span
-                className={cn(
-                  'relative grid size-14 shrink-0 place-items-center rounded-full border-(length:--stroke) border-outline font-display text-lg font-extrabold',
-                  n.state === 'done' && 'bg-success text-background shadow-(--shadow-hard-sm)',
-                  n.state === 'current' && 'bg-primary text-primary-foreground shadow-(--shadow-hard)',
-                  n.state === 'open' && 'bg-card text-foreground shadow-(--shadow-hard-sm)',
-                  n.state === 'locked' && 'border-dashed bg-surface-2 text-muted-foreground',
-                )}
-              >
-                {n.state === 'current' && (
-                  <span aria-hidden="true" className="absolute -inset-2 animate-ping rounded-full border-(length:--stroke-thin) border-(--accent) opacity-60 motion-reduce:hidden" />
-                )}
-                {n.state === 'done' ? <Check className="size-6" strokeWidth={3} aria-hidden="true" /> : n.state === 'locked' ? <Lock className="size-5" aria-hidden="true" /> : i + 1}
-              </span>
+              {n.href ? (
+                <Link href={n.href} className="rounded-full" aria-label={stateLabels?.[n.state] ? `${n.label} — ${stateLabels[n.state]}` : n.label}>
+                  <span
+                    className={cn(
+                      'relative grid size-14 shrink-0 place-items-center rounded-full border-(length:--stroke) border-outline font-display text-lg font-extrabold',
+                      n.state === 'done' && 'bg-success text-background shadow-(--shadow-hard-sm)',
+                      n.state === 'current' && 'bg-primary text-primary-foreground shadow-(--shadow-hard)',
+                      n.state === 'open' && 'bg-card text-foreground shadow-(--shadow-hard-sm)',
+                      (n.state === 'locked' || n.state === 'soon') && 'border-dashed bg-surface-2 text-muted-foreground',
+                      n.href && 'transition-transform hover:-translate-y-0.5',
+                    )}
+                  >
+                    {n.state === 'current' && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute -inset-2 animate-ping rounded-full border-(length:--stroke-thin) border-(--accent) opacity-60 motion-reduce:hidden"
+                      />
+                    )}
+                    {n.state === 'done' ? (
+                      <Check className="size-6" strokeWidth={3} aria-hidden="true" />
+                    ) : n.state === 'locked' ? (
+                      <Lock className="size-5" aria-hidden="true" />
+                    ) : n.state === 'soon' ? (
+                      <Clock className="size-5" aria-hidden="true" />
+                    ) : (
+                      i + 1
+                    )}
+                  </span>
+                </Link>
+              ) : (
+                <span
+                  className={cn(
+                    'relative grid size-14 shrink-0 place-items-center rounded-full border-(length:--stroke) border-outline font-display text-lg font-extrabold',
+                    n.state === 'done' && 'bg-success text-background shadow-(--shadow-hard-sm)',
+                    n.state === 'current' && 'bg-primary text-primary-foreground shadow-(--shadow-hard)',
+                    n.state === 'open' && 'bg-card text-foreground shadow-(--shadow-hard-sm)',
+                    (n.state === 'locked' || n.state === 'soon') && 'border-dashed bg-surface-2 text-muted-foreground',
+                    n.href && 'transition-transform hover:-translate-y-0.5',
+                  )}
+                >
+                  {n.state === 'current' && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute -inset-2 animate-ping rounded-full border-(length:--stroke-thin) border-(--accent) opacity-60 motion-reduce:hidden"
+                    />
+                  )}
+                  {n.state === 'done' ? (
+                    <Check className="size-6" strokeWidth={3} aria-hidden="true" />
+                  ) : n.state === 'locked' ? (
+                    <Lock className="size-5" aria-hidden="true" />
+                  ) : n.state === 'soon' ? (
+                    <Clock className="size-5" aria-hidden="true" />
+                  ) : (
+                    i + 1
+                  )}
+                </span>
+              )}
               <span
                 className={cn(
                   'absolute top-1/2 w-max max-w-36 -translate-y-1/2 rounded-(--radius-xs) bg-card px-2 py-1 text-[0.8125rem] leading-tight font-bold shadow-(--shadow-press) border-(length:--stroke-thin) border-outline',
                   left ? 'left-[calc(100%+10px)]' : 'right-[calc(100%+10px)] text-right',
-                  n.state === 'locked' && 'text-muted-foreground',
+                  (n.state === 'locked' || n.state === 'soon') && 'text-muted-foreground',
                 )}
               >
                 {n.label}
