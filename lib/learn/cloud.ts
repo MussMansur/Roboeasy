@@ -370,3 +370,32 @@ export async function robotPhotos(classId: string, userId: string): Promise<{ le
   )
   return (signed ?? []).flatMap((s, i) => (s.signedUrl ? [{ lesson: files[i].name.replace(/\.jpg$/, ''), url: s.signedUrl }] : []))
 }
+
+// ── Admin analytics ──────────────────────────────────────────────────────
+
+export async function isAdmin(): Promise<boolean> {
+  const sb = cloud()
+  if (!sb) return false
+  const { data } = await sb.rpc('is_admin')
+  return data === true
+}
+
+/** Funnel events of every learner (RLS: admins only), one list per learner. */
+export async function allLearnerEvents(): Promise<LearnEvent[][]> {
+  const { data, error } = await need()
+    .from('learn_events')
+    .select('user_id, id, kind, at, data')
+    .in('kind', ['lesson_start', 'lesson_done', 'step_done', 'mistake'])
+    .order('at')
+    .limit(50000)
+  if (error) throw error
+  const byUser = new Map<string, LearnEvent[]>()
+  for (const r of data ?? []) {
+    const e = fromServer(r)
+    if (!e) continue
+    let list = byUser.get(r.user_id)
+    if (!list) byUser.set(r.user_id, (list = []))
+    list.push(e)
+  }
+  return [...byUser.values()]
+}

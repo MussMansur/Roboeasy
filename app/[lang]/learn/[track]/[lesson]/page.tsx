@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 
 import { AchievementWatcher } from '@/components/learn/achievement-watcher'
 import { LessonPlayer } from '@/components/learn/lesson-player'
+import { CloudSync } from '@/components/learn/use-cloud'
 import { getDictionary, isLocale, locales } from '@/lib/i18n'
 import { getLearnText } from '@/lib/i18n/learn'
 import { getLearnAppText } from '@/lib/i18n/learn-app'
@@ -54,8 +55,10 @@ export default async function LessonPage({ params }: Params) {
         next={next}
         mapHref={`/${lang}/learn/${track}`}
         lockedT={app.locked}
+        classesT={app.classes}
       />
       <AchievementWatcher lang={lang} app={app} />
+      <CloudSync />
     </>
   )
 }

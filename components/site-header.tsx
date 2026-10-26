@@ -70,13 +70,12 @@ export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: Si
           { href: '#faq', label: t.faq },
         ]
       : []
-  // App sections, marked current by path. Profile sits with the actions.
+  // App sections, marked current by path. Profile sits with the actions; Class is in the header only (not the phone tab bar).
   const current = currentSection(rest)
-  const pages = APP_SECTIONS.filter((p) => p !== 'profile').map((p) => ({
-    href: `${home}/${p}`,
-    label: names[p],
-    current: current === p,
-  }))
+  const pages = [
+    ...APP_SECTIONS.filter((p) => p !== 'profile').map((p) => ({ href: `${home}/${p}`, label: names[p], current: current === p })),
+    { href: `${home}/class`, label: names.class, current: rest === '/class' || rest.startsWith('/class/') },
+  ]
 
   return (
     <>

@@ -1,6 +1,6 @@
 # RoboEasy AI
 
-Describe a task in plain words — get a LEGO SPIKE Prime program (word blocks or Python) as a `.llsp3` file for the SPIKE App 3. Includes an FLL run-strategy helper. UI in Russian, Kazakh and English.
+A robotics course from scratch for LEGO SPIKE Prime: short lessons with a robot simulator and Blockly, autochecks, an AI mentor that gives hints (never solutions), a path map, streaks, achievements, classes for teachers. Plus the original tools: describe a task in plain words and get a `.llsp3` program for the SPIKE App 3, and an FLL run-strategy helper. UI in Russian, Kazakh and English.
 
 ## Run
 
@@ -10,12 +10,33 @@ cp .env.example .env.local   # add GEMINI_API_KEY
 npm run dev                  # http://localhost:3000 → /ru, /kk or /en
 ```
 
+Accounts, sync and classes are optional (without them progress stays in the browser). Locally they run on Supabase in Docker:
+
+```bash
+npm run db:start             # prints the API URL and keys; ports 563xx
+# put NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY into .env.local
+npm run db:reset             # re-apply supabase/migrations
+```
+
+Sign-in emails land in the local Mailpit: http://127.0.0.1:56324.
+
 | Command | What it does |
 |---|---|
 | `npm test` | vitest: DSL validation, both compilers, .llsp3 packing, FLL geometry and planning, season files and migration, editor model, perspective correction, Python snapshots |
+| `npm run e2e` | Playwright (desktop and tablet): new learner journey with a fixed clock, and teacher/student classes with real sign-in (skipped when the local Supabase is down) |
+| `npm run db:test` | database tests against the local Supabase: XP rules equal the app's, idempotent sync, row-level security, account deletion |
 | `npm run typecheck` | TypeScript strict |
 | `npm run build` | production build |
 | `npm run reference` | compares our blocks with SPIKE App exports in `reference/` (see `reference/README.md`) |
+
+## Learning platform
+
+- Content is data: `content/learn/course.json` (8 tracks, 37 units, 123 lessons; `ready` ones have a file) and `content/learn/lessons/*.json`, validated by `lib/learn/schema.ts` (zod). Tests run every reference solution through the simulator and its checks. Weekly challenges: `content/learn/challenges.json`.
+- `lib/sim/` — the 2D robot simulator (fixed 10 ms step, mm, sensors); `lib/learn/checks.ts` — autochecks (zone, points, collisions, sensors, blocks…).
+- `lib/learn/state.ts` + `store.ts` — the learner's append-only event log in localStorage; XP (`xp.ts`), unlocking and spaced review (`progress.ts`), streaks in the learner's time zone with freezes (`streak.ts`), achievements, cosmetics, placement test, certificates (signed codes + PDF), analytics and A/B flags (`lib/flags.ts`) are all computed from it.
+- `lib/learn/cloud.ts` — optional Supabase client loaded on demand: email magic link, two-way sync of the same event log (server keyed by event id, so XP stays idempotent), classes, photos. Schema and row-level security: `supabase/migrations/`.
+- Routes: `/path` (home, onboarding), `/learn`, `/learn/[track]`, `/learn/[track]/[lesson]`, `/learn/placement`, `/review`, `/path/challenge`, `/profile`, `/class`, `/cert/[code]`, `/privacy`, `/parents`, `/sandbox` (AI studio), `/compete` (FLL), `/ai` (the generator's landing), `/admin` (hidden in production).
+- Privacy and child safety: `docs/privacy.md` (draft for legal review).
 
 ## Key principle
 
@@ -30,16 +51,16 @@ The AI only writes commands of a small DSL. Valid word blocks and Python are pro
 - `lib/spike/llsp3.ts` — packs `.llsp3` exactly like the SPIKE App; `lib/spike/prompts.ts` — system prompts.
 - `lib/gemini.ts` — Gemini client: JSON schema, model fallbacks, timeouts.
 - `app/api/generate` — modes `blocks`, `python` (both DSL) and `python-free` (the AI writes Python).
-- `lib/fll/*`, `data/seasons/*.json`, `app/api/fll/plan`, `app/[lang]/fll` — FLL helper: season schema (`season.ts`), shape geometry (`geometry.ts`), route geometry (`path.ts`), runs (`run.ts`), calibration, AI planning with a deterministic fallback.
-- `app/[lang]/fll/editor` — field editor (missions, launch areas, forbidden zones; undo/redo, JSON import/export, draft autosave in IndexedDB).
+- `lib/fll/*`, `data/seasons/*.json`, `app/api/fll/plan`, `app/[lang]/compete` — FLL helper: season schema (`season.ts`), shape geometry (`geometry.ts`), route geometry (`path.ts`), runs (`run.ts`), calibration, AI planning with a deterministic fallback.
+- `app/[lang]/compete/editor` — field editor (missions, launch areas, forbidden zones; undo/redo, JSON import/export, draft autosave in IndexedDB).
 - `lib/compilers/index.ts` — code generators by robot platform (`spike` only for now; other platforms can still plan routes).
-- `app/[lang]/` — landing, studio, FLL pages; `lib/i18n/` — dictionaries (`ru` defines the shape); `proxy.ts` — language redirect.
+- `app/[lang]/` — pages; `lib/i18n/` — dictionaries (`ru` defines the shape); `proxy.ts` — language redirect; old URLs (`/workspace`, `/fll`) redirect in `next.config.mjs`.
 
 ## FLL season data
 
 One schema for every season (`lib/fll/season.ts`, `schemaVersion: 2`; v1 files are migrated on load). `data/seasons/index.json` lists the seasons; the one with `status: "current"` is selected by default.
 
-`bioglow-2026.json` (current) and `unearthed-2025.json` (archive) are skeletons: metadata and the mat size only, marked TODO. Missions, launch areas and forbidden zones are entered from the official Robot Game Rulebook in the field editor (`/ru/fll/editor`), exported as JSON and saved over the season file. Coordinates are millimetres from the bottom-left corner of the mat; angles are degrees, 0 = right, counterclockwise. Mission outlines and action zones are stored in the model's own frame, so rotating a model rotates them too.
+`bioglow-2026.json` (current) and `unearthed-2025.json` (archive) are skeletons: metadata and the mat size only, marked TODO. Missions, launch areas and forbidden zones are entered from the official Robot Game Rulebook in the field editor (`/ru/compete/editor`), exported as JSON and saved over the season file. Coordinates are millimetres from the bottom-left corner of the mat; angles are degrees, 0 = right, counterclockwise. Mission outlines and action zones are stored in the model's own frame, so rotating a model rotates them too.
 
 The official field artwork belongs to FIRST/LEGO and is not in this repository. Teams can use their own photo, scan or PDF of the mat as a background: it is stored only in the browser (IndexedDB) and straightened by marking the four mat corners.
 
@@ -47,4 +68,5 @@ The official field artwork belongs to FIRST/LEGO and is not in this repository. 
 
 - The rate limiter is in-memory (per server instance).
 - Robot profile and history are stored in the browser's localStorage (profile schema is versioned; v1 is migrated).
+- Production needs `CERT_SECRET` (certificate signatures); see `.env.example`.
 - LEGO® and SPIKE™ are trademarks of the LEGO Group, which does not sponsor or endorse this project.

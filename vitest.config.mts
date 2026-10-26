@@ -8,5 +8,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['tests/**/*.test.ts'],
+    // Database tests need the local Supabase: npm run db:test.
+    exclude: ['tests/db/**', 'node_modules/**'],
   },
 })

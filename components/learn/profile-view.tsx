@@ -6,6 +6,7 @@ import { Award, CalendarPlus, Download, Lock, Settings, ShieldCheck, Trash2, Upl
 import { toast } from 'sonner'
 
 import { ProgressBar } from '@/components/learn/learn-map'
+import { AccountCard } from '@/components/learn/account-card'
 import { Onboarding } from '@/components/learn/onboarding'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardTitle } from '@/components/ui/card'
@@ -365,6 +366,8 @@ export function ProfileView({ lang, app }: { lang: Lang; app: LearnAppText }) {
           </div>
         </Card>
       </div>
+
+      <AccountCard lang={lang} app={app} />
 
       <Card className="gap-3" flat>
         <CardTitle>

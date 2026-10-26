@@ -8,6 +8,7 @@ import { RichText } from '@/components/learn/rich-text'
 import { CodeStep } from '@/components/learn/steps/code-step'
 import { PredictStep } from '@/components/learn/steps/predict-step'
 import { QuizStep } from '@/components/learn/steps/quiz-step'
+import { RobotPhoto } from '@/components/learn/robot-photo'
 import { BuildStep, RealRobotStep, type StepDone, TheoryStep } from '@/components/learn/steps/simple-steps'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
@@ -36,9 +37,10 @@ interface PlayerProps {
   next: { href: string; title: string } | null
   mapHref: string
   lockedT: LearnAppText['locked']
+  classesT: LearnAppText['classes']
 }
 
-export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, isProject, next, mapHref, lockedT }: PlayerProps) {
+export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, isProject, next, mapHref, lockedT, classesT }: PlayerProps) {
   const learn = useLearn()
   const hydrated = useHydrated()
   const [forceOpen, setForceOpen] = useState(false)
@@ -259,7 +261,17 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
               onMistake={onMistake}
             />
           )}
-          {step!.type === 'real_robot' && <RealRobotStep key={step!.id} step={step!} lang={lang} t={t} done={stepDone} onDone={onDone} />}
+          {step!.type === 'real_robot' && (
+            <RealRobotStep
+              key={step!.id}
+              step={step!}
+              lang={lang}
+              t={t}
+              done={stepDone}
+              onDone={onDone}
+              extra={<RobotPhoto lessonId={lesson.id} t={classesT} />}
+            />
+          )}
           {(step!.type === 'code' || step!.type === 'debug' || step!.type === 'project') && (
             <CodeStep
               key={step!.id}

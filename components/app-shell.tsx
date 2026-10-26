@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 
 import { AppTabBar } from '@/components/app-tab-bar'
 import { AchievementWatcher } from '@/components/learn/achievement-watcher'
+import { CloudSync } from '@/components/learn/use-cloud'
 import { SiteHeader } from '@/components/site-header'
 import { getDictionary } from '@/lib/i18n'
 import type { Locale } from '@/lib/i18n/config'
@@ -19,6 +20,7 @@ export function AppShell({ lang, children, className }: { lang: Locale; children
       </main>
       <AppTabBar lang={lang} names={nav} />
       <AchievementWatcher lang={lang} app={getLearnAppText(lang)} />
+      <CloudSync />
     </>
   )
 }

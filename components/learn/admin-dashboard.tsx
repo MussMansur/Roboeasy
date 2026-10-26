@@ -1,10 +1,14 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 import { ProgressBar } from '@/components/learn/learn-map'
+import { useCloudModule, useCloudUser } from '@/components/learn/use-cloud'
 import { Card, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EXPERIMENTS, type Experiment, variantFor } from '@/lib/flags'
 import { lessonFunnels, stuckPoints } from '@/lib/learn/analytics'
+import type { LearnEvent } from '@/lib/learn/state'
 import { findLessonRef } from '@/lib/learn/course'
 import { useHydrated, useLearn } from '@/lib/learn/store'
 
@@ -13,7 +17,8 @@ type Lang = 'ru' | 'kk' | 'en'
 const T = {
   ru: {
     title: 'Аналитика обучения',
-    note: 'Пока аккаунтов нет, здесь данные только этого браузера. С базой данных тот же расчёт пойдёт по всем ученикам.',
+    note: 'Данные только этого браузера. Войдите аккаунтом администратора, чтобы видеть всех учеников.',
+    server: 'Данные всех учеников с сервера: {n}.',
     funnel: 'Воронка уроков',
     lesson: 'Урок',
     started: 'Начали',
@@ -27,7 +32,8 @@ const T = {
   },
   kk: {
     title: 'Оқу аналитикасы',
-    note: 'Аккаунттар болмағанша, мұнда тек осы браузердің деректері. Дерекқормен дәл осы есеп барлық оқушылар бойынша жүреді.',
+    note: 'Тек осы браузердің деректері. Барлық оқушыларды көру үшін әкімші аккаунтымен кіріңіз.',
+    server: 'Сервердегі барлық оқушылардың деректері: {n}.',
     funnel: 'Сабақтар воронкасы',
     lesson: 'Сабақ',
     started: 'Бастады',
@@ -41,7 +47,8 @@ const T = {
   },
   en: {
     title: 'Learning analytics',
-    note: 'Until accounts exist, this shows this browser’s data only. With the database the same calculation runs over all learners.',
+    note: 'This browser’s data only. Sign in with an admin account to see all learners.',
+    server: 'All learners’ data from the server: {n}.',
     funnel: 'Lesson funnel',
     lesson: 'Lesson',
     started: 'Started',
@@ -59,8 +66,21 @@ export function AdminDashboard({ lang }: { lang: Lang }) {
   const hydrated = useHydrated()
   const learn = useLearn()
   const t = T[lang]
+  const mod = useCloudModule()
+  const user = useCloudUser(mod)
+  const [server, setServer] = useState<LearnEvent[][] | null>(null)
+  useEffect(() => {
+    if (!mod || !user) return
+    let alive = true
+    void mod.isAdmin().then(async (ok) => {
+      if (ok && alive) setServer(await mod.allLearnerEvents())
+    })
+    return () => {
+      alive = false
+    }
+  }, [mod, user])
   if (!hydrated) return <Skeleton className="container my-10 h-96" />
-  const funnels = lessonFunnels([learn.events])
+  const funnels = lessonFunnels(server ?? [learn.events])
   const stuck = stuckPoints(funnels)
   const title = (id: string) => findLessonRef(id)?.ref.title[lang] ?? id
 
@@ -68,7 +88,7 @@ export function AdminDashboard({ lang }: { lang: Lang }) {
     <div className="container grid gap-6 py-10">
       <header className="grid gap-2">
         <h1 className="m-0 text-4xl">{t.title}</h1>
-        <p className="alert alert-warn m-0">{t.note}</p>
+        <p className={server ? 'alert alert-ok m-0' : 'alert alert-warn m-0'}>{server ? t.server.replace('{n}', String(server.length)) : t.note}</p>
       </header>
       <Card className="gap-4">
         <CardTitle>{t.funnel}</CardTitle>

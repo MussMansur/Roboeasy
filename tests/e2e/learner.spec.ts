@@ -1,4 +1,6 @@
-import { type Page, expect, test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+
+import { closeAchievements, loadProgram, next } from './helpers'
 
 /**
  * A new learner's first two days: onboarding → placement test → first
@@ -8,27 +10,6 @@ import { type Page, expect, test } from '@playwright/test'
 
 const DAY1 = new Date('2026-10-20T10:00:00+05:00')
 const DAY2 = new Date('2026-10-21T09:30:00+05:00')
-
-type Steps = Parameters<NonNullable<Window['__roboeasyBlockly']>['load']>[0]
-
-async function loadProgram(page: Page, steps: Steps) {
-  await page.waitForFunction(() => !!window.__roboeasyBlockly, null, { timeout: 60_000 })
-  await page.evaluate((s) => window.__roboeasyBlockly!.load(s), steps)
-  await page.waitForTimeout(400)
-}
-
-async function closeAchievements(page: Page) {
-  const great = page.getByRole('button', { name: 'Класс!' })
-  for (let i = 0; i < 6; i++) {
-    if (!(await great.isVisible().catch(() => false))) break
-    await great.click()
-    await page.waitForTimeout(150)
-  }
-}
-
-async function next(page: Page) {
-  await page.getByRole('button', { name: 'Дальше' }).click()
-}
 
 test('new learner: placement, first lesson, XP, achievement, streak next day', async ({ page }) => {
   const errors: string[] = []

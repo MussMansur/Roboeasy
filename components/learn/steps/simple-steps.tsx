@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import { Bot, Check, FileDown, Hammer, SkipForward } from 'lucide-react'
 
 import { BlockStack } from '@/components/block-stack'
@@ -33,14 +33,29 @@ export async function downloadProgram(name: string, steps: Step[]) {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `${name.replace(/[^\p{L}\p{N}_\- ]+/gu, '').trim().replace(/\s+/g, '_') || 'RoboEasy'}.llsp3`
+  a.download = `${
+    name
+      .replace(/[^\p{L}\p{N}_\- ]+/gu, '')
+      .trim()
+      .replace(/\s+/g, '_') || 'RoboEasy'
+  }.llsp3`
   document.body.appendChild(a)
   a.click()
   a.remove()
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
-export function TheoryStep({ step, lang, blocksT, onDone }: { step: Extract<LessonStep, { type: 'theory' }>; lang: Lang; blocksT: Dictionary['blocks']; onDone: (d: StepDone) => void }) {
+export function TheoryStep({
+  step,
+  lang,
+  blocksT,
+  onDone,
+}: {
+  step: Extract<LessonStep, { type: 'theory' }>
+  lang: Lang
+  blocksT: Dictionary['blocks']
+  onDone: (d: StepDone) => void
+}) {
   useEffect(() => onDone({ firstTry: true, hints: 0 }), [onDone])
   return (
     <div className="grid gap-4 md:grid-cols-[1.2fr_1fr] md:items-start">
@@ -62,7 +77,17 @@ export function TheoryStep({ step, lang, blocksT, onDone }: { step: Extract<Less
   )
 }
 
-export function BuildStep({ step, lang, t, onDone }: { step: Extract<LessonStep, { type: 'build' }>; lang: Lang; t: LearnText; onDone: (d: StepDone) => void }) {
+export function BuildStep({
+  step,
+  lang,
+  t,
+  onDone,
+}: {
+  step: Extract<LessonStep, { type: 'build' }>
+  lang: Lang
+  t: LearnText
+  onDone: (d: StepDone) => void
+}) {
   useEffect(() => onDone({ firstTry: true, hints: 0 }), [onDone])
   return (
     <div className="grid gap-4">
@@ -74,8 +99,13 @@ export function BuildStep({ step, lang, t, onDone }: { step: Extract<LessonStep,
       <p className="m-0 text-sm text-muted-foreground">{t.lesson.buildNote}</p>
       <ol className="m-0 grid list-none gap-3 p-0">
         {step.instructions.map((ins, i) => (
-          <li key={i} className="grid gap-2 rounded-(--radius-md) border-(length:--stroke-thin) border-outline bg-card p-4 sm:grid-cols-[auto_1fr_160px] sm:items-center">
-            <span className="grid size-9 place-items-center rounded-full border-(length:--stroke-thin) border-outline bg-primary font-display font-extrabold text-primary-foreground">{i + 1}</span>
+          <li
+            key={i}
+            className="grid gap-2 rounded-(--radius-md) border-(length:--stroke-thin) border-outline bg-card p-4 sm:grid-cols-[auto_1fr_160px] sm:items-center"
+          >
+            <span className="grid size-9 place-items-center rounded-full border-(length:--stroke-thin) border-outline bg-primary font-display font-extrabold text-primary-foreground">
+              {i + 1}
+            </span>
             <RichText text={ins.text[lang]} />
             {ins.illustration && <Illustration name={ins.illustration} lang={lang} />}
           </li>
@@ -85,7 +115,22 @@ export function BuildStep({ step, lang, t, onDone }: { step: Extract<LessonStep,
   )
 }
 
-export function RealRobotStep({ step, lang, t, done, onDone }: { step: Extract<LessonStep, { type: 'real_robot' }>; lang: Lang; t: LearnText; done: boolean; onDone: (d: StepDone) => void }) {
+/** `extra`: optional content under the buttons (the robot photo upload for class members). */
+export function RealRobotStep({
+  step,
+  lang,
+  t,
+  done,
+  onDone,
+  extra,
+}: {
+  step: Extract<LessonStep, { type: 'real_robot' }>
+  lang: Lang
+  t: LearnText
+  done: boolean
+  onDone: (d: StepDone) => void
+  extra?: ReactNode
+}) {
   const [checked, setChecked] = useState<boolean[]>(() => step.checklist.map(() => done))
   return (
     <div className="grid gap-4 md:grid-cols-[1.2fr_1fr] md:items-start">
@@ -99,7 +144,11 @@ export function RealRobotStep({ step, lang, t, done, onDone }: { step: Extract<L
       </div>
       <div className="grid gap-3 rounded-(--radius-md) border-(length:--stroke-thin) border-outline bg-card p-4">
         {step.program && (
-          <button type="button" className={buttonVariants({ variant: 'secondary', size: 'sm', className: 'justify-self-start' })} onClick={() => void downloadProgram(step.title[lang], step.program!)}>
+          <button
+            type="button"
+            className={buttonVariants({ variant: 'secondary', size: 'sm', className: 'justify-self-start' })}
+            onClick={() => void downloadProgram(step.title[lang], step.program!)}
+          >
             <FileDown aria-hidden="true" />
             {t.lesson.download}
           </button>
@@ -108,14 +157,24 @@ export function RealRobotStep({ step, lang, t, done, onDone }: { step: Extract<L
           {step.checklist.map((c, i) => (
             <li key={i}>
               <label className="flex cursor-pointer items-center gap-3 rounded-(--radius-sm) border-(length:--stroke-thin) border-outline bg-surface-2 px-3 py-2 font-bold">
-                <input type="checkbox" className="size-5 accent-(--success)" checked={checked[i]} onChange={(e) => setChecked((cs) => cs.map((v, j) => (j === i ? e.target.checked : v)))} />
+                <input
+                  type="checkbox"
+                  className="size-5 accent-(--success)"
+                  checked={checked[i]}
+                  onChange={(e) => setChecked((cs) => cs.map((v, j) => (j === i ? e.target.checked : v)))}
+                />
                 {c[lang]}
               </label>
             </li>
           ))}
         </ul>
         <div className="flex flex-wrap gap-2">
-          <button type="button" className={buttonVariants({ variant: 'primary' })} disabled={!checked.every(Boolean)} onClick={() => onDone({ firstTry: true, hints: 0, real: true })}>
+          <button
+            type="button"
+            className={buttonVariants({ variant: 'primary' })}
+            disabled={!checked.every(Boolean)}
+            onClick={() => onDone({ firstTry: true, hints: 0, real: true })}
+          >
             <Check aria-hidden="true" />
             {t.lesson.did}
           </button>
@@ -124,6 +183,7 @@ export function RealRobotStep({ step, lang, t, done, onDone }: { step: Extract<L
             {t.lesson.skip}
           </button>
         </div>
+        {extra}
       </div>
     </div>
   )

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowRight, Flame, Repeat, Snowflake, Star, Target, Trophy } from 'lucide-react'
 
 import { ProgressBar } from '@/components/learn/learn-map'
+import { ClassLive } from '@/components/learn/class-live'
 import { Onboarding } from '@/components/learn/onboarding'
 import { SkillRadar } from '@/components/learn/skill-radar'
 import { TrackIcon } from '@/components/learn/track-icon'
@@ -88,6 +89,8 @@ export function PathHome({ lang, app, challengeTitles }: { lang: Lang; app: Lear
           <span className="text-sm font-bold text-muted-foreground">{nextLevel ? fill(t.toNext, { title: nextLevel.title[lang], xp: (p.level.to ?? 0) - p.xp }) : t.maxLevel}</span>
         </div>
       </header>
+
+      <ClassLive lang={lang} app={app} />
 
       {/* Continue */}
       <Card className="flex-col items-start gap-4 bg-primary text-primary-foreground sm:flex-row sm:items-center sm:gap-5">
