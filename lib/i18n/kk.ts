@@ -161,7 +161,7 @@ export const kk: Dictionary = {
     button: 'Студияны ашу',
   },
   footer: {
-    tagline: 'LEGO SPIKE Prime бағдарламалары — қарапайым мәтіннен.',
+    tagline: 'LEGO SPIKE Prime үшін нөлден робототехника: сабақтар, ойындар және робот-серік.',
     legal:
       'RoboEasy — тәуелсіз жоба. LEGO® және SPIKE™ — LEGO Group тауар белгілері, FIRST® және FIRST® LEGO® League — FIRST® тауар белгілері. LEGO Group те, FIRST те бұл сайтқа демеушілік етпейді, рұқсат бермейді және оны мақұлдамайды.',
   },

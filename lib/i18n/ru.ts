@@ -159,7 +159,7 @@ export const ru = {
     button: 'Открыть студию',
   },
   footer: {
-    tagline: 'Программы для LEGO SPIKE Prime из обычного текста.',
+    tagline: 'Робототехника с нуля для LEGO SPIKE Prime: уроки, игры и робот-напарник.',
     legal:
       'RoboEasy — независимый проект. LEGO® и SPIKE™ — товарные знаки LEGO Group, FIRST® и FIRST® LEGO® League — товарные знаки FIRST®. Ни LEGO Group, ни FIRST не спонсируют, не авторизуют и не одобряют этот сайт.',
   },

@@ -10,9 +10,10 @@
  * - magnet: daily quest coins ×2;
  * - battery: more streak freezes (see streakInfo).
  *
- * A purchase counts only if the coins were there: purchases are checked in
- * log order against everything earned. Adding events only adds coins, so a
- * purchase that was valid stays valid.
+ * The garage checks the balance before a purchase is recorded. Once bought,
+ * an item stays bought: if a later change lowers past earnings (a new daily
+ * goal or time zone re-counts old days), the shortfall becomes a debt that
+ * new coins pay off first (`balance` below zero, `coins` shows 0).
  */
 
 import { CHEST, QUEST_XP, questStatus } from './quests'
@@ -65,7 +66,10 @@ interface Owned {
 
 export interface Ledger {
   xp: number
+  /** What can be spent now (never below zero). */
   coins: number
+  /** Earned minus spent; below zero is a debt (see the note at the top). */
+  balance: number
   earned: number
   spent: number
   /** Bought item keys (`hat:cap`, `upgrade:motor-1`). */
@@ -190,8 +194,6 @@ export function ledger(state: LearnState): Ledger {
     const item = itemByKey(e.item)
     const price = item ? priceOf(item) : null
     if (!item || price === null || keys.has(itemKey(item)) || !canBuyTier(item, keys)) continue
-    const earned = list.reduce((sum, c) => sum + coinsOf(c, owned), 0)
-    if (earned - spent < price) continue
     spent += price
     keys.add(itemKey(item))
     owned.push({ key: itemKey(item), at: e.at, line: item.upgrade?.line, tier: item.upgrade?.tier })
@@ -199,7 +201,8 @@ export function ledger(state: LearnState): Ledger {
   const earned = list.reduce((sum, c) => sum + coinsOf(c, owned), 0)
   const xp = list.reduce((sum, c) => sum + xpOf(c, owned), 0)
   const tiers = Object.fromEntries(LINES.map((l) => [l, tierAt(owned, l, Infinity)])) as Record<UpgradeLine, number>
-  return { xp, coins: earned - spent, earned, spent, owned: keys, tiers, maxFreezes: MAX_FREEZES + BUFFS.battery[tiers.battery] }
+  const balance = earned - spent
+  return { xp, coins: Math.max(0, balance), balance, earned, spent, owned: keys, tiers, maxFreezes: MAX_FREEZES + BUFFS.battery[tiers.battery] }
 }
 
 export function totalXp(state: LearnState): number {

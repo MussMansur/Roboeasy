@@ -2802,15 +2802,151 @@
     transform: scaleX(0.15);
   }
 }
+@keyframes buddy-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
 @media (prefers-reduced-motion: no-preference) {
   .buddy-bob {
     animation: buddy-bob 2.6s ease-in-out infinite;
+    will-change: transform;
   }
   .buddy-hover {
     animation: buddy-hover 2.2s ease-in-out infinite;
+    will-change: transform;
+  }
+  .buddy-blink {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: buddy-blink 4.5s ease-in-out infinite;
   }
   .buddy-hover .buddy-spin,
   .buddy-bob .buddy-spin {
     animation: buddy-spin 0.35s linear infinite;
+  }
+}
+
+/* Landing motion: transform and opacity only (composited), off with reduced motion. */
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--tilt, 0deg));
+  }
+  50% {
+    transform: translateY(-8px) rotate(var(--tilt, 0deg));
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes spin-back {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes hop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-12px);
+  }
+  55% {
+    transform: translateY(0);
+  }
+}
+@keyframes confetti {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--a)) translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateX(64px) scale(0.6);
+  }
+}
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes march {
+  to {
+    transform: translateX(-24px);
+  }
+}
+.demo-confetti {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--outline);
+  border-radius: 2px;
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .float-y {
+    animation: float-y 4s ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+    will-change: transform;
+  }
+  .spin-slow {
+    animation: spin 18s linear infinite;
+    will-change: transform;
+  }
+  .spin-slow-back {
+    animation: spin-back 12s linear infinite;
+    will-change: transform;
+  }
+  .twinkle {
+    animation: twinkle 2.4s ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+  .hop-on-hover:hover,
+  .hop-on-hover:focus-visible {
+    animation: hop 0.6s ease-out;
+  }
+  .demo-confetti {
+    animation: confetti 0.9s ease-out forwards;
+  }
+  .march {
+    animation: march 1.2s linear infinite;
+  }
+  /* Sections fade in as they scroll in (browsers with scroll-driven animations). */
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .demo-confetti {
+    display: none;
   }
 }

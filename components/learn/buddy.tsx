@@ -197,21 +197,25 @@ function Body({ model, fill, wheels, sticker }: { model: string; fill: string; w
       return (
         <g>
           <rect x="92" y="110" width="16" height="14" fill={INK} />
-          {[-1, 1].map((s) =>
-            [0, 1, 2].map((i) => (
-              <path
-                key={`${s}${i}`}
-                d={`M${100 + s * 30} ${138 + i * 6} L${100 + s * (70 + i * 6)} ${116 + i * 12} L${100 + s * (82 + i * 4)} 188`}
-                fill="none"
-                stroke={INK}
-                strokeWidth="7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            )),
+          {/* Six jointed legs: hip under the body, knee raised outside it, foot on the ground. Back legs first. */}
+          {[2, 1, 0].flatMap((i) =>
+            [-1, 1].map((s) => {
+              const hip = [100 + s * 28, 140 + i * 7]
+              const knee = [100 + s * (62 + i * 12), 110 + i * 7]
+              const foot = [100 + s * (58 + i * 16), 190]
+              const d = `M${hip[0]} ${hip[1]} L${knee[0]} ${knee[1]} L${foot[0]} ${foot[1]}`
+              return (
+                <g key={`${s}${i}`}>
+                  <path d={d} fill="none" stroke={INK} strokeWidth="11" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d={d} fill="none" stroke={fill} strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx={knee[0]} cy={knee[1]} r="5.5" fill={INK} />
+                  <circle cx={foot[0]} cy={foot[1]} r="5" fill={INK} />
+                </g>
+              )
+            }),
           )}
-          <ellipse cx="100" cy="144" rx="48" ry="25" fill={fill} {...stroke} />
-          {label(100, 145, 24)}
+          <ellipse cx="100" cy="146" rx="42" ry="24" fill={fill} {...stroke} />
+          {label(100, 147, 22)}
         </g>
       )
     case 'android':
@@ -315,12 +319,13 @@ export function Buddy({
   return (
     <svg
       viewBox="0 -12 200 214"
-      className={cn('h-auto w-full overflow-visible', className)}
+      // The idle motion moves the whole <svg> (a composited transform), not shapes inside it, so it stays smooth.
+      className={cn('h-auto w-full overflow-visible', animate && (model === 'drone' ? 'buddy-hover' : 'buddy-bob'), className)}
       role={title ? 'img' : undefined}
       aria-label={title}
       aria-hidden={title ? undefined : true}
     >
-      <g className={animate ? (model === 'drone' ? 'buddy-hover' : 'buddy-bob') : undefined}>
+      <g>
         <Upgrades tiers={tiers} />
         <Body model={model} fill={fill} wheels={wheels} sticker={stickerEmoji(sticker)} />
         {/* Head */}
@@ -328,7 +333,9 @@ export function Buddy({
         <circle cx="151" cy="80" r="7" fill={INK} />
         <rect x="52" y="40" width="96" height="74" rx="20" fill={fill} stroke={INK} strokeWidth="5" />
         <rect x="64" y="52" width="72" height="48" rx="12" fill={INK} />
-        <Eyes kind={eyes} />
+        <g className={animate ? 'buddy-blink' : undefined}>
+          <Eyes kind={eyes} />
+        </g>
         <path d="M90 89 Q100 95 110 89" fill="none" stroke={GLOW} strokeWidth="3" strokeLinecap="round" />
         <Hat kind={hat} />
       </g>

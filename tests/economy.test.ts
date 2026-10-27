@@ -55,11 +55,22 @@ describe('coins', () => {
     expect(ledger(s).coins).toBe(c.reduce((sum, x) => sum + x.coins, 0))
   })
 
-  it('subtracts purchases and ignores those without enough coins', () => {
-    const s = withProfile([buy('hat:antenna', T0), buy('color:gold', T0 + 1), buy('hat:nonexistent', T0 + 2)])
+  it('subtracts purchases and ignores unknown items', () => {
+    const s = withProfile([buy('hat:antenna', T0), buy('hat:nonexistent', T0 + 2), buy('model:rover', T0 + 3)])
     const l = ledger(s)
     expect(l.owned).toEqual(new Set(['hat:antenna']))
     expect(l.coins).toBe(COIN_RULES.start - 40)
+  })
+
+  it('keeps bought items when a profile change lowers past earnings (a debt, coins never below zero)', () => {
+    const events = [lesson(T0), lesson(T0 + HOUR), buy('hat:cap', T0 + 2 * HOUR)]
+    const before = ledger(withProfile(events))
+    expect(before.owned.has('hat:cap')).toBe(true)
+    // A harder daily goal re-counts the old day: its goal coins go away.
+    const harder = ledger(appendEvents({ ...EMPTY_STATE, profile: { ...profile, goal: { kind: 'minutes', n: 15 } } }, events))
+    expect(harder.owned.has('hat:cap')).toBe(true)
+    expect(harder.balance).toBeLessThan(before.balance)
+    expect(harder.coins).toBe(Math.max(0, harder.balance))
   })
 
   it('a purchase counts once, and upgrade tiers need the tier before', () => {

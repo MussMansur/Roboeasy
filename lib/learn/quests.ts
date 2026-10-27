@@ -25,14 +25,21 @@ export const QUEST_XP = 5
 export const CHEST = { coins: 25, xp: 10 } as const
 
 export const QUESTS: Record<QuestId, QuestDef> = {
-  lesson: { id: 'lesson', icon: '📘', target: 1, coins: 20, href: '/path', title: { ru: 'Пройди урок', kk: 'Сабақ өт', en: 'Finish a lesson' } },
+  lesson: {
+    id: 'lesson',
+    icon: '📘',
+    target: 1,
+    coins: 20,
+    href: '/path',
+    title: { ru: 'Пройди урок или повторение', kk: 'Сабақ не қайталау өт', en: 'Finish a lesson or a review' },
+  },
   'first-try': {
     id: 'first-try',
     icon: '🎯',
     target: 3,
     coins: 15,
     href: '/path',
-    title: { ru: 'Реши 3 задания с первой попытки', kk: '3 тапсырманы бірінші әрекеттен шеш', en: 'Solve 3 tasks on the first try' },
+    title: { ru: 'Ответь верно с первой попытки 3 раза', kk: 'Бірінші әрекеттен 3 рет дұрыс жауап бер', en: 'Get 3 answers right on the first try' },
   },
   minutes: {
     id: 'minutes',
@@ -103,10 +110,12 @@ export function questProgress(id: QuestId, dayEvents: LearnEvent[]): number {
   for (const e of dayEvents) {
     switch (id) {
       case 'lesson':
-        if (e.kind === 'lesson_done') n++
+        // Reviews count too, so the quest stays doable when every ready lesson is done.
+        if (e.kind === 'lesson_done' || e.kind === 'review_done') n++
         break
       case 'first-try':
         if (e.kind === 'step_done' && e.firstTry && e.hints === 0 && e.stepType !== 'theory' && e.stepType !== 'build') n++
+        if (e.kind === 'review_done') n += e.correct
         break
       case 'minutes':
         if (e.kind === 'time') n += e.seconds / 60

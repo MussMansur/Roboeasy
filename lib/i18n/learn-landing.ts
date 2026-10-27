@@ -4,6 +4,8 @@
  * /[lang]/ai). Kazakh needs a review by a native speaker before launch.
  */
 
+import type { SimDemoCopy } from '@/components/landing/sim-demo'
+
 import type { Locale } from './config'
 
 export type TrackKey = 'start' | 'build' | 'blocks' | 'sensors' | 'navigation' | 'python' | 'mechanisms' | 'fll'
@@ -38,7 +40,8 @@ export interface LearnLandingCopy {
     partKit: string
     items: Record<TrackKey, { title: string; text: string; time: string }>
   }
-  virtual: { eyebrow: string; title: string; text: string; points: string[] }
+  virtual: { eyebrow: string; title: string; text: string; points: string[]; demo: SimDemoCopy }
+  stats: { value: string; label: string }[]
   motivation: { eyebrow: string; title: string; items: { title: string; text: string }[]; note: string }
   mentor: { eyebrow: string; title: string; text: string; levels: string[]; question: string; answer: string }
   compete: { eyebrow: string; title: string; text: string; cta: string }
@@ -124,7 +127,22 @@ const ru: LearnLandingCopy = {
     title: 'Виртуальный робот всегда под рукой',
     text: 'Основной путь проходится в симуляторе: робот ездит по полю, видит линии и стены, а задания проверяются автоматически. Есть набор SPIKE Prime? Задания на настоящем роботе дают бонус.',
     points: ['Поле с линиями, стенами и зонами', 'Датчики цвета, расстояния, силы и гироскоп', 'Скачай программу и запусти на своём роботе'],
+    demo: {
+      title: 'Программа робота на поле',
+      run: 'Запустить',
+      again: 'Ещё раз',
+      done: 'Задание выполнено!',
+      start: 'Старт',
+      finish: 'Финиш',
+      blocks: ['Когда программа запущена', 'Едь вперёд 30 см', 'Поверни направо 90°', 'Едь вперёд 50 см', 'Поверни направо 90°', 'Едь вперёд 30 см'],
+    },
   },
+  stats: [
+    { value: '8', label: 'треков от нуля до соревнований' },
+    { value: '4', label: 'обучающие игры и задания дня' },
+    { value: '6', label: 'роботов-напарников' },
+    { value: '3', label: 'языка: қазақша, русский, English' },
+  ],
   motivation: {
     eyebrow: 'Мотивация',
     title: 'Каждый день немного — и результат заметен',
@@ -256,7 +274,22 @@ const en: LearnLandingCopy = {
     title: 'A virtual robot is always at hand',
     text: 'The main path runs in the simulator: the robot drives on a field, sees lines and walls, and tasks are checked automatically. Have a SPIKE Prime kit? Tasks on the real robot give a bonus.',
     points: ['A field with lines, walls and zones', 'Colour, distance and force sensors and a gyro', 'Download the program and run it on your robot'],
+    demo: {
+      title: 'A robot program on the field',
+      run: 'Run',
+      again: 'Run again',
+      done: 'Task complete!',
+      start: 'Start',
+      finish: 'Finish',
+      blocks: ['When the program starts', 'Drive forward 30 cm', 'Turn right 90°', 'Drive forward 50 cm', 'Turn right 90°', 'Drive forward 30 cm'],
+    },
   },
+  stats: [
+    { value: '8', label: 'tracks from zero to competitions' },
+    { value: '4', label: 'learning games and daily quests' },
+    { value: '6', label: 'robot buddies' },
+    { value: '3', label: 'languages: қазақша, русский, English' },
+  ],
   motivation: {
     eyebrow: 'Motivation',
     title: 'A little every day adds up',
@@ -385,7 +418,22 @@ const kk: LearnLandingCopy = {
     title: 'Виртуалды робот әрдайым қасыңда',
     text: 'Негізгі жол симуляторда өтеді: робот алаңда жүреді, сызықтар мен қабырғаларды көреді, ал тапсырмалар автоматты түрде тексеріледі. SPIKE Prime жиынтығың бар ма? Нағыз роботтағы тапсырмалар бонус береді.',
     points: ['Сызықтары, қабырғалары мен аймақтары бар алаң', 'Түс, қашықтық, күш датчиктері және гироскоп', 'Бағдарламаны жүктеп, өз роботыңда іске қос'],
+    demo: {
+      title: 'Алаңдағы робот бағдарламасы',
+      run: 'Іске қосу',
+      again: 'Тағы бір рет',
+      done: 'Тапсырма орындалды!',
+      start: 'Старт',
+      finish: 'Мәре',
+      blocks: ['Бағдарлама іске қосылғанда', '30 см алға жүр', 'Оңға 90° бұрыл', '50 см алға жүр', 'Оңға 90° бұрыл', '30 см алға жүр'],
+    },
   },
+  stats: [
+    { value: '8', label: 'нөлден жарыстарға дейінгі трек' },
+    { value: '4', label: 'оқу ойындары және күн тапсырмалары' },
+    { value: '6', label: 'робот-серік' },
+    { value: '3', label: 'тіл: қазақша, русский, English' },
+  ],
   motivation: {
     eyebrow: 'Мотивация',
     title: 'Күн сайын аздап — нәтиже байқалады',

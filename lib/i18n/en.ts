@@ -156,7 +156,7 @@ export const en: Dictionary = {
     button: 'Open the studio',
   },
   footer: {
-    tagline: 'LEGO SPIKE Prime programs from plain words.',
+    tagline: 'Robotics from scratch for LEGO SPIKE Prime: lessons, games and a robot buddy.',
     legal: 'RoboEasy is an independent project. LEGO® and SPIKE™ are trademarks of the LEGO Group; FIRST® and FIRST® LEGO® League are trademarks of FIRST®. Neither the LEGO Group nor FIRST sponsors, authorizes or endorses this site.',
   },
   studio: {
