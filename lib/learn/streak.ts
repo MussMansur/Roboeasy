@@ -3,7 +3,8 @@
  *
  * - A day counts when the daily goal is met: 1 or 2 lessons (a review counts
  *   as a lesson) or 15 minutes of practice.
- * - Every 7 counted days in a row earn a freeze (at most 2). A missed day
+ * - Every 7 counted days in a row earn a freeze (at most 2, more with the
+ *   battery upgrade). A missed day
  *   uses a freeze instead of ending the streak.
  * - With "skip weekends", Saturday and Sunday never break a streak (they
  *   still count when the goal is met).
@@ -13,6 +14,7 @@
 import type { LearnState, Profile } from './state'
 
 export const MAX_FREEZES = 2
+export const DEFAULT_GOAL: Profile['goal'] = { kind: 'lessons', n: 1 }
 export const FREEZE_EVERY = 7
 
 export type DayStatus = 'met' | 'frozen' | 'missed' | 'rest' | 'today'
@@ -28,10 +30,16 @@ export interface StreakInfo {
 
 /** YYYY-MM-DD of a moment in a time zone (invalid zones fall back to UTC). */
 export function dayKey(at: number, timeZone: string): string {
+  return dayKeyer(timeZone)(at)
+}
+
+/** dayKey with the formatter made once (for loops over the whole log). */
+export function dayKeyer(timeZone: string): (at: number) => string {
   try {
-    return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(at)
+    const fmt = new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' })
+    return (at) => fmt.format(at)
   } catch {
-    return new Date(at).toISOString().slice(0, 10)
+    return (at) => new Date(at).toISOString().slice(0, 10)
   }
 }
 
@@ -47,12 +55,12 @@ export function isWeekend(key: string): boolean {
 }
 
 type Goal = Profile['goal']
-const DEFAULT_GOAL: Goal = { kind: 'lessons', n: 1 }
 
 export function dailyActivity(state: LearnState, timeZone: string): Map<string, { lessons: number; seconds: number }> {
   const days = new Map<string, { lessons: number; seconds: number }>()
+  const keyOf = dayKeyer(timeZone)
   const day = (at: number) => {
-    const key = dayKey(at, timeZone)
+    const key = keyOf(at)
     let d = days.get(key)
     if (!d) days.set(key, (d = { lessons: 0, seconds: 0 }))
     return d
@@ -64,12 +72,13 @@ export function dailyActivity(state: LearnState, timeZone: string): Map<string, 
   return days
 }
 
-function goalProgress(goal: Goal, a: { lessons: number; seconds: number } | undefined): number {
+export function goalProgress(goal: Goal, a: { lessons: number; seconds: number } | undefined): number {
   if (!a) return 0
   return goal.kind === 'lessons' ? Math.min(1, a.lessons / goal.n) : Math.min(1, a.seconds / 60 / goal.n)
 }
 
-export function streakInfo(state: LearnState, now = Date.now()): StreakInfo {
+/** `maxFreezes`: 2, more with the battery upgrade (lib/learn/shop.ts). */
+export function streakInfo(state: LearnState, now = Date.now(), maxFreezes = MAX_FREEZES): StreakInfo {
   const profile = state.profile
   const tz = profile?.timezone ?? 'UTC'
   const goal = profile?.goal ?? DEFAULT_GOAL
@@ -78,7 +87,13 @@ export function streakInfo(state: LearnState, now = Date.now()): StreakInfo {
   const todayKey = dayKey(now, tz)
   const todayActivity = activity.get(todayKey)
   const todayProgress = goalProgress(goal, todayActivity)
-  const today = { key: todayKey, lessons: todayActivity?.lessons ?? 0, minutes: Math.floor((todayActivity?.seconds ?? 0) / 60), met: todayProgress >= 1, progress: todayProgress }
+  const today = {
+    key: todayKey,
+    lessons: todayActivity?.lessons ?? 0,
+    minutes: Math.floor((todayActivity?.seconds ?? 0) / 60),
+    met: todayProgress >= 1,
+    progress: todayProgress,
+  }
 
   const days = new Map<string, DayStatus>()
   const keys = [...activity.keys()].filter((k) => k <= todayKey).sort()
@@ -91,7 +106,7 @@ export function streakInfo(state: LearnState, now = Date.now()): StreakInfo {
       if (met) {
         current++
         best = Math.max(best, current)
-        if (current % FREEZE_EVERY === 0) freezes = Math.min(MAX_FREEZES, freezes + 1)
+        if (current % FREEZE_EVERY === 0) freezes = Math.min(maxFreezes, freezes + 1)
         days.set(key, 'met')
       } else if (key === todayKey) days.set(key, 'today')
       else if (skipWeekends && isWeekend(key)) days.set(key, 'rest')

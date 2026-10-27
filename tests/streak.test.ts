@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { EMPTY_STATE, type LearnState, type NewEvent, type Profile, appendEvents } from '@/lib/learn/state'
+import { DEFAULT_COSMETICS, EMPTY_STATE, type LearnState, type NewEvent, type Profile, appendEvents } from '@/lib/learn/state'
 import { addDays, challengeIndex, dayKey, isWeekend, isoWeek, streakInfo } from '@/lib/learn/streak'
 
 const profile = (over: Partial<Profile> = {}): Profile => ({
@@ -10,7 +10,8 @@ const profile = (over: Partial<Profile> = {}): Profile => ({
   goal: { kind: 'lessons', n: 1 },
   skipWeekends: false,
   reminders: { enabled: false, time: '18:00' },
-  cosmetics: { color: 'sun', sticker: 'none', wheels: 'classic', sound: 'beep' },
+  cosmetics: DEFAULT_COSMETICS,
+  buddy: { model: 'rover', name: '' },
   parentConsent: true,
   createdAt: 0,
   anonId: 'anon-12345678',

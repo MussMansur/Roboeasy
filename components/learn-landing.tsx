@@ -5,28 +5,36 @@ import {
   Blocks,
   BookOpen,
   Bot,
+  Brain,
   Check,
   CircleCheckBig,
   Code2,
   Cog,
   Compass,
   Flame,
+  Gauge,
+  Gift,
   Hammer,
-  Info,
+  Library,
   Lightbulb,
   MonitorPlay,
+  Palette,
   Plus,
+  Puzzle,
   Radar,
   Rocket,
+  Route,
   ShieldCheck,
   Sparkles,
   Star,
+  Timer,
   Trophy,
-  Users,
   Wrench,
+  Zap,
 } from 'lucide-react'
 
-import { PathTrail } from '@/components/learn/path-trail'
+import { Buddy } from '@/components/learn/buddy'
+import { CoinIcon } from '@/components/learn/coin'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -44,6 +52,21 @@ const TRACKS: { key: TrackKey; icon: typeof Rocket; color: string; kit: 'none' |
   { key: 'fll', icon: Trophy, color: 'var(--blk-events)', kit: 'part' },
 ]
 
+const GAMES = [
+  { icon: Route, color: 'var(--blk-move)' },
+  { icon: Puzzle, color: 'var(--blk-events)' },
+  { icon: Brain, color: 'var(--blk-sound)' },
+  { icon: Zap, color: 'var(--blk-control)' },
+]
+
+/** Sample robots for the buddy section (all are free or in the garage). */
+const SAMPLE_ROBOTS = [
+  { model: 'rover', color: 'sun', hat: 'cap', eyes: 'happy', sticker: 'star' },
+  { model: 'tank', color: 'grape', hat: 'headphones', eyes: 'round', sticker: 'bolt' },
+  { model: 'racer', color: 'brick', hat: 'none', eyes: 'visor', sticker: 'fire', wheels: 'racing' },
+  { model: 'spider', color: 'mint', hat: 'crown', eyes: 'heart', sticker: 'none' },
+]
+
 function Head({ eyebrow, title, lead }: { eyebrow: string; title: string; lead?: string }) {
   return (
     <div className="section-head">
@@ -54,42 +77,45 @@ function Head({ eyebrow, title, lead }: { eyebrow: string; title: string; lead?:
   )
 }
 
-/** The landing of the learning platform (phase 13 preview). */
+function StatChip({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <span
+      className={`inline-flex items-center justify-center gap-1.5 rounded-full border-(length:--stroke-thin) border-outline bg-card px-3 py-1.5 text-sm font-extrabold shadow-(--shadow-press) ${className ?? ''}`}
+    >
+      {children}
+    </span>
+  )
+}
+
+/** The home page: self-paced robotics with a robot buddy, games and daily quests. */
 export function LearnLanding({ lang, t }: { lang: Locale; t: LearnLandingCopy }) {
-  const trail = t.hero.path.map((label, i) => ({ label, state: i < 2 ? ('done' as const) : i === 2 ? ('current' as const) : i === 3 ? ('open' as const) : ('locked' as const) }))
   const stepIcons = [BookOpen, Wrench, CircleCheckBig]
   const motivationIcons = [Flame, Star, Award]
+  const buddyIcons = [Gauge, Palette, CoinIcon]
+  const selfIcons = [Timer, Lightbulb, Library]
 
   return (
     <>
-      <div className="container pt-4">
-        <p className="alert alert-warn m-0" role="note">
-          <Info size={18} aria-hidden="true" />
-          <span>{t.previewNote}</span>
-        </p>
-      </div>
-
       {/* Hero */}
-      <section className="container grid items-center gap-10 py-10 md:grid-cols-[1.15fr_0.85fr] md:py-16">
-        <div className="grid gap-6">
+      <section className="container grid items-center gap-8 py-8 md:grid-cols-[1.1fr_0.9fr] md:gap-10 md:py-16">
+        <div className="grid gap-5 md:gap-6">
           <Badge variant="outline" className="py-1.5">
             <Bot aria-hidden="true" />
             {t.hero.badge}
           </Badge>
-          <h1 className="m-0 text-(length:--text-4xl) leading-[1.05]">
+          <h1 className="m-0 text-(length:--text-4xl) leading-[1.08]">
             {t.hero.title}{' '}
-            <span className="relative isolate inline-block">
-              <span className="absolute inset-x-[-4px] bottom-[0.08em] -z-10 h-[0.42em] rounded-sm bg-primary" aria-hidden="true" />
+            <span className="mt-1 inline-block -rotate-2 rounded-(--radius-sm) border-(length:--stroke) border-outline bg-primary px-3 pb-1 text-primary-foreground shadow-(--shadow-hard-sm)">
               {t.hero.accent}
             </span>
           </h1>
           <p className="lead m-0">{t.hero.sub}</p>
           <div className="flex flex-wrap gap-3">
-            <Link className={buttonVariants({ variant: 'primary', size: 'lg' })} href={`/${lang}/path`}>
+            <Link className={buttonVariants({ variant: 'primary', size: 'lg', className: 'max-sm:w-full' })} href={`/${lang}/path`}>
               {t.hero.cta}
               <ArrowRight aria-hidden="true" />
             </Link>
-            <Link className={buttonVariants({ size: 'lg' })} href={`/${lang}/learn/placement`}>
+            <Link className={buttonVariants({ size: 'lg', className: 'max-sm:w-full' })} href={`/${lang}/learn/placement`}>
               {t.hero.ctaTest}
             </Link>
           </div>
@@ -104,8 +130,28 @@ export function LearnLanding({ lang, t }: { lang: Locale; t: LearnLandingCopy })
             ))}
           </ul>
         </div>
-        <Card className="bg-[radial-gradient(var(--dots)_1.6px,transparent_2px)] bg-size-[20px_20px] py-8">
-          <PathTrail nodes={trail} station={t.hero.station} />
+        <Card className="gap-3 bg-[radial-gradient(var(--dots)_1.6px,transparent_2px)] bg-size-[20px_20px] p-4 sm:p-6" aria-hidden="true">
+          <div className="flex flex-wrap justify-between gap-2">
+            <StatChip className="-rotate-2">
+              <Flame className="size-4 text-[#e8442e]" />
+              {t.hero.stats.streak}
+            </StatChip>
+            <StatChip className="rotate-2">
+              <CoinIcon className="size-4" />
+              {t.hero.stats.coins}
+            </StatChip>
+          </div>
+          <Buddy model="rover" color="sky" hat="cap" eyes="happy" sticker="star" tiers={{ motor: 2, cpu: 1 }} className="mx-auto w-48 sm:w-60" animate />
+          <div className="flex flex-wrap justify-between gap-2">
+            <StatChip className="rotate-1">
+              <Sparkles className="size-4 text-[#c98a00]" />
+              {t.hero.stats.level}
+            </StatChip>
+            <StatChip className="-rotate-1 bg-(--ok-bg)">
+              <Check className="size-4 text-success" />
+              {t.hero.stats.quest}
+            </StatChip>
+          </div>
         </Card>
       </section>
 
@@ -131,6 +177,98 @@ export function LearnLanding({ lang, t }: { lang: Locale; t: LearnLandingCopy })
               )
             })}
           </ol>
+        </div>
+      </section>
+
+      {/* Robot buddy */}
+      <section className="section" id="buddy">
+        <div className="container grid items-center gap-10 lg:grid-cols-2">
+          <div>
+            <Head eyebrow={t.buddy.eyebrow} title={t.buddy.title} lead={t.buddy.text} />
+            <ul className="m-0 grid list-none gap-4 p-0">
+              {t.buddy.points.map((pt, i) => {
+                const Icon = buddyIcons[i]
+                return (
+                  <li key={pt.title} className="flex gap-3">
+                    <span className="grid size-11 shrink-0 place-items-center rounded-full border-(length:--stroke-thin) border-outline bg-card shadow-(--shadow-press)">
+                      <Icon className="size-5" aria-hidden="true" />
+                    </span>
+                    <span className="grid gap-0.5">
+                      <strong className="font-display text-lg">{pt.title}</strong>
+                      <span className="text-muted-foreground">{pt.text}</span>
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+          <Card className="gap-4">
+            <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-4" aria-hidden="true">
+              {SAMPLE_ROBOTS.map((r) => (
+                <li key={r.model} className="rounded-(--radius-md) border-(length:--stroke-thin) border-outline bg-surface-2 p-2">
+                  <Buddy {...r} />
+                </li>
+              ))}
+            </ul>
+            <div className="grid gap-2">
+              <p className="m-0 flex items-center gap-2 font-display text-lg font-extrabold">
+                <Wrench className="size-5" aria-hidden="true" />
+                {t.buddy.shop.title}
+              </p>
+              <ul className="m-0 grid list-none gap-2 p-0">
+                {t.buddy.shop.items.map((it) => (
+                  <li
+                    key={it.name}
+                    className="flex items-center justify-between gap-3 rounded-(--radius-sm) border-(length:--stroke-thin) border-outline bg-card px-3 py-2"
+                  >
+                    <span className="font-bold">
+                      {it.name} <span className="font-normal text-muted-foreground">· {it.effect}</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1 font-display font-extrabold">
+                      <CoinIcon className="size-4" />
+                      {it.price}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Card>
+        </div>
+      </section>
+
+      {/* Games */}
+      <section className="section" id="games">
+        <div className="container">
+          <Head eyebrow={t.games.eyebrow} title={t.games.title} lead={t.games.lead} />
+          <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
+            {t.games.items.map((g, i) => {
+              const { icon: Icon, color } = GAMES[i]
+              return (
+                <li key={g.title}>
+                  <Card className="h-full gap-3">
+                    <span
+                      className="grid size-12 place-items-center rounded-(--radius-sm) border-(length:--stroke) border-outline text-(--blk-text) shadow-(--shadow-press)"
+                      style={{ background: color }}
+                    >
+                      <Icon className="size-6" aria-hidden="true" />
+                    </span>
+                    <h3 className="m-0 text-lg">{g.title}</h3>
+                    <p className="m-0 text-sm text-muted-foreground">{g.text}</p>
+                  </Card>
+                </li>
+              )
+            })}
+          </ul>
+          <div className="mt-6 flex flex-wrap items-center gap-4">
+            <p className="m-0 flex items-center gap-2 font-bold">
+              <Gift className="size-5 text-[#c98a00]" aria-hidden="true" />
+              {t.games.quests}
+            </p>
+            <Link className={buttonVariants({ variant: 'primary' })} href={`/${lang}/play`}>
+              {t.games.title}
+              <ArrowRight aria-hidden="true" />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -188,10 +326,36 @@ export function LearnLanding({ lang, t }: { lang: Locale; t: LearnLandingCopy })
             </div>
             {/* A schematic task field: start, line, wall, finish */}
             <svg viewBox="0 0 320 180" className="w-full rounded-(--radius-sm) border-(length:--stroke-thin) border-outline bg-surface-2" aria-hidden="true">
-              <rect x="20" y="120" width="56" height="44" rx="6" fill="color-mix(in srgb, var(--link) 18%, transparent)" stroke="var(--link)" strokeWidth="3" strokeDasharray="8 6" />
-              <path d="M48 120 C 48 60, 150 70, 170 60 S 250 40, 268 90" fill="none" stroke="var(--text)" strokeWidth="10" strokeLinecap="round" opacity="0.85" />
+              <rect
+                x="20"
+                y="120"
+                width="56"
+                height="44"
+                rx="6"
+                fill="color-mix(in srgb, var(--link) 18%, transparent)"
+                stroke="var(--link)"
+                strokeWidth="3"
+                strokeDasharray="8 6"
+              />
+              <path
+                d="M48 120 C 48 60, 150 70, 170 60 S 250 40, 268 90"
+                fill="none"
+                stroke="var(--text)"
+                strokeWidth="10"
+                strokeLinecap="round"
+                opacity="0.85"
+              />
               <rect x="226" y="24" width="12" height="70" rx="3" fill="var(--blk-move)" stroke="var(--outline)" strokeWidth="2.5" />
-              <rect x="244" y="104" width="60" height="56" rx="6" fill="color-mix(in srgb, var(--success) 22%, transparent)" stroke="var(--success)" strokeWidth="3" />
+              <rect
+                x="244"
+                y="104"
+                width="60"
+                height="56"
+                rx="6"
+                fill="color-mix(in srgb, var(--success) 22%, transparent)"
+                stroke="var(--success)"
+                strokeWidth="3"
+              />
               <g transform="translate(150 66) rotate(-18)">
                 <rect x="-22" y="-16" width="44" height="32" rx="6" fill="var(--accent)" stroke="var(--outline)" strokeWidth="3" />
                 <rect x="-26" y="-20" width="12" height="8" rx="2" fill="var(--outline)" />
@@ -229,9 +393,42 @@ export function LearnLanding({ lang, t }: { lang: Locale; t: LearnLandingCopy })
             })}
           </div>
           <p className="mt-6 mb-0 flex items-center gap-2 font-bold text-muted-foreground">
-            <Sparkles className="size-5" aria-hidden="true" />
+            <Sparkles className="size-5 shrink-0" aria-hidden="true" />
             {t.motivation.note}
           </p>
+        </div>
+      </section>
+
+      {/* Learning on your own */}
+      <section className="section" id="self">
+        <div className="container">
+          <Head eyebrow={t.self.eyebrow} title={t.self.title} />
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {t.self.items.map((it, i) => {
+              const Icon = selfIcons[i]
+              return (
+                <Card key={it.title} className="gap-3">
+                  <Icon className="size-7" aria-hidden="true" />
+                  <h3 className="m-0 text-xl">{it.title}</h3>
+                  <p className="m-0 text-muted-foreground">{it.text}</p>
+                </Card>
+              )
+            })}
+            <Card className="gap-3 bg-surface-2" flat>
+              <h3 className="m-0 flex items-center gap-2 text-xl">
+                <ShieldCheck className="size-6" aria-hidden="true" />
+                {t.self.parents.title}
+              </h3>
+              <ul className="checklist">
+                {t.self.parents.items.map((it) => (
+                  <li key={it}>
+                    <Check size={18} aria-hidden="true" />
+                    {it}
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          </div>
         </div>
       </section>
 
@@ -250,7 +447,9 @@ export function LearnLanding({ lang, t }: { lang: Locale; t: LearnLandingCopy })
             </ol>
           </div>
           <Card className="gap-3">
-            <p className="m-0 max-w-[85%] self-end rounded-(--radius-sm) border-(length:--stroke-thin) border-outline bg-surface-2 px-3 py-2 font-bold">{t.mentor.question}</p>
+            <p className="m-0 max-w-[85%] self-end rounded-(--radius-sm) border-(length:--stroke-thin) border-outline bg-surface-2 px-3 py-2 font-bold">
+              {t.mentor.question}
+            </p>
             <div className="flex max-w-[90%] gap-2">
               <span className="grid size-9 shrink-0 place-items-center rounded-full border-(length:--stroke-thin) border-outline bg-primary text-primary-foreground">
                 <Lightbulb className="size-5" aria-hidden="true" />
@@ -278,34 +477,6 @@ export function LearnLanding({ lang, t }: { lang: Locale; t: LearnLandingCopy })
               {t.compete.cta}
             </Link>
           </Card>
-        </div>
-      </section>
-
-      {/* Teachers and parents */}
-      <section className="section">
-        <div className="container">
-          <Head eyebrow={t.adults.eyebrow} title={t.adults.title} />
-          <div className="grid gap-4 md:grid-cols-2">
-            {[
-              { block: t.adults.teachers, icon: Users },
-              { block: t.adults.parents, icon: ShieldCheck },
-            ].map(({ block, icon: Icon }) => (
-              <Card key={block.title} className="gap-3">
-                <h3 className="m-0 flex items-center gap-2 text-xl">
-                  <Icon className="size-6" aria-hidden="true" />
-                  {block.title}
-                </h3>
-                <ul className="checklist">
-                  {block.items.map((it) => (
-                    <li key={it}>
-                      <Check size={18} aria-hidden="true" />
-                      {it}
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            ))}
-          </div>
         </div>
       </section>
 

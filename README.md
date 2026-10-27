@@ -1,6 +1,6 @@
 # RoboEasy AI
 
-A robotics course from scratch for LEGO SPIKE Prime: short lessons with a robot simulator and Blockly, autochecks, an AI mentor that gives hints (never solutions), a path map, streaks, achievements, classes for teachers. Plus the original tools: describe a task in plain words and get a `.llsp3` program for the SPIKE App 3, and an FLL run-strategy helper. UI in Russian, Kazakh and English.
+A robotics course from scratch for LEGO SPIKE Prime: short lessons with a robot simulator and Blockly, autochecks, an AI mentor that gives hints (never solutions), a path map, streaks, achievements, daily quests, practice games (robot maze, program puzzles, term pairs, blitz), a robot buddy you upgrade in the garage with coins earned by learning, and a glossary with resources. Self-paced: no classes or teachers. Plus the original tools: describe a task in plain words and get a `.llsp3` program for the SPIKE App 3, and an FLL run-strategy helper. UI in Russian, Kazakh and English.
 
 ## Run
 
@@ -10,7 +10,7 @@ cp .env.example .env.local   # add GEMINI_API_KEY
 npm run dev                  # http://localhost:3000 → /ru, /kk or /en
 ```
 
-Accounts, sync and classes are optional (without them progress stays in the browser). Locally they run on Supabase in Docker:
+Accounts and sync are optional (without them progress stays in the browser). Locally they run on Supabase in Docker:
 
 ```bash
 npm run db:start             # prints the API URL and keys; ports 563xx
@@ -23,7 +23,7 @@ Sign-in emails land in the local Mailpit: http://127.0.0.1:56324.
 | Command | What it does |
 |---|---|
 | `npm test` | vitest: DSL validation, both compilers, .llsp3 packing, FLL geometry and planning, season files and migration, editor model, perspective correction, Python snapshots |
-| `npm run e2e` | Playwright (desktop and tablet): new learner journey with a fixed clock, and teacher/student classes with real sign-in (skipped when the local Supabase is down) |
+| `npm run e2e` | Playwright (desktop and tablet): new learner journey with a fixed clock, and games → coins → a garage purchase |
 | `npm run db:test` | database tests against the local Supabase: XP rules equal the app's, idempotent sync, row-level security, account deletion |
 | `npm run typecheck` | TypeScript strict |
 | `npm run build` | production build |
@@ -34,8 +34,8 @@ Sign-in emails land in the local Mailpit: http://127.0.0.1:56324.
 - Content is data: `content/learn/course.json` (8 tracks, 37 units, 123 lessons; `ready` ones have a file) and `content/learn/lessons/*.json`, validated by `lib/learn/schema.ts` (zod). Tests run every reference solution through the simulator and its checks. Weekly challenges: `content/learn/challenges.json`.
 - `lib/sim/` — the 2D robot simulator (fixed 10 ms step, mm, sensors); `lib/learn/checks.ts` — autochecks (zone, points, collisions, sensors, blocks…).
 - `lib/learn/state.ts` + `store.ts` — the learner's append-only event log in localStorage; XP (`xp.ts`), unlocking and spaced review (`progress.ts`), streaks in the learner's time zone with freezes (`streak.ts`), achievements, cosmetics, placement test, certificates (signed codes + PDF), analytics and A/B flags (`lib/flags.ts`) are all computed from it.
-- `lib/learn/cloud.ts` — optional Supabase client loaded on demand: email magic link, two-way sync of the same event log (server keyed by event id, so XP stays idempotent), classes, photos. Schema and row-level security: `supabase/migrations/`.
-- Routes: `/path` (home, onboarding), `/learn`, `/learn/[track]`, `/learn/[track]/[lesson]`, `/learn/placement`, `/review`, `/path/challenge`, `/profile`, `/class`, `/cert/[code]`, `/privacy`, `/parents`, `/sandbox` (AI studio), `/compete` (FLL), `/ai` (the generator's landing), `/admin` (hidden in production).
+- `lib/learn/cloud.ts` — optional Supabase client loaded on demand: email magic link, two-way sync of the same event log (server keyed by event id, so replays change nothing). Schema and row-level security: `supabase/migrations/`.
+- Routes: `/path` (home, onboarding), `/learn`, `/learn/[track]`, `/learn/[track]/[lesson]`, `/learn/placement`, `/review`, `/path/challenge`, `/play` (games: `/play/maze`, `/play/puzzle`, `/play/memory`, `/play/blitz`), `/garage`, `/library`, `/profile`, `/cert/[code]`, `/privacy`, `/parents`, `/sandbox` (AI studio), `/compete` (FLL), `/ai` (the generator's landing), `/admin` (hidden in production).
 - Privacy and child safety: `docs/privacy.md` (draft for legal review).
 
 ## Key principle

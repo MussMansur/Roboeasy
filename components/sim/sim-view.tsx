@@ -6,7 +6,7 @@ import { Pause, Play, RotateCcw, Volume2 } from 'lucide-react'
 import { FieldFrame, Label } from '@/components/fll/field-shapes'
 import { buttonVariants } from '@/components/ui/button'
 import { svgPoints } from '@/lib/fll/geometry'
-import { stickerEmoji } from '@/lib/learn/cosmetics'
+import { colorHex, stickerEmoji } from '@/lib/learn/shop'
 import type { Point } from '@/lib/fll/season'
 import type { SimField } from '@/lib/sim/field'
 import { ROBOT_SHAPE } from '@/lib/sim/robot'
@@ -32,15 +32,6 @@ function zoneLabelY(z: { y: number; h: number }, height: number) {
   return z.y + z.h - 26
 }
 
-export const ROBOT_COLORS: Record<string, string> = {
-  sun: '#ffc531',
-  brick: '#e8442e',
-  sky: '#4a86f7',
-  leaf: '#2bb673',
-  grape: '#b26ef0',
-  rose: '#f06fb4',
-}
-
 export interface PathOverlay {
   points: Point[]
   color: string
@@ -61,14 +52,27 @@ interface SimViewProps {
   autoPlay?: boolean
   robotColor?: string
   sticker?: string
-  /** classic | offroad | racing (cosmetics, lib/learn/cosmetics.ts) */
+  /** classic | offroad | racing | gold (lib/learn/shop.ts) */
   wheels?: string
   labels: { play: string; pause: string; restart: string; speed: string; time: string }
   className?: string
 }
 
 /** Field, robot and playback of a simulator run. */
-export function SimView({ field, result, lang, paths = [], onStep, onEnd, autoPlay = true, robotColor = 'sun', sticker, wheels = 'classic', labels, className }: SimViewProps) {
+export function SimView({
+  field,
+  result,
+  lang,
+  paths = [],
+  onStep,
+  onEnd,
+  autoPlay = true,
+  robotColor = 'sun',
+  sticker,
+  wheels = 'classic',
+  labels,
+  className,
+}: SimViewProps) {
   const [t, setT] = useState(0)
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)
@@ -123,7 +127,7 @@ export function SimView({ field, result, lang, paths = [], onStep, onEnd, autoPl
   const W = field.width
   const H = field.height
   const grid = 100
-  const color = ROBOT_COLORS[robotColor] ?? ROBOT_COLORS.sun
+  const color = colorHex(robotColor)
 
   return (
     <div className={cn('grid gap-2', className)}>
@@ -154,14 +158,26 @@ export function SimView({ field, result, lang, paths = [], onStep, onEnd, autoPl
                   strokeDasharray={z.color ? undefined : '18 12'}
                 />
                 {z.label && (
-                  <Label at={{ x: z.x + z.w / 2, y: zoneLabelY(z, H) }} size={30} className="fill-[#1b1f2a] stroke-[#fbf7ef] stroke-[10px] font-extrabold [paint-order:stroke]">
+                  <Label
+                    at={{ x: z.x + z.w / 2, y: zoneLabelY(z, H) }}
+                    size={30}
+                    className="fill-[#1b1f2a] stroke-[#fbf7ef] stroke-[10px] font-extrabold [paint-order:stroke]"
+                  >
                     {z.label[lang]}
                   </Label>
                 )}
               </g>
             ))}
             {field.lines.map((l, i) => (
-              <polyline key={i} points={l.points.map(([x, y]) => `${x},${y}`).join(' ')} fill="none" stroke={SENSOR_FILL[l.color]} strokeWidth={l.width} strokeLinecap="round" strokeLinejoin="round" />
+              <polyline
+                key={i}
+                points={l.points.map(([x, y]) => `${x},${y}`).join(' ')}
+                fill="none"
+                stroke={SENSOR_FILL[l.color]}
+                strokeWidth={l.width}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             ))}
             {field.walls.map((w, i) => (
               <g key={i}>
@@ -182,7 +198,15 @@ export function SimView({ field, result, lang, paths = [], onStep, onEnd, autoPl
 
             {paths.map((p, i) => (
               <g key={i} opacity={p.active === false ? 0.35 : 1}>
-                <polyline points={svgPoints(p.points)} fill="none" stroke={p.color} strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" strokeDasharray={p.active ? undefined : '26 16'} />
+                <polyline
+                  points={svgPoints(p.points)}
+                  fill="none"
+                  stroke={p.color}
+                  strokeWidth="14"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeDasharray={p.active ? undefined : '26 16'}
+                />
                 {p.points.length > 0 && (
                   <g>
                     <circle cx={p.points[p.points.length - 1].x} cy={p.points[p.points.length - 1].y} r="34" fill={p.color} stroke="#1b1f2a" strokeWidth="5" />
@@ -194,7 +218,17 @@ export function SimView({ field, result, lang, paths = [], onStep, onEnd, autoPl
               </g>
             ))}
 
-            {travelled.length > 1 && <polyline points={svgPoints(travelled.concat([{ ...pose, t }]))} fill="none" stroke="#2560d8" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" opacity="0.8" />}
+            {travelled.length > 1 && (
+              <polyline
+                points={svgPoints(travelled.concat([{ ...pose, t }]))}
+                fill="none"
+                stroke="#2560d8"
+                strokeWidth="10"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                opacity="0.8"
+              />
+            )}
 
             {/* Robot: body, wheels, colour sensor, heading arrow */}
             <g transform={`translate(${pose.x} ${pose.y}) rotate(${pose.heading})`}>
@@ -206,12 +240,36 @@ export function SimView({ field, result, lang, paths = [], onStep, onEnd, autoPl
                 return (
                   <g key={side}>
                     <rect x={-ROBOT_SHAPE.length / 2 - (big ? 7 : 0)} y={y} width={w} height={h} rx="6" fill="#1b1f2a" />
-                    {big && <path d={Array.from({ length: 6 }, (_, i) => `M${-ROBOT_SHAPE.length / 2 + 4 + i * 13} ${y + 3}v${h - 6}`).join('')} stroke="#5b6275" strokeWidth="4" />}
-                    {wheels === 'racing' && <rect x={-ROBOT_SHAPE.length / 2 + 6} y={y + h / 2 - 3} width={w - 12} height={6} rx="3" fill="#ffc531" />}
+                    {big && (
+                      <path
+                        d={Array.from({ length: 6 }, (_, i) => `M${-ROBOT_SHAPE.length / 2 + 4 + i * 13} ${y + 3}v${h - 6}`).join('')}
+                        stroke="#5b6275"
+                        strokeWidth="4"
+                      />
+                    )}
+                    {(wheels === 'racing' || wheels === 'gold') && (
+                      <rect
+                        x={-ROBOT_SHAPE.length / 2 + 6}
+                        y={y + h / 2 - 3}
+                        width={w - 12}
+                        height={6}
+                        rx="3"
+                        fill={wheels === 'gold' ? '#e9b949' : '#ffc531'}
+                      />
+                    )}
                   </g>
                 )
               })}
-              <rect x={-ROBOT_SHAPE.length / 2} y={-ROBOT_SHAPE.width / 2} width={ROBOT_SHAPE.length} height={ROBOT_SHAPE.width} rx="18" fill={color} stroke="#1b1f2a" strokeWidth="7" />
+              <rect
+                x={-ROBOT_SHAPE.length / 2}
+                y={-ROBOT_SHAPE.width / 2}
+                width={ROBOT_SHAPE.length}
+                height={ROBOT_SHAPE.width}
+                rx="18"
+                fill={color}
+                stroke="#1b1f2a"
+                strokeWidth="7"
+              />
               <rect x={-30} y={-34} width={60} height={68} rx="10" fill="#fff7e8" stroke="#1b1f2a" strokeWidth="4" />
               {stickerEmoji(sticker ?? 'none') && (
                 <text x={-4} y={4} fontSize="40" textAnchor="middle" dominantBaseline="central" transform="scale(1 -1)">
@@ -234,7 +292,9 @@ export function SimView({ field, result, lang, paths = [], onStep, onEnd, autoPl
           <span className="grid grid-cols-5 gap-[2px] rounded-md border-2 border-[#1b1f2a] bg-[#1b1f2a] p-1" aria-hidden="true">
             {Array.from({ length: 25 }, (_, i) => {
               const v = shown.pixels ? Number(shown.pixels[i] ?? 0) : 0
-              return <i key={i} className="block size-2 rounded-[2px]" style={{ background: v > 0 ? `rgba(255,197,49,${0.25 + (v / 9) * 0.75})` : '#2a3042' }} />
+              return (
+                <i key={i} className="block size-2 rounded-[2px]" style={{ background: v > 0 ? `rgba(255,197,49,${0.25 + (v / 9) * 0.75})` : '#2a3042' }} />
+              )
             })}
           </span>
         </div>
@@ -243,10 +303,22 @@ export function SimView({ field, result, lang, paths = [], onStep, onEnd, autoPl
 
       {result && (
         <div className="flex flex-wrap items-center gap-2">
-          <button type="button" className={buttonVariants({ size: 'icon-sm' })} aria-label={playing ? labels.pause : labels.play} title={playing ? labels.pause : labels.play} onClick={() => (t >= end ? (setT(0), setPlaying(true)) : setPlaying((p) => !p))}>
+          <button
+            type="button"
+            className={buttonVariants({ size: 'icon-sm' })}
+            aria-label={playing ? labels.pause : labels.play}
+            title={playing ? labels.pause : labels.play}
+            onClick={() => (t >= end ? (setT(0), setPlaying(true)) : setPlaying((p) => !p))}
+          >
             {playing ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
           </button>
-          <button type="button" className={buttonVariants({ size: 'icon-sm', variant: 'ghost' })} aria-label={labels.restart} title={labels.restart} onClick={() => (setT(0), setPlaying(true))}>
+          <button
+            type="button"
+            className={buttonVariants({ size: 'icon-sm', variant: 'ghost' })}
+            aria-label={labels.restart}
+            title={labels.restart}
+            onClick={() => (setT(0), setPlaying(true))}
+          >
             <RotateCcw aria-hidden="true" />
           </button>
           <input
@@ -260,7 +332,12 @@ export function SimView({ field, result, lang, paths = [], onStep, onEnd, autoPl
             className="min-w-24 flex-1 accent-(--link)"
           />
           <span className="font-mono text-sm font-semibold tabular-nums">{t.toFixed(1)} s</span>
-          <button type="button" className={buttonVariants({ size: 'sm', variant: 'ghost' })} aria-label={labels.speed} onClick={() => setSpeed((s) => (s === 1 ? 2 : s === 2 ? 0.5 : 1))}>
+          <button
+            type="button"
+            className={buttonVariants({ size: 'sm', variant: 'ghost' })}
+            aria-label={labels.speed}
+            onClick={() => setSpeed((s) => (s === 1 ? 2 : s === 2 ? 0.5 : 1))}
+          >
             {speed}×
           </button>
         </div>

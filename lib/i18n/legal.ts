@@ -39,7 +39,7 @@ const privacy: Record<Locale, LegalPage> = {
         title: 'Безопасность',
         items: [
           'Нет чатов, комментариев и публичных профилей.',
-          'Рейтинги (после появления аккаунтов) — только внутри класса или между друзьями, только ники.',
+          'Нет рейтингов и сравнения с другими: ты соревнуешься только с собой. Монеты нельзя купить — только заработать учёбой.',
           'ИИ-наставник даёт подсказки, но не готовые решения, не задаёт личных вопросов и не уходит от темы урока.',
           'Никаких покупок: всё для робота открывается за учёбу.',
         ],
@@ -79,7 +79,7 @@ const privacy: Record<Locale, LegalPage> = {
         title: 'Қауіпсіздік',
         items: [
           'Чаттар, пікірлер және ашық профильдер жоқ.',
-          'Рейтингтер (аккаунттар пайда болғаннан кейін) — тек сынып ішінде немесе достар арасында, тек лақап аттар.',
+          'Рейтингтер мен басқалармен салыстыру жоқ: сен тек өзіңмен жарысасың. Тиынды сатып алуға болмайды — тек оқумен табуға болады.',
           'ЖИ-тәлімгер дайын шешім емес, кеңес береді, жеке сұрақтар қоймайды және сабақ тақырыбынан ауытқымайды.',
           'Ешқандай сатып алу жоқ: роботқа арналғанның бәрі оқу арқылы ашылады.',
         ],
@@ -119,14 +119,17 @@ const privacy: Record<Locale, LegalPage> = {
         title: 'Safety',
         items: [
           'No chats, comments or public profiles.',
-          'Leaderboards (once accounts exist) — only inside a class or between friends, nicknames only.',
+          'No leaderboards or comparing with others: you only compete with yourself. Coins cannot be bought, only earned by learning.',
           'The AI mentor gives hints, not ready solutions, asks no personal questions and stays on the lesson.',
           'No purchases: everything for the robot is earned by learning.',
         ],
       },
       {
         title: 'Your data is yours',
-        items: ['Profile → “My data”: download everything as one file, load it on another device, or delete it for good.', 'Learners under 16 need a parent’s or teacher’s permission.'],
+        items: [
+          'Profile → “My data”: download everything as one file, load it on another device, or delete it for good.',
+          'Learners under 16 need a parent’s or teacher’s permission.',
+        ],
       },
     ],
   },
@@ -194,7 +197,11 @@ const parents: Record<Locale, LegalPage> = {
       },
       {
         title: 'ЖИ-тәлімгер',
-        items: ['Тәлімгер қадам-қадаммен кеңес береді және дайын шешімді бермейді.', 'Ол тек сабақ пен роботтар туралы сөйлейді, жеке сұрақтар қоймайды. Күніне 30 сұраққа дейін.', 'Сабақтың өз кеңестері ЖИ-сіз де жұмыс істейді.'],
+        items: [
+          'Тәлімгер қадам-қадаммен кеңес береді және дайын шешімді бермейді.',
+          'Ол тек сабақ пен роботтар туралы сөйлейді, жеке сұрақтар қоймайды. Күніне 30 сұраққа дейін.',
+          'Сабақтың өз кеңестері ЖИ-сіз де жұмыс істейді.',
+        ],
       },
       {
         title: 'Сіздің рұқсатыңыз',
@@ -228,7 +235,11 @@ const parents: Record<Locale, LegalPage> = {
       },
       {
         title: 'The AI mentor',
-        items: ['The mentor gives step-by-step hints and never hands out the full solution.', 'It talks only about the lesson and robots and asks no personal questions. Up to 30 questions a day.', 'The lesson’s own hints work without the AI too.'],
+        items: [
+          'The mentor gives step-by-step hints and never hands out the full solution.',
+          'It talks only about the lesson and robots and asks no personal questions. Up to 30 questions a day.',
+          'The lesson’s own hints work without the AI too.',
+        ],
       },
       {
         title: 'Your permission',

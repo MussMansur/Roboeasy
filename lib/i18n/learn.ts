@@ -3,7 +3,16 @@
 import type { Locale } from './config'
 
 const ru = {
-  nav: { path: 'Мой путь', learn: 'Обучение', sandbox: 'Песочница', compete: 'Соревнования', profile: 'Профиль', class: 'Класс' },
+  nav: {
+    path: 'Мой путь',
+    learn: 'Уроки',
+    play: 'Игры',
+    garage: 'Гараж',
+    library: 'Справочник',
+    sandbox: 'Песочница',
+    compete: 'Соревнования',
+    profile: 'Профиль',
+  },
   sim: { play: 'Запустить', pause: 'Пауза', restart: 'Сначала', speed: 'Скорость воспроизведения', time: 'Симулятор' },
   lesson: {
     minutes: '{n} мин',
@@ -20,7 +29,16 @@ const ru = {
     again: 'Пройти ещё раз',
     trackDone: 'Трек пройден! 🎉',
     kit: 'Нужен набор',
-    stepTypes: { theory: 'Теория', quiz: 'Вопрос', build: 'Сборка', code: 'Задание', predict: 'Угадай', debug: 'Найди ошибку', real_robot: 'Настоящий робот', project: 'Проект' },
+    stepTypes: {
+      theory: 'Теория',
+      quiz: 'Вопрос',
+      build: 'Сборка',
+      code: 'Задание',
+      predict: 'Угадай',
+      debug: 'Найди ошибку',
+      real_robot: 'Настоящий робот',
+      project: 'Проект',
+    },
     // quiz
     check: 'Проверить',
     correct: 'Верно!',
@@ -80,7 +98,16 @@ const ru = {
 export type LearnText = typeof ru
 
 const kk: LearnText = {
-  nav: { path: 'Менің жолым', learn: 'Оқу', sandbox: 'Құмсалғыш', compete: 'Жарыстар', profile: 'Профиль', class: 'Сынып' },
+  nav: {
+    path: 'Менің жолым',
+    learn: 'Сабақтар',
+    play: 'Ойындар',
+    garage: 'Гараж',
+    library: 'Анықтамалық',
+    sandbox: 'Құмсалғыш',
+    compete: 'Жарыстар',
+    profile: 'Профиль',
+  },
   sim: { play: 'Іске қосу', pause: 'Үзіліс', restart: 'Басынан', speed: 'Ойнату жылдамдығы', time: 'Симулятор' },
   lesson: {
     minutes: '{n} мин',
@@ -97,7 +124,16 @@ const kk: LearnText = {
     again: 'Қайта өту',
     trackDone: 'Трек өтілді! 🎉',
     kit: 'Жиынтық керек',
-    stepTypes: { theory: 'Теория', quiz: 'Сұрақ', build: 'Құрастыру', code: 'Тапсырма', predict: 'Болжа', debug: 'Қатені тап', real_robot: 'Нағыз робот', project: 'Жоба' },
+    stepTypes: {
+      theory: 'Теория',
+      quiz: 'Сұрақ',
+      build: 'Құрастыру',
+      code: 'Тапсырма',
+      predict: 'Болжа',
+      debug: 'Қатені тап',
+      real_robot: 'Нағыз робот',
+      project: 'Жоба',
+    },
     check: 'Тексеру',
     correct: 'Дұрыс!',
     wrong: 'Әзірге дұрыс емес. Тағы байқап көр.',
@@ -150,7 +186,16 @@ const kk: LearnText = {
 }
 
 const en: LearnText = {
-  nav: { path: 'My path', learn: 'Learn', sandbox: 'Sandbox', compete: 'Competitions', profile: 'Profile', class: 'Class' },
+  nav: {
+    path: 'My path',
+    learn: 'Lessons',
+    play: 'Games',
+    garage: 'Garage',
+    library: 'Library',
+    sandbox: 'Sandbox',
+    compete: 'Competitions',
+    profile: 'Profile',
+  },
   sim: { play: 'Play', pause: 'Pause', restart: 'From the start', speed: 'Playback speed', time: 'Simulator' },
   lesson: {
     minutes: '{n} min',
@@ -167,7 +212,16 @@ const en: LearnText = {
     again: 'Do it again',
     trackDone: 'Track complete! 🎉',
     kit: 'Kit needed',
-    stepTypes: { theory: 'Theory', quiz: 'Question', build: 'Building', code: 'Task', predict: 'Predict', debug: 'Find the bug', real_robot: 'Real robot', project: 'Project' },
+    stepTypes: {
+      theory: 'Theory',
+      quiz: 'Question',
+      build: 'Building',
+      code: 'Task',
+      predict: 'Predict',
+      debug: 'Find the bug',
+      real_robot: 'Real robot',
+      project: 'Project',
+    },
     check: 'Check',
     correct: 'Correct!',
     wrong: 'Not quite yet. Try again.',

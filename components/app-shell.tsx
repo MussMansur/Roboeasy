@@ -8,13 +8,14 @@ import { getDictionary } from '@/lib/i18n'
 import type { Locale } from '@/lib/i18n/config'
 import { getLearnText } from '@/lib/i18n/learn'
 import { getLearnAppText } from '@/lib/i18n/learn-app'
+import { getPlayText } from '@/lib/i18n/play'
 
 /** Header, page content and (on phones) the bottom tab bar, shared by all app sections. */
 export function AppShell({ lang, children, className }: { lang: Locale; children: ReactNode; className?: string }) {
   const nav = getLearnText(lang).nav
   return (
     <>
-      <SiteHeader lang={lang} t={getDictionary(lang).nav} sections={nav} variant="app" />
+      <SiteHeader lang={lang} t={getDictionary(lang).nav} sections={nav} coinsLabel={getPlayText(lang).coinsLabel} variant="app" />
       <main id="main" className={className}>
         {children}
       </main>

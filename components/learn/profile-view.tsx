@@ -2,19 +2,21 @@
 
 import { useId, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Award, CalendarPlus, Download, Lock, Settings, ShieldCheck, Trash2, Upload } from 'lucide-react'
+import { Award, CalendarPlus, Download, Settings, ShieldCheck, Trash2, Upload, Wrench } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ProgressBar } from '@/components/learn/learn-map'
 import { AccountCard } from '@/components/learn/account-card'
+import { Buddy } from '@/components/learn/buddy'
+import { CoinAmount } from '@/components/learn/coin'
 import { Onboarding } from '@/components/learn/onboarding'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { fill } from '@/lib/i18n/config'
 import type { LearnAppText } from '@/lib/i18n/learn-app'
+import type { PlayText } from '@/lib/i18n/play'
 import { ACHIEVEMENTS, recordedAchievements } from '@/lib/learn/achievements'
-import { COSMETICS, type CosmeticKind, isUnlocked } from '@/lib/learn/cosmetics'
 import { COURSE } from '@/lib/learn/course'
 import { reminderIcs } from '@/lib/learn/reminders'
 import { type Profile, parseState, stateSchema } from '@/lib/learn/state'
@@ -24,7 +26,10 @@ import { useProgress } from '@/lib/learn/use-progress'
 import { cn } from '@/lib/utils'
 
 type Lang = 'ru' | 'kk' | 'en'
-const GOALS = { l1: { kind: 'lessons', n: 1 }, l2: { kind: 'lessons', n: 2 }, m15: { kind: 'minutes', n: 15 } } as const satisfies Record<string, Profile['goal']>
+const GOALS = { l1: { kind: 'lessons', n: 1 }, l2: { kind: 'lessons', n: 2 }, m15: { kind: 'minutes', n: 15 } } as const satisfies Record<
+  string,
+  Profile['goal']
+>
 const goalKey = (g: Profile['goal']) => (g.kind === 'minutes' ? 'm15' : g.n === 2 ? 'l2' : 'l1')
 
 const DAY_STYLE: Record<DayStatus | 'none', string> = {
@@ -47,30 +52,7 @@ function download(name: string, text: string, type: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
-/** A small top-down robot in the chosen looks. */
-function RobotPreview({ color, sticker, wheels }: { color: string; sticker: string; wheels: string }) {
-  const big = wheels === 'offroad'
-  return (
-    <svg viewBox="-110 -100 220 200" className="w-40" aria-hidden="true">
-      {[-1, 1].map((side) => (
-        <g key={side}>
-          <rect x={-85 - (big ? 7 : 0)} y={side < 0 ? -65 - (big ? 30 : 22) + 4 : 61} width={big ? 84 : 70} height={big ? 30 : 22} rx="6" fill="#1b1f2a" />
-          {wheels === 'racing' && <rect x={-79} y={side < 0 ? -76 : 69} width={58} height={6} rx="3" fill="#ffc531" />}
-        </g>
-      ))}
-      <rect x={-85} y={-65} width={170} height={130} rx="18" fill={color} stroke="#1b1f2a" strokeWidth="7" />
-      <rect x={-30} y={-34} width={60} height={68} rx="10" fill="#fff7e8" stroke="#1b1f2a" strokeWidth="4" />
-      {sticker && (
-        <text x={0} y={2} fontSize="40" textAnchor="middle" dominantBaseline="central">
-          {sticker}
-        </text>
-      )}
-      <path d="M79 -22 L111 0 L79 22 Z" fill="#1b1f2a" />
-    </svg>
-  )
-}
-
-export function ProfileView({ lang, app }: { lang: Lang; app: LearnAppText }) {
+export function ProfileView({ lang, app, play }: { lang: Lang; app: LearnAppText; play: PlayText }) {
   const hydrated = useHydrated()
   const p = useProgress()
   const id = useId()
@@ -88,11 +70,10 @@ export function ProfileView({ lang, app }: { lang: Lang; app: LearnAppText }) {
 
   if (!hydrated) return <Skeleton className="container my-10 h-96" />
   const profile = p.state.profile
-  if (!profile || joining) return <Onboarding lang={lang} app={app} onSaved={() => setJoining(true)} onDone={() => setJoining(false)} />
+  if (!profile || joining) return <Onboarding lang={lang} app={app} play={play} onSaved={() => setJoining(true)} onDone={() => setJoining(false)} />
 
   const dateFmt = new Intl.DateTimeFormat(lang === 'kk' ? 'kk-KZ' : lang, { day: 'numeric', month: 'long', year: 'numeric' })
   const certificates = p.state.events.flatMap((e) => (e.kind === 'certificate' ? [e] : []))
-  const unlockedAch = new Set(earned.keys())
   const under16 = profile.ageRange !== '16-plus'
 
   // Calendar: 5 weeks ending this week, Monday first.
@@ -123,19 +104,11 @@ export function ProfileView({ lang, app }: { lang: Lang; app: LearnAppText }) {
     toast.success(t.deleted)
   }
 
-  const kinds: { kind: CosmeticKind; title: string; field: keyof Profile['cosmetics'] }[] = [
-    { kind: 'color', title: t.color, field: 'color' },
-    { kind: 'sticker', title: t.sticker, field: 'sticker' },
-    { kind: 'wheels', title: t.wheels, field: 'wheels' },
-  ]
-  const colorHex = COSMETICS.find((c) => c.kind === 'color' && c.id === profile.cosmetics.color)?.value ?? '#ffc531'
-  const stickerValue = COSMETICS.find((c) => c.kind === 'sticker' && c.id === profile.cosmetics.sticker)?.value ?? ''
-
   return (
     <div className="container grid gap-6 py-8 md:py-12">
       <header className="flex flex-wrap items-center gap-4">
-        <span className="grid size-16 place-items-center rounded-full border-(length:--stroke) border-outline font-display text-3xl font-extrabold shadow-(--shadow-press)" style={{ background: colorHex }} aria-hidden="true">
-          {profile.nickname.slice(0, 1).toUpperCase()}
+        <span className="block size-20 shrink-0 rounded-full border-(length:--stroke) border-outline bg-card p-1.5 shadow-(--shadow-press)">
+          <Buddy {...p.looks} />
         </span>
         <div className="grid min-w-0 flex-1 gap-1">
           <h1 className="m-0 text-4xl">{profile.nickname}</h1>
@@ -165,7 +138,11 @@ export function ProfileView({ lang, app }: { lang: Lang; app: LearnAppText }) {
               return (
                 <li
                   key={key}
-                  className={cn('grid aspect-square place-items-center rounded-(--radius-xs) border-(length:--stroke-thin) text-xs font-bold', DAY_STYLE[status], key > todayKey && 'opacity-30')}
+                  className={cn(
+                    'grid aspect-square place-items-center rounded-(--radius-xs) border-(length:--stroke-thin) text-xs font-bold',
+                    DAY_STYLE[status],
+                    key > todayKey && 'opacity-30',
+                  )}
                   title={status === 'none' ? key : `${key}: ${t.dayStatus[status]}`}
                   aria-label={status === 'none' ? key : `${key}: ${t.dayStatus[status]}`}
                 >
@@ -183,53 +160,23 @@ export function ProfileView({ lang, app }: { lang: Lang; app: LearnAppText }) {
             ))}
           </ul>
           <p className="m-0 text-sm text-muted-foreground">
-            {fill(app.path.freezes, { n: p.streak.freezes, max: 2 })}. {app.path.freezesHint}
+            {fill(app.path.freezes, { n: p.streak.freezes, max: p.ledger.maxFreezes })}. {app.path.freezesHint}
           </p>
         </Card>
 
         <Card className="gap-4">
           <CardTitle>{t.robot}</CardTitle>
           <div className="flex flex-wrap items-center gap-4">
-            <RobotPreview color={colorHex} sticker={stickerValue} wheels={profile.cosmetics.wheels} />
-            <p className="m-0 flex-1 text-sm text-muted-foreground">{t.robotHint}</p>
+            <Buddy {...p.looks} tiers={p.ledger.tiers} className="w-36" />
+            <div className="grid flex-1 gap-2">
+              <p className="m-0 text-sm text-muted-foreground">{play.garage.lead}</p>
+              <CoinAmount n={p.coins} className="text-xl" />
+              <Link className={buttonVariants({ variant: 'primary', className: 'justify-self-start' })} href={`/${lang}/garage`}>
+                <Wrench aria-hidden="true" />
+                {play.garage.title}
+              </Link>
+            </div>
           </div>
-          {kinds.map(({ kind, title, field }) => (
-            <fieldset key={kind} className="m-0 grid gap-2 border-0 p-0">
-              <legend className="mb-1 p-0 font-bold">{title}</legend>
-              <div className="flex flex-wrap gap-2">
-                {COSMETICS.filter((c) => c.kind === kind).map((c) => {
-                  const open = isUnlocked(c, p.level.index, unlockedAch)
-                  const selected = profile.cosmetics[field] === c.id
-                  const lockText =
-                    c.unlock && 'level' in c.unlock
-                      ? fill(t.lockedLevel, { n: c.unlock.level + 1 })
-                      : c.unlock && 'achievement' in c.unlock
-                        ? fill(t.lockedAchievement, { name: ACHIEVEMENTS.find((a) => a.id === (c.unlock as { achievement: string }).achievement)?.title[lang] ?? '' })
-                        : ''
-                  return (
-                    <button
-                      key={c.id}
-                      type="button"
-                      disabled={!open}
-                      aria-pressed={selected}
-                      title={open ? c.title[lang] : `${c.title[lang]} — ${lockText}`}
-                      onClick={() => updateProfile({ cosmetics: { ...profile.cosmetics, [field]: c.id } })}
-                      className={cn(
-                        'flex min-h-11 items-center gap-2 rounded-(--radius-sm) border-(length:--stroke-thin) border-outline bg-card px-3 text-sm font-bold disabled:cursor-not-allowed disabled:opacity-50',
-                        selected && 'ring-3 ring-(--focus)',
-                      )}
-                    >
-                      {kind === 'color' && <span className="size-5 rounded-full border-2 border-outline" style={{ background: c.value }} aria-hidden="true" />}
-                      {kind === 'sticker' && c.value && <span aria-hidden="true">{c.value}</span>}
-                      {c.title[lang]}
-                      {!open && <Lock className="size-3.5" aria-hidden="true" />}
-                      {!open && <span className="sr-only">— {lockText}</span>}
-                    </button>
-                  )
-                })}
-              </div>
-            </fieldset>
-          ))}
         </Card>
       </div>
 
@@ -240,8 +187,20 @@ export function ProfileView({ lang, app }: { lang: Lang; app: LearnAppText }) {
             const at = earned.get(a.id)
             const secret = a.hidden && !at
             return (
-              <li key={a.id} className={cn('flex gap-3 rounded-(--radius-md) border-(length:--stroke-thin) border-outline p-3', at ? 'bg-card shadow-(--shadow-press)' : 'border-dashed bg-surface-2 text-muted-foreground')}>
-                <span className={cn('grid size-12 shrink-0 place-items-center rounded-full border-(length:--stroke-thin) border-outline text-2xl', at ? 'bg-primary' : 'bg-card grayscale')} aria-hidden="true">
+              <li
+                key={a.id}
+                className={cn(
+                  'flex gap-3 rounded-(--radius-md) border-(length:--stroke-thin) border-outline p-3',
+                  at ? 'bg-card shadow-(--shadow-press)' : 'border-dashed bg-surface-2 text-muted-foreground',
+                )}
+              >
+                <span
+                  className={cn(
+                    'grid size-12 shrink-0 place-items-center rounded-full border-(length:--stroke-thin) border-outline text-2xl',
+                    at ? 'bg-primary' : 'bg-card grayscale',
+                  )}
+                  aria-hidden="true"
+                >
                   {secret ? '?' : a.icon}
                 </span>
                 <span className="grid content-start gap-0.5">
@@ -286,7 +245,9 @@ export function ProfileView({ lang, app }: { lang: Lang; app: LearnAppText }) {
             onSubmit={(e) => {
               e.preventDefault()
               const data = new FormData(e.currentTarget)
-              const nickname = String(data.get('nickname') ?? '').trim().slice(0, 24)
+              const nickname = String(data.get('nickname') ?? '')
+                .trim()
+                .slice(0, 24)
               const zone = String(data.get('timezone') ?? profile.timezone)
               save({ nickname: nickname || profile.nickname, timezone: zones.includes(zone) ? zone : profile.timezone })
             }}
@@ -326,7 +287,12 @@ export function ProfileView({ lang, app }: { lang: Lang; app: LearnAppText }) {
             </div>
           </fieldset>
           <label className="flex cursor-pointer items-center gap-3 font-bold">
-            <input type="checkbox" className="size-5 accent-(--success)" checked={profile.skipWeekends} onChange={(e) => save({ skipWeekends: e.target.checked })} />
+            <input
+              type="checkbox"
+              className="size-5 accent-(--success)"
+              checked={profile.skipWeekends}
+              onChange={(e) => save({ skipWeekends: e.target.checked })}
+            />
             {t.skipWeekends}
           </label>
 
@@ -338,7 +304,12 @@ export function ProfileView({ lang, app }: { lang: Lang; app: LearnAppText }) {
             <p className="m-0 text-sm text-muted-foreground">{t.remindersText}</p>
             {under16 && <p className="m-0 text-sm text-muted-foreground">{t.remindersOffKids}</p>}
             <label className="flex cursor-pointer items-center gap-3 font-bold">
-              <input type="checkbox" className="size-5 accent-(--success)" checked={profile.reminders.enabled} onChange={(e) => save({ reminders: { ...profile.reminders, enabled: e.target.checked } })} />
+              <input
+                type="checkbox"
+                className="size-5 accent-(--success)"
+                checked={profile.reminders.enabled}
+                onChange={(e) => save({ reminders: { ...profile.reminders, enabled: e.target.checked } })}
+              />
               {t.remindersEnable}
             </label>
             {profile.reminders.enabled && (
@@ -356,7 +327,18 @@ export function ProfileView({ lang, app }: { lang: Lang; app: LearnAppText }) {
                 <button
                   type="button"
                   className={buttonVariants({ size: 'sm' })}
-                  onClick={() => download('roboeasy-reminder.ics', reminderIcs({ time: profile.reminders.time, timeZone: profile.timezone, title: t.reminderTitle, url: `${window.location.origin}/${lang}/path` }), 'text/calendar')}
+                  onClick={() =>
+                    download(
+                      'roboeasy-reminder.ics',
+                      reminderIcs({
+                        time: profile.reminders.time,
+                        timeZone: profile.timezone,
+                        title: t.reminderTitle,
+                        url: `${window.location.origin}/${lang}/path`,
+                      }),
+                      'text/calendar',
+                    )
+                  }
                 >
                   <Download aria-hidden="true" />
                   {t.remindersDownload}
@@ -384,7 +366,15 @@ export function ProfileView({ lang, app }: { lang: Lang; app: LearnAppText }) {
             <Upload aria-hidden="true" />
             {t.import}
           </button>
-          <input ref={fileInput} type="file" accept="application/json,.json" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={(e) => e.target.files?.[0] && void importData(e.target.files[0])} />
+          <input
+            ref={fileInput}
+            type="file"
+            accept="application/json,.json"
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden="true"
+            onChange={(e) => e.target.files?.[0] && void importData(e.target.files[0])}
+          />
           <button type="button" className={buttonVariants({ size: 'sm', variant: 'danger' })} onClick={deleteAll}>
             <Trash2 aria-hidden="true" />
             {t.delete}

@@ -2773,3 +2773,44 @@
   }
 }
 }
+
+/* Robot buddy (components/learn/buddy.tsx) */
+@keyframes buddy-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+@keyframes buddy-hover {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+@keyframes buddy-spin {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(0.15);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .buddy-bob {
+    animation: buddy-bob 2.6s ease-in-out infinite;
+  }
+  .buddy-hover {
+    animation: buddy-hover 2.2s ease-in-out infinite;
+  }
+  .buddy-hover .buddy-spin,
+  .buddy-bob .buddy-spin {
+    animation: buddy-spin 0.35s linear infinite;
+  }
+}

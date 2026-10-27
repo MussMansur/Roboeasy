@@ -55,7 +55,6 @@ export default async function LessonPage({ params }: Params) {
         next={next}
         mapHref={`/${lang}/learn/${track}`}
         lockedT={app.locked}
-        classesT={app.classes}
       />
       <AchievementWatcher lang={lang} app={app} />
       <CloudSync />

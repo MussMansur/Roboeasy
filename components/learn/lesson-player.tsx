@@ -8,7 +8,6 @@ import { RichText } from '@/components/learn/rich-text'
 import { CodeStep } from '@/components/learn/steps/code-step'
 import { PredictStep } from '@/components/learn/steps/predict-step'
 import { QuizStep } from '@/components/learn/steps/quiz-step'
-import { RobotPhoto } from '@/components/learn/robot-photo'
 import { BuildStep, RealRobotStep, type StepDone, TheoryStep } from '@/components/learn/steps/simple-steps'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
@@ -21,7 +20,8 @@ import { COURSE } from '@/lib/learn/course'
 import { lessonStates, trackLessons } from '@/lib/learn/progress'
 import { completedLessons, doneSteps } from '@/lib/learn/state'
 import { record, useHydrated, useLearn } from '@/lib/learn/store'
-import { totalXp } from '@/lib/learn/xp'
+import { ledger } from '@/lib/learn/economy'
+import { CoinIcon } from '@/components/learn/coin'
 import { cn } from '@/lib/utils'
 
 type Lang = 'ru' | 'kk' | 'en'
@@ -37,10 +37,9 @@ interface PlayerProps {
   next: { href: string; title: string } | null
   mapHref: string
   lockedT: LearnAppText['locked']
-  classesT: LearnAppText['classes']
 }
 
-export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, isProject, next, mapHref, lockedT, classesT }: PlayerProps) {
+export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, isProject, next, mapHref, lockedT }: PlayerProps) {
   const learn = useLearn()
   const hydrated = useHydrated()
   const [forceOpen, setForceOpen] = useState(false)
@@ -48,9 +47,9 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
   const lessonDone = learn.events.some((e) => e.kind === 'lesson_done' && e.lesson === lesson.id)
   const [index, setIndex] = useState(-1)
   const [finished, setFinished] = useState(false)
-  const [xpGained, setXpGained] = useState(0)
+  const [gained, setGained] = useState({ xp: 0, coins: 0 })
   const started = useRef<number | null>(null)
-  const xpBefore = useRef(0)
+  const before = useRef({ xp: 0, coins: 0 })
   const cosmetics = learn.profile?.cosmetics ?? { color: 'sun', sticker: 'none', wheels: 'classic', sound: 'beep' }
 
   const step = index >= 0 ? lesson.steps[index] : null
@@ -59,7 +58,8 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
 
   const begin = () => {
     started.current = Date.now()
-    xpBefore.current = totalXp(learn)
+    const l = ledger(learn)
+    before.current = { xp: l.xp, coins: l.coins }
     record([{ kind: 'lesson_start', lesson: lesson.id }])
     const firstOpen = lesson.steps.findIndex((s) => !done.has(s.id))
     setIndex(firstOpen === -1 || lessonDone ? 0 : firstOpen)
@@ -104,9 +104,11 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
     setFinished(true)
   }
 
-  // XP gained in this session (computed after the events land).
+  // XP and coins gained in this session (computed after the events land; upgrades and quests included).
   useEffect(() => {
-    if (finished) setXpGained(Math.max(0, totalXp(learn) - xpBefore.current))
+    if (!finished) return
+    const l = ledger(learn)
+    setGained({ xp: Math.max(0, l.xp - before.current.xp), coins: Math.max(0, l.coins - before.current.coins) })
   }, [finished, learn])
 
   useEffect(() => {
@@ -183,9 +185,21 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
           </span>
           <h1 className="m-0 text-(length:--text-3xl)">{t.lesson.done}</h1>
           <RichText text={lesson.summary[lang]} className="text-lg [&>p]:my-0" />
-          {xpGained > 0 && (
-            <span className="animate-in delay-150 duration-300 fill-mode-backwards zoom-in-50 motion-reduce:animate-none rounded-full border-(length:--stroke-thin) border-outline bg-(--ok-bg) px-4 py-1.5 font-display text-2xl font-extrabold text-success">
-              {fill(t.lesson.xp, { xp: xpGained })}
+          {(gained.xp > 0 || gained.coins > 0) && (
+            <span className="flex flex-wrap justify-center gap-2">
+              {gained.xp > 0 && (
+                <span className="animate-in delay-150 duration-300 fill-mode-backwards zoom-in-50 motion-reduce:animate-none rounded-full border-(length:--stroke-thin) border-outline bg-(--ok-bg) px-4 py-1.5 font-display text-2xl font-extrabold text-success">
+                  {fill(t.lesson.xp, { xp: gained.xp })}
+                </span>
+              )}
+              {gained.coins > 0 && (
+                <span
+                  className="animate-in delay-300 duration-300 fill-mode-backwards zoom-in-50 motion-reduce:animate-none inline-flex items-center gap-1.5 rounded-full border-(length:--stroke-thin) border-outline bg-[#fff3c4] px-4 py-1.5 font-display text-2xl font-extrabold text-[#8a5a00]"
+                  data-testid="coins-gained"
+                >
+                  <CoinIcon className="size-6" />+{gained.coins}
+                </span>
+              )}
             </span>
           )}
           <div className="flex flex-wrap justify-center gap-2">
@@ -261,17 +275,7 @@ export function LessonPlayer({ lesson, lang, t, blocksT, trackTitle, unitTitle, 
               onMistake={onMistake}
             />
           )}
-          {step!.type === 'real_robot' && (
-            <RealRobotStep
-              key={step!.id}
-              step={step!}
-              lang={lang}
-              t={t}
-              done={stepDone}
-              onDone={onDone}
-              extra={<RobotPhoto lessonId={lesson.id} t={classesT} />}
-            />
-          )}
+          {step!.type === 'real_robot' && <RealRobotStep key={step!.id} step={step!} lang={lang} t={t} done={stepDone} onDone={onDone} />}
           {(step!.type === 'code' || step!.type === 'debug' || step!.type === 'project') && (
             <CodeStep
               key={step!.id}

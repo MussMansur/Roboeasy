@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { House, Menu, UserRound, X } from 'lucide-react'
 
+import { CoinChip } from '@/components/learn/coin-chip'
 import { LogoMark } from '@/components/logo'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { buttonVariants } from '@/components/ui/button'
@@ -15,21 +16,30 @@ import type { Dictionary } from '@/lib/i18n/ru'
 interface SiteHeaderProps {
   lang: Locale
   t: Dictionary['nav']
-  /** Names of the app sections (Мой путь, Обучение, …). */
+  /** Names of the app sections (Мой путь, Уроки, …). */
   sections: LearnText['nav']
+  /** Label of the coin balance. */
+  coinsLabel?: string
   /** Landing shows section links; app pages show the app sections. */
   variant?: 'landing' | 'app'
 }
 
-/** The app sections, in menu order (docs/product/information-architecture.md). */
-export const APP_SECTIONS = ['path', 'learn', 'sandbox', 'compete', 'profile'] as const
+/** The phone tab bar sections, in order (docs/product/information-architecture.md). */
+export const APP_SECTIONS = ['path', 'learn', 'play', 'garage', 'profile'] as const
 export type AppSection = (typeof APP_SECTIONS)[number]
+/** All header sections; the last ones are in the header and the menu only. */
+const HEADER_SECTIONS = ['path', 'learn', 'play', 'garage', 'library', 'sandbox', 'compete'] as const
+type HeaderSection = (typeof HEADER_SECTIONS)[number]
 
 export function currentSection(rest: string): AppSection | null {
   return (
     APP_SECTIONS.find((s) => rest === `/${s}` || rest.startsWith(`/${s}/`)) ??
-    (rest.startsWith('/review') ? 'path' : rest.startsWith('/cert') ? 'profile' : null)
+    (rest.startsWith('/review') ? 'play' : rest.startsWith('/cert') ? 'profile' : null)
   )
+}
+
+function currentHeaderSection(rest: string): HeaderSection | null {
+  return HEADER_SECTIONS.find((s) => rest === `/${s}` || rest.startsWith(`/${s}/`)) ?? (rest.startsWith('/review') ? 'play' : null)
 }
 
 function rememberLocale(locale: Locale) {
@@ -40,7 +50,7 @@ function rememberLocale(locale: Locale) {
  * Navigation links do not prefetch: they are on every page, and prefetching
  * every section's code on each load costs more than it saves on phones.
  */
-export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: SiteHeaderProps) {
+export function SiteHeader({ lang, t, sections: names, coinsLabel = '', variant = 'landing' }: SiteHeaderProps) {
   const pathname = usePathname() ?? `/${lang}`
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
@@ -66,16 +76,13 @@ export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: Si
       ? [
           { href: '#how', label: t.how },
           { href: '#examples', label: t.examples },
-          { href: '#teachers', label: t.teachers },
           { href: '#faq', label: t.faq },
         ]
       : []
-  // App sections, marked current by path. Profile sits with the actions; Class is in the header only (not the phone tab bar).
+  // App sections, marked current by path. Profile sits with the actions.
   const current = currentSection(rest)
-  const pages = [
-    ...APP_SECTIONS.filter((p) => p !== 'profile').map((p) => ({ href: `${home}/${p}`, label: names[p], current: current === p })),
-    { href: `${home}/class`, label: names.class, current: rest === '/class' || rest.startsWith('/class/') },
-  ]
+  const currentHeader = currentHeaderSection(rest)
+  const pages = HEADER_SECTIONS.map((p) => ({ href: `${home}/${p}`, label: names[p], current: currentHeader === p, extra: p === 'sandbox' || p === 'compete' }))
 
   return (
     <>
@@ -99,7 +106,14 @@ export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: Si
             ))}
             {variant === 'app' &&
               pages.map((p) => (
-                <Link prefetch={false} key={p.href} href={p.href} aria-current={p.current ? 'page' : undefined}>
+                // Sandbox and competitions fit the header only on wide screens; the menu always has them.
+                <Link
+                  prefetch={false}
+                  key={p.href}
+                  href={p.href}
+                  aria-current={p.current ? 'page' : undefined}
+                  className={p.extra ? 'max-[1439px]:hidden' : undefined}
+                >
                   {p.label}
                 </Link>
               ))}
@@ -156,19 +170,22 @@ export function SiteHeader({ lang, t, sections: names, variant = 'landing' }: Si
                 </Link>
               </>
             ) : (
-              <Link
-                prefetch={false}
-                className={buttonVariants({
-                  variant: current === 'profile' ? 'secondary' : 'ghost',
-                  size: 'sm',
-                  className: 'header-wide',
-                })}
-                href={`${home}/profile`}
-                aria-current={current === 'profile' ? 'page' : undefined}
-              >
-                <UserRound aria-hidden="true" />
-                {names.profile}
-              </Link>
+              <>
+                <CoinChip href={`${home}/garage`} label={coinsLabel} />
+                <Link
+                  prefetch={false}
+                  className={buttonVariants({
+                    variant: current === 'profile' ? 'secondary' : 'ghost',
+                    size: 'sm',
+                    className: 'header-wide',
+                  })}
+                  href={`${home}/profile`}
+                  aria-current={current === 'profile' ? 'page' : undefined}
+                >
+                  <UserRound aria-hidden="true" />
+                  {names.profile}
+                </Link>
+              </>
             )}
             <button
               type="button"

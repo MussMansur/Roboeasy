@@ -77,7 +77,7 @@ export function AccountCard({ lang, app }: { lang: Lang; app: LearnAppText }) {
               onClick={async () => {
                 if (!mod || !window.confirm(t.deleteConfirm)) return
                 if (await mod.deleteAccount()) toast.success(t.deleted)
-                else toast.error(app.classes.error)
+                else toast.error(app.account.failed)
               }}
             >
               <Trash2 aria-hidden="true" />

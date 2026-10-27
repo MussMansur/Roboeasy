@@ -1,13 +1,13 @@
 'use client'
 
 /**
- * Accounts, sync and classes (Supabase). Optional: without
- * NEXT_PUBLIC_SUPABASE_URL the app stays local-only. Loaded on demand
- * (dynamic import) so pages without an account do not carry the client.
+ * Accounts and sync (Supabase). Optional: without NEXT_PUBLIC_SUPABASE_URL
+ * the app stays local-only. Loaded on demand (dynamic import) so pages
+ * without an account do not carry the client.
  *
  * Sync: the server keeps the same append-only event log as the browser,
  * keyed by (user, event id), so pushing the same events twice changes
- * nothing and XP stays idempotent (record_events in the migration).
+ * nothing (record_events in the migration).
  */
 
 import { type SupabaseClient, createClient } from '@supabase/supabase-js'
@@ -25,6 +25,12 @@ export function cloud(): SupabaseClient | null {
   if (!cloudConfigured || typeof window === 'undefined') return null
   client ??= createClient(URL_!, KEY!, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'pkce' } })
   return client
+}
+
+function need(): SupabaseClient {
+  const sb = cloud()
+  if (!sb) throw new Error('not configured')
+  return sb
 }
 
 /** True when a session is stored in this browser (cheap check before loading the client). */
@@ -60,14 +66,8 @@ export async function signOut() {
 export async function deleteAccount(): Promise<boolean> {
   const sb = cloud()
   if (!sb) return false
-  const user = await currentUser()
-  if (!user) return false
-  // Photos first (Storage API), then the account and every row with it.
-  const classes = await myClasses().catch(() => [] as ClassRow[])
-  for (const c of classes) {
-    const { data } = await sb.storage.from('robot-photos').list(`${c.id}/${user.id}`)
-    if (data?.length) await sb.storage.from('robot-photos').remove(data.map((f) => `${c.id}/${user.id}/${f.name}`))
-  }
+  if (!(await currentUser())) return false
+  // The account and every row with it (on delete cascade).
   const { error } = await sb.rpc('delete_my_account')
   if (error) return false
   stopSync()
@@ -82,7 +82,14 @@ interface ProfileRow {
   nickname: string
   age_range: Profile['ageRange']
   timezone: string
-  settings: { goal?: Profile['goal']; skipWeekends?: boolean; reminders?: Profile['reminders']; cosmetics?: Profile['cosmetics']; anonId?: string }
+  settings: {
+    goal?: Profile['goal']
+    skipWeekends?: boolean
+    reminders?: Profile['reminders']
+    cosmetics?: Profile['cosmetics']
+    buddy?: Profile['buddy']
+    anonId?: string
+  }
   parent_consent: boolean
 }
 
@@ -92,7 +99,7 @@ function toRow(id: string, p: Profile): ProfileRow {
     nickname: p.nickname,
     age_range: p.ageRange,
     timezone: p.timezone,
-    settings: { goal: p.goal, skipWeekends: p.skipWeekends, reminders: p.reminders, cosmetics: p.cosmetics, anonId: p.anonId },
+    settings: { goal: p.goal, skipWeekends: p.skipWeekends, reminders: p.reminders, cosmetics: p.cosmetics, buddy: p.buddy, anonId: p.anonId },
     parent_consent: p.parentConsent,
   }
 }
@@ -106,6 +113,7 @@ function fromRow(row: ProfileRow): Profile | null {
     skipWeekends: row.settings.skipWeekends,
     reminders: row.settings.reminders,
     cosmetics: row.settings.cosmetics,
+    buddy: row.settings.buddy,
     parentConsent: row.parent_consent,
     createdAt: Date.now(),
     anonId: row.settings.anonId ?? `anon_${row.id.replace(/-/g, '').slice(0, 16)}`,
@@ -130,7 +138,7 @@ async function push(sb: SupabaseClient, events: LearnEvent[]) {
 }
 
 /** Two-way sync, then live pushes of new events and profile changes. Safe to call more than once. */
-export async function startSync(): Promise<{ ok: boolean; xp?: number }> {
+export async function startSync(): Promise<{ ok: boolean }> {
   const sb = cloud()
   if (!sb) return { ok: false }
   const user = await currentUser()
@@ -203,172 +211,12 @@ export async function startSync(): Promise<{ ok: boolean; xp?: number }> {
     offProfile()
     document.removeEventListener('visibilitychange', flushOnHide)
   }
-  const { data: xp } = await sb.rpc('my_xp')
-  return { ok: true, xp: typeof xp === 'number' ? xp : undefined }
+  return { ok: true }
 }
 
 export function stopSync() {
   stop?.()
   stop = null
-}
-
-// ── Classes ──────────────────────────────────────────────────────────────
-
-export interface ClassRow {
-  id: string
-  teacher_id: string
-  name: string
-  join_code: string
-  live_lesson: string | null
-  live_started_at: string | null
-  created_at: string
-}
-export interface AssignmentRow {
-  id: string
-  class_id: string
-  lesson_id: string
-  due_at: string | null
-}
-export interface OverviewRow {
-  user_id: string
-  nickname: string
-  lessons_done: number
-  xp: number
-  mistakes: number
-  last_active: string | null
-}
-export interface LeaderRow {
-  nickname: string
-  xp: number
-  is_me: boolean
-}
-
-function need(): SupabaseClient {
-  const sb = cloud()
-  if (!sb) throw new Error('not configured')
-  return sb
-}
-
-export async function myClasses(): Promise<ClassRow[]> {
-  const { data, error } = await need().from('classes').select('*').order('created_at')
-  if (error) throw error
-  return data ?? []
-}
-
-export async function createClass(name: string): Promise<ClassRow> {
-  const { data, error } = await need().rpc('create_class', { class_name: name })
-  if (error) throw error
-  return data as ClassRow
-}
-
-export async function joinClass(code: string): Promise<{ id: string; name: string } | null> {
-  const { data, error } = await need().rpc('join_class', { code })
-  if (error) return null
-  return (data as { id: string; name: string }[])[0] ?? null
-}
-
-export async function leaveClass(classId: string, userId: string) {
-  await need().from('class_members').delete().eq('class_id', classId).eq('user_id', userId)
-}
-
-export async function assignments(classIds: string[]): Promise<AssignmentRow[]> {
-  if (!classIds.length) return []
-  const { data, error } = await need()
-    .from('assignments')
-    .select('id, class_id, lesson_id, due_at')
-    .in('class_id', classIds)
-    .order('due_at', { nullsFirst: false })
-  if (error) throw error
-  return data ?? []
-}
-
-export async function addAssignment(classId: string, lessonId: string, dueAt: string | null) {
-  const { error } = await need().from('assignments').upsert({ class_id: classId, lesson_id: lessonId, due_at: dueAt }, { onConflict: 'class_id,lesson_id' })
-  if (error) throw error
-}
-
-export async function removeAssignment(id: string) {
-  await need().from('assignments').delete().eq('id', id)
-}
-
-export async function setLiveLesson(classId: string, lessonId: string | null) {
-  const { error } = await need()
-    .from('classes')
-    .update({ live_lesson: lessonId, live_started_at: lessonId ? new Date().toISOString() : null })
-    .eq('id', classId)
-  if (error) throw error
-}
-
-export async function classOverview(classId: string): Promise<OverviewRow[]> {
-  const { data, error } = await need().rpc('class_overview', { cls: classId })
-  if (error) throw error
-  return data ?? []
-}
-
-export async function classLeaderboard(classId: string): Promise<LeaderRow[]> {
-  const { data, error } = await need().rpc('class_leaderboard', { cls: classId })
-  if (error) throw error
-  return data ?? []
-}
-
-/** Events of one learner (teacher view; RLS allows only teachers of the learner's class). */
-export async function learnerEvents(userId: string): Promise<LearnEvent[]> {
-  const { data, error } = await need().from('learn_events').select('id, kind, at, data').eq('user_id', userId).order('at').limit(5000)
-  if (error) throw error
-  return (data ?? []).flatMap((r) => fromServer(r) ?? [])
-}
-
-export async function classEvents(userIds: string[]): Promise<Map<string, LearnEvent[]>> {
-  const out = new Map<string, LearnEvent[]>(userIds.map((id) => [id, []]))
-  if (!userIds.length) return out
-  const { data, error } = await need()
-    .from('learn_events')
-    .select('user_id, id, kind, at, data')
-    .in('user_id', userIds)
-    .in('kind', ['lesson_start', 'lesson_done', 'step_done', 'mistake'])
-    .order('at')
-    .limit(20000)
-  if (error) throw error
-  for (const r of data ?? []) {
-    const e = fromServer(r)
-    if (e) out.get(r.user_id)?.push(e)
-  }
-  return out
-}
-
-// ── Real robot photos ────────────────────────────────────────────────────
-
-/** Re-encodes to JPEG (drops EXIF, including location) and shrinks to at most 1280 px. */
-export async function cleanPhoto(file: File): Promise<Blob> {
-  const bitmap = await createImageBitmap(file)
-  const scale = Math.min(1, 1280 / Math.max(bitmap.width, bitmap.height))
-  const canvas = document.createElement('canvas')
-  canvas.width = Math.round(bitmap.width * scale)
-  canvas.height = Math.round(bitmap.height * scale)
-  canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
-  bitmap.close()
-  return new Promise((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('encode failed'))), 'image/jpeg', 0.85))
-}
-
-export async function uploadRobotPhoto(classId: string, lessonId: string, file: File): Promise<boolean> {
-  const sb = need()
-  const user = await currentUser()
-  if (!user) return false
-  const blob = await cleanPhoto(file)
-  const { error } = await sb.storage.from('robot-photos').upload(`${classId}/${user.id}/${lessonId}.jpg`, blob, { contentType: 'image/jpeg', upsert: true })
-  return !error
-}
-
-export async function robotPhotos(classId: string, userId: string): Promise<{ lesson: string; url: string }[]> {
-  const sb = need()
-  const { data } = await sb.storage.from('robot-photos').list(`${classId}/${userId}`)
-  const files = (data ?? []).filter((f) => f.name.endsWith('.jpg'))
-  if (!files.length) return []
-  const { data: signed } = await sb.storage.from('robot-photos').createSignedUrls(
-    files.map((f) => `${classId}/${userId}/${f.name}`),
-    600,
-  )
-  return (signed ?? []).flatMap((s, i) => (s.signedUrl ? [{ lesson: files[i].name.replace(/\.jpg$/, ''), url: s.signedUrl }] : []))
 }
 
 // ── Admin analytics ──────────────────────────────────────────────────────

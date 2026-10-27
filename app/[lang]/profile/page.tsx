@@ -5,6 +5,7 @@ import { AppShell } from '@/components/app-shell'
 import { ProfileView } from '@/components/learn/profile-view'
 import { isLocale } from '@/lib/i18n'
 import { getLearnAppText } from '@/lib/i18n/learn-app'
+import { getPlayText } from '@/lib/i18n/play'
 
 type Params = { params: Promise<{ lang: string }> }
 
@@ -19,7 +20,7 @@ export default async function ProfilePage({ params }: Params) {
   if (!isLocale(lang)) notFound()
   return (
     <AppShell lang={lang}>
-      <ProfileView lang={lang} app={getLearnAppText(lang)} />
+      <ProfileView lang={lang} app={getLearnAppText(lang)} play={getPlayText(lang)} />
     </AppShell>
   )
 }

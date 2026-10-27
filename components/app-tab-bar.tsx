@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Blocks, GraduationCap, Map as MapIcon, Trophy, UserRound } from 'lucide-react'
+import { Gamepad2, GraduationCap, Map as MapIcon, UserRound, Wrench } from 'lucide-react'
 
 import { APP_SECTIONS, type AppSection, currentSection } from '@/components/site-header'
 import type { Locale } from '@/lib/i18n/config'
@@ -12,8 +12,8 @@ import { cn } from '@/lib/utils'
 const ICONS: Record<AppSection, typeof MapIcon> = {
   path: MapIcon,
   learn: GraduationCap,
-  sandbox: Blocks,
-  compete: Trophy,
+  play: Gamepad2,
+  garage: Wrench,
   profile: UserRound,
 }
 

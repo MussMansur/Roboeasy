@@ -115,21 +115,18 @@ export function BuildStep({
   )
 }
 
-/** `extra`: optional content under the buttons (the robot photo upload for class members). */
 export function RealRobotStep({
   step,
   lang,
   t,
   done,
   onDone,
-  extra,
 }: {
   step: Extract<LessonStep, { type: 'real_robot' }>
   lang: Lang
   t: LearnText
   done: boolean
   onDone: (d: StepDone) => void
-  extra?: ReactNode
 }) {
   const [checked, setChecked] = useState<boolean[]>(() => step.checklist.map(() => done))
   return (
@@ -183,7 +180,6 @@ export function RealRobotStep({
             {t.lesson.skip}
           </button>
         </div>
-        {extra}
       </div>
     </div>
   )

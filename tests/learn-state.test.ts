@@ -2,10 +2,18 @@ import { describe, expect, it } from 'vitest'
 
 import { sanitizeHint } from '@/lib/learn/mentor'
 import { EMPTY_STATE, type NewEvent, appendEvents, completedLessons, parseState } from '@/lib/learn/state'
-import { XP_RULES, levelFor, totalXp } from '@/lib/learn/xp'
+import { totalXp } from '@/lib/learn/economy'
+import { XP_RULES, levelFor } from '@/lib/learn/xp'
 
 const lesson = (id: string, project = false): NewEvent => ({ kind: 'lesson_done', lesson: id, track: 'start', unit: 'u1', project, seconds: 120 })
-const step = (id: string, firstTry: boolean, hints = 0, stepType = 'code'): NewEvent => ({ kind: 'step_done', lesson: 'start-01', step: id, stepType, firstTry, hints })
+const step = (id: string, firstTry: boolean, hints = 0, stepType = 'code'): NewEvent => ({
+  kind: 'step_done',
+  lesson: 'start-01',
+  step: id,
+  stepType,
+  firstTry,
+  hints,
+})
 
 describe('event log', () => {
   it('ignores repeated "earn once" events', () => {
@@ -61,8 +69,8 @@ describe('XP', () => {
 
   it('maps XP to levels', () => {
     expect(levelFor(0)).toMatchObject({ index: 0, from: 0, to: 100, progress: 0 })
-    expect(levelFor(150)).toMatchObject({ index: 1, progress: 0.25 })
-    expect(levelFor(5000)).toMatchObject({ index: 4, to: null, progress: 1 })
+    expect(levelFor(175)).toMatchObject({ index: 1, progress: 0.5 })
+    expect(levelFor(5000)).toMatchObject({ index: 9, to: null, progress: 1 })
   })
 })
 

@@ -1,5 +1,5 @@
 /**
- * Copy of the home page ("Learn robotics from scratch"), phase 13; live at
+ * Copy of the home page ("Learn robotics from scratch"); live at
  * /[lang] since the first tracks shipped (the AI generator's page moved to
  * /[lang]/ai). Kazakh needs a review by a native speaker before launch.
  */
@@ -9,31 +9,89 @@ import type { Locale } from './config'
 export type TrackKey = 'start' | 'build' | 'blocks' | 'sensors' | 'navigation' | 'python' | 'mechanisms' | 'fll'
 
 export interface LearnLandingCopy {
-  previewNote: string
-  hero: { badge: string; title: string; accent: string; sub: string; cta: string; ctaTest: string; chips: string[]; path: string[]; station: string }
+  hero: {
+    badge: string
+    title: string
+    accent: string
+    sub: string
+    cta: string
+    ctaTest: string
+    chips: string[]
+    path: string[]
+    station: string
+    stats: { streak: string; coins: string; level: string; quest: string }
+  }
+  buddy: {
+    eyebrow: string
+    title: string
+    text: string
+    points: { title: string; text: string }[]
+    shop: { title: string; items: { name: string; effect: string; price: number }[] }
+  }
+  games: { eyebrow: string; title: string; lead: string; items: { title: string; text: string }[]; quests: string }
   how: { eyebrow: string; title: string; steps: { title: string; text: string }[] }
-  tracks: { eyebrow: string; title: string; lead: string; noKit: string; partKit: string; items: Record<TrackKey, { title: string; text: string; time: string }> }
+  tracks: {
+    eyebrow: string
+    title: string
+    lead: string
+    noKit: string
+    partKit: string
+    items: Record<TrackKey, { title: string; text: string; time: string }>
+  }
   virtual: { eyebrow: string; title: string; text: string; points: string[] }
   motivation: { eyebrow: string; title: string; items: { title: string; text: string }[]; note: string }
   mentor: { eyebrow: string; title: string; text: string; levels: string[]; question: string; answer: string }
   compete: { eyebrow: string; title: string; text: string; cta: string }
-  adults: { eyebrow: string; title: string; teachers: { title: string; items: string[] }; parents: { title: string; items: string[] } }
+  self: { eyebrow: string; title: string; items: { title: string; text: string }[]; parents: { title: string; items: string[] } }
   faq: { title: string; items: { q: string; a: string }[] }
   final: { title: string; text: string; cta: string }
 }
 
 const ru: LearnLandingCopy = {
-  previewNote: 'Превью нового лендинга. Уроки ещё в работе — на сайте пока прежняя главная.',
   hero: {
     badge: 'Для LEGO® Education SPIKE™ Prime',
     title: 'Научись робототехнике',
     accent: 'с нуля',
-    sub: 'Собирай роботов и программируй их — сначала блоками, потом на Python. Короткие уроки, виртуальный робот и ИИ-наставник, который подсказывает, а не решает за тебя.',
+    sub: 'Учись сам, в своём темпе: короткие уроки, виртуальный робот, игры и задания дня. Выбери робота-напарника и прокачивай его за XP и монеты.',
     cta: 'Начать бесплатно',
     ctaTest: 'Я уже умею — пройти тест',
     chips: ['Можно без набора', '5–10 минут в день', 'Қазақша · Русский · English'],
     path: ['Что такое робот', 'Хаб — мозг робота', 'Моторы', 'Датчики', 'Первая поездка'],
     station: 'Старт',
+    stats: { streak: '5 дней подряд', coins: '+20 монет', level: 'Уровень 3', quest: 'Задание дня выполнено' },
+  },
+  buddy: {
+    eyebrow: 'Твой робот',
+    title: 'Выбери напарника и прокачай его',
+    text: 'При входе выбираешь робота — ровер, танк, болид или паука — и даёшь ему имя. Он растёт вместе с тобой: за уроки, серии и игры ты получаешь XP и монеты.',
+    points: [
+      {
+        title: 'Улучшения с бонусами',
+        text: 'Мотор даёт больше монет, процессор — больше XP, аккумулятор — лишнюю заморозку серии, сенсоры — подсказки в играх.',
+      },
+      { title: 'Аксессуары и стиль', text: 'Кепка, корона, наушники, визор, краска и наклейки. Ещё два робота — андроид и дрон — открываются в гараже.' },
+      { title: 'Монеты только за учёбу', text: 'Ничего не продаётся за деньги: всё зарабатывается уроками, заданиями и практикой.' },
+    ],
+    shop: {
+      title: 'Гараж',
+      items: [
+        { name: 'Мотор II', effect: '+20% монет', price: 180 },
+        { name: 'Процессор I', effect: '+10% XP', price: 100 },
+        { name: 'Корона', effect: 'стиль', price: 350 },
+      ],
+    },
+  },
+  games: {
+    eyebrow: 'Практика',
+    title: 'Игры, которые учат',
+    lead: 'Закрепляй темы в играх — каждая приносит XP и монеты, а лучшие результаты сохраняются.',
+    items: [
+      { title: 'Лабиринт робота', text: 'Команды и циклы: собери кристаллы и доедь до финиша.' },
+      { title: 'Собери программу', text: 'Расставь строки программы в правильном порядке.' },
+      { title: 'Пары терминов', text: 'Найди пары «термин — значение».' },
+      { title: 'Блиц', text: 'Минута вопросов: термины, уроки и задачки.' },
+    ],
+    quests: 'Каждый день — три новых задания и сундук за все три.',
   },
   how: {
     eyebrow: 'Как это устроено',
@@ -71,8 +129,8 @@ const ru: LearnLandingCopy = {
     eyebrow: 'Мотивация',
     title: 'Каждый день немного — и результат заметен',
     items: [
-      { title: 'Стрики', text: 'Дни подряд с выполненной целью. Заморозки спасают, если пропустил день.' },
-      { title: 'Опыт и уровни', text: 'От «Новичка» до «Капитана команды» — за уроки, проекты и повторение.' },
+      { title: 'Серии', text: 'Дни подряд с выполненной целью. Заморозки спасают, если пропустил день.' },
+      { title: 'Опыт и уровни', text: '10 уровней от «Новичка» до «Мастера роботов» — за уроки, игры и задания.' },
       { title: 'Достижения', text: 'Бейджи за первую программу, первый датчик, собранного робота и секретные решения.' },
     ],
     note: 'Без давления: если сбился — просто начнёшь заново, рекорд сохранится.',
@@ -91,18 +149,26 @@ const ru: LearnLandingCopy = {
     text: 'В последнем треке — стратегия заездов, насадки, работа в команде и защита робота. FLL-тренер поможет спланировать сезон.',
     cta: 'Открыть FLL-тренер',
   },
-  adults: {
-    eyebrow: 'Учителям и родителям',
-    title: 'Удобно в классе, безопасно дома',
-    teachers: { title: 'Учителям', items: ['Классы с входом по коду', 'Назначение уроков со сроками', 'Видно, где ученики застревают'] },
-    parents: { title: 'Родителям', items: ['Минимум данных: только никнейм', 'Нет чата между пользователями', 'ИИ отвечает только про учёбу'] },
+  self: {
+    eyebrow: 'Самостоятельно',
+    title: 'Учись сам — без класса и расписания',
+    items: [
+      { title: 'Свой темп', text: 'Занимайся когда удобно: 5–10 минут в день достаточно. Тест на входе подскажет, с чего начать.' },
+      { title: 'Подсказки вместо учителя', text: 'Задания проверяются сами, а ИИ-наставник подсказывает по шагам.' },
+      { title: 'Справочник и источники', text: 'Словарь терминов простыми словами и подборка полезных сайтов для учёбы дальше.' },
+    ],
+    parents: {
+      title: 'Родителям',
+      items: ['Минимум данных: только никнейм', 'Нет чата между пользователями', 'ИИ отвечает только про учёбу', 'Никаких покупок: монеты только за учёбу'],
+    },
   },
   faq: {
     title: 'Частые вопросы',
     items: [
       { q: 'Нужен ли набор LEGO?', a: 'Нет. Основной путь проходится на виртуальном роботе. Набор SPIKE Prime нужен для бонусных заданий и сборки.' },
       { q: 'С какого возраста?', a: 'Уроки рассчитаны на 9–16 лет, но подходят и взрослым новичкам.' },
-      { q: 'Это бесплатно?', a: 'Да, учиться можно бесплатно и без регистрации.' },
+      { q: 'Это бесплатно?', a: 'Да, учиться можно бесплатно и без регистрации. Монеты в игре не продаются — их зарабатывают учёбой.' },
+      { q: 'Нужен ли учитель?', a: 'Нет. Всё устроено для самостоятельной учёбы: задания проверяются сами, а наставник подсказывает.' },
       { q: 'Я уже программирую. Начинать с нуля?', a: 'Нет — пройди тест на входе, и мы подскажем, с какого урока начать.' },
       { q: 'Это официальный продукт LEGO?', a: 'Нет. RoboEasy — независимый проект и не связан с LEGO Group и FIRST.' },
     ],
@@ -111,17 +177,53 @@ const ru: LearnLandingCopy = {
 }
 
 const en: LearnLandingCopy = {
-  previewNote: 'Preview of the new landing page. Lessons are in progress; the site still shows the current home page.',
   hero: {
     badge: 'For LEGO® Education SPIKE™ Prime',
     title: 'Learn robotics',
     accent: 'from scratch',
-    sub: 'Build robots and program them, first with blocks and then in Python. Short lessons, a virtual robot and an AI mentor that gives hints instead of doing it for you.',
+    sub: 'Learn on your own, at your pace: short lessons, a virtual robot, games and daily quests. Pick a robot buddy and upgrade it with XP and coins.',
     cta: 'Start for free',
     ctaTest: 'I already know some — take the test',
     chips: ['No kit needed', '5–10 minutes a day', 'Қазақша · Русский · English'],
     path: ['What is a robot', 'The hub — the brain', 'Motors', 'Sensors', 'First drive'],
     station: 'Start',
+    stats: { streak: '5 days in a row', coins: '+20 coins', level: 'Level 3', quest: 'Daily quest done' },
+  },
+  buddy: {
+    eyebrow: 'Your robot',
+    title: 'Pick a buddy and upgrade it',
+    text: 'When you start, you pick a robot (rover, tank, racer or spider) and name it. It grows with you: lessons, streaks and games earn XP and coins.',
+    points: [
+      {
+        title: 'Upgrades with boosts',
+        text: 'The motor earns more coins, the processor more XP, the battery an extra streak freeze, sensors give game hints.',
+      },
+      {
+        title: 'Accessories and style',
+        text: 'Cap, crown, headphones, visor, paint and stickers. Two more robots, an android and a drone, open in the garage.',
+      },
+      { title: 'Coins only for learning', text: 'Nothing is sold for money: everything is earned with lessons, quests and practice.' },
+    ],
+    shop: {
+      title: 'Garage',
+      items: [
+        { name: 'Motor II', effect: '+20% coins', price: 180 },
+        { name: 'Processor I', effect: '+10% XP', price: 100 },
+        { name: 'Crown', effect: 'style', price: 350 },
+      ],
+    },
+  },
+  games: {
+    eyebrow: 'Practice',
+    title: 'Games that teach',
+    lead: 'Practise topics in games: each one earns XP and coins, and your best results are saved.',
+    items: [
+      { title: 'Robot maze', text: 'Commands and loops: collect gems and reach the finish.' },
+      { title: 'Build the program', text: 'Put the lines of a program in the right order.' },
+      { title: 'Term pairs', text: 'Match each term with its meaning.' },
+      { title: 'Blitz', text: 'A minute of questions: terms, lessons and puzzles.' },
+    ],
+    quests: 'Three new quests every day, and a chest for all three.',
   },
   how: {
     eyebrow: 'How it works',
@@ -160,7 +262,7 @@ const en: LearnLandingCopy = {
     title: 'A little every day adds up',
     items: [
       { title: 'Streaks', text: 'Days in a row with your goal done. Freezes save the streak if you miss a day.' },
-      { title: 'XP and levels', text: 'From “Beginner” to “Team captain” — for lessons, projects and review.' },
+      { title: 'XP and levels', text: '10 levels from “Beginner” to “Robot master”, for lessons, games and quests.' },
       { title: 'Achievements', text: 'Badges for your first program, first sensor, first robot built and secret solutions.' },
     ],
     note: 'No pressure: if you miss, you simply start again, and your record stays.',
@@ -179,18 +281,26 @@ const en: LearnLandingCopy = {
     text: 'The last track covers run strategy, attachments, teamwork and presenting your robot. The FLL coach helps plan the season.',
     cta: 'Open the FLL coach',
   },
-  adults: {
-    eyebrow: 'For teachers and parents',
-    title: 'Easy in class, safe at home',
-    teachers: { title: 'Teachers', items: ['Classes with a join code', 'Assign lessons with due dates', 'See where students get stuck'] },
-    parents: { title: 'Parents', items: ['Minimal data: just a nickname', 'No chat between users', 'The AI only talks about learning'] },
+  self: {
+    eyebrow: 'On your own',
+    title: 'Learn by yourself — no class, no schedule',
+    items: [
+      { title: 'Your pace', text: 'Learn whenever it suits you: 5–10 minutes a day is enough. A placement test shows where to start.' },
+      { title: 'Hints instead of a teacher', text: 'Tasks check themselves, and the AI mentor gives step-by-step hints.' },
+      { title: 'Library and resources', text: 'A glossary in plain words and a list of useful sites to keep learning.' },
+    ],
+    parents: {
+      title: 'Parents',
+      items: ['Minimal data: just a nickname', 'No chat between users', 'The AI only talks about learning', 'No purchases: coins are earned by learning'],
+    },
   },
   faq: {
     title: 'Questions',
     items: [
       { q: 'Do I need a LEGO kit?', a: 'No. The main path runs on a virtual robot. A SPIKE Prime kit is used for bonus tasks and building.' },
       { q: 'What age is it for?', a: 'Lessons are made for ages 9–16, and adult beginners are welcome too.' },
-      { q: 'Is it free?', a: 'Yes, you can learn for free and without signing up.' },
+      { q: 'Is it free?', a: 'Yes, you can learn for free and without signing up. Coins are never sold; they are earned by learning.' },
+      { q: 'Do I need a teacher?', a: 'No. Everything is made for learning on your own: tasks check themselves and the mentor gives hints.' },
       { q: 'I already code. Do I start from zero?', a: 'No — take the placement test and we’ll suggest where to start.' },
       { q: 'Is this an official LEGO product?', a: 'No. RoboEasy is an independent project, not affiliated with the LEGO Group or FIRST.' },
     ],
@@ -199,17 +309,50 @@ const en: LearnLandingCopy = {
 }
 
 const kk: LearnLandingCopy = {
-  previewNote: 'Жаңа лендингтің алдын ала көрінісі. Сабақтар әзірленуде — сайтта әзірге бұрынғы басты бет.',
   hero: {
     badge: 'LEGO® Education SPIKE™ Prime үшін',
     title: 'Робототехниканы',
     accent: 'нөлден үйрен',
-    sub: 'Роботтар құрастырып, оларды бағдарламала — алдымен блоктармен, кейін Python тілінде. Қысқа сабақтар, виртуалды робот және сен үшін шешпейтін, тек кеңес беретін ЖИ-тәлімгер.',
+    sub: 'Өз бетіңше, өз қарқыныңмен оқы: қысқа сабақтар, виртуалды робот, ойындар және күн тапсырмалары. Робот-серік таңдап, оны XP мен тиынға жетілдір.',
     cta: 'Тегін бастау',
     ctaTest: 'Мен білемін — тест тапсыру',
     chips: ['Жиынтықсыз да болады', 'Күніне 5–10 минут', 'Қазақша · Русский · English'],
     path: ['Робот деген не', 'Хаб — роботтың миы', 'Моторлар', 'Датчиктер', 'Алғашқы сапар'],
     station: 'Бастау',
+    stats: { streak: 'Қатарынан 5 күн', coins: '+20 тиын', level: '3-деңгей', quest: 'Күн тапсырмасы орындалды' },
+  },
+  buddy: {
+    eyebrow: 'Сенің роботың',
+    title: 'Серік таңдап, оны жетілдір',
+    text: 'Кіргенде роботты — ровер, танк, болид немесе өрмекшіні — таңдап, оған ат бересің. Ол сенімен бірге өседі: сабақтар, сериялар мен ойындар үшін XP мен тиын аласың.',
+    points: [
+      {
+        title: 'Бонусы бар жақсартулар',
+        text: 'Мотор көбірек тиын, процессор көбірек XP, аккумулятор серияға қосымша мұздату, сенсорлар ойындарда кеңес береді.',
+      },
+      { title: 'Аксессуарлар мен стиль', text: 'Кепка, тәж, құлаққап, визор, бояу және жапсырмалар. Тағы екі робот — андроид пен дрон — гаражда ашылады.' },
+      { title: 'Тиын тек оқу үшін', text: 'Ештеңе ақшаға сатылмайды: бәрі сабақтармен, тапсырмалармен және жаттығумен табылады.' },
+    ],
+    shop: {
+      title: 'Гараж',
+      items: [
+        { name: 'Мотор II', effect: '+20% тиын', price: 180 },
+        { name: 'Процессор I', effect: '+10% XP', price: 100 },
+        { name: 'Тәж', effect: 'стиль', price: 350 },
+      ],
+    },
+  },
+  games: {
+    eyebrow: 'Жаттығу',
+    title: 'Үйрететін ойындар',
+    lead: 'Тақырыптарды ойында бекіт: әрқайсысы XP мен тиын әкеледі, ал үздік нәтижелер сақталады.',
+    items: [
+      { title: 'Робот лабиринті', text: 'Командалар мен циклдер: кристалдарды жинап, мәреге жет.' },
+      { title: 'Бағдарламаны құрастыр', text: 'Бағдарлама жолдарын дұрыс ретпен қой.' },
+      { title: 'Терминдер жұбы', text: '«Термин — мағына» жұптарын тап.' },
+      { title: 'Блиц', text: 'Бір минут сұрақ: терминдер, сабақтар және есептер.' },
+    ],
+    quests: 'Күн сайын — үш жаңа тапсырма және үшеуі үшін сандық.',
   },
   how: {
     eyebrow: 'Қалай жұмыс істейді',
@@ -248,7 +391,7 @@ const kk: LearnLandingCopy = {
     title: 'Күн сайын аздап — нәтиже байқалады',
     items: [
       { title: 'Стриктер', text: 'Мақсат орындалған қатарынан күндер. Күн өткізіп алсаң, мұздату құтқарады.' },
-      { title: 'Тәжірибе мен деңгейлер', text: '«Жаңадан бастаушыдан» «Команда капитанына» дейін — сабақтар, жобалар және қайталау үшін.' },
+      { title: 'Тәжірибе мен деңгейлер', text: '«Жаңадан бастаушыдан» «Роботтар шеберіне» дейін 10 деңгей — сабақтар, ойындар мен тапсырмалар үшін.' },
       { title: 'Жетістіктер', text: 'Алғашқы бағдарлама, алғашқы датчик, құрастырылған робот және құпия шешімдер үшін белгілер.' },
     ],
     note: 'Қысымсыз: тоқтап қалсаң — қайта бастайсың, рекордың сақталады.',
@@ -267,18 +410,26 @@ const kk: LearnLandingCopy = {
     text: 'Соңғы тректе — заездер стратегиясы, саптамалар, командалық жұмыс және роботты қорғау. FLL-жаттықтырушы маусымды жоспарлауға көмектеседі.',
     cta: 'FLL-жаттықтырушыны ашу',
   },
-  adults: {
-    eyebrow: 'Мұғалімдер мен ата-аналарға',
-    title: 'Сыныпта ыңғайлы, үйде қауіпсіз',
-    teachers: { title: 'Мұғалімдерге', items: ['Код арқылы кіретін сыныптар', 'Мерзімі бар сабақтарды тағайындау', 'Оқушылардың қай жерде қиналатыны көрінеді'] },
-    parents: { title: 'Ата-аналарға', items: ['Ең аз дерек: тек лақап ат', 'Пайдаланушылар арасында чат жоқ', 'ЖИ тек оқу туралы жауап береді'] },
+  self: {
+    eyebrow: 'Өз бетіңше',
+    title: 'Өзің оқы — сыныпсыз және кестесіз',
+    items: [
+      { title: 'Өз қарқының', text: 'Ыңғайлы кезде оқы: күніне 5–10 минут жеткілікті. Кіру тесті неден бастау керегін айтады.' },
+      { title: 'Мұғалімнің орнына кеңестер', text: 'Тапсырмалар өзі тексеріледі, ал ЖИ-тәлімгер қадамдап кеңес береді.' },
+      { title: 'Анықтамалық және көздер', text: 'Қарапайым сөздермен терминдер сөздігі және әрі қарай оқуға пайдалы сайттар.' },
+    ],
+    parents: {
+      title: 'Ата-аналарға',
+      items: ['Ең аз дерек: тек лақап ат', 'Пайдаланушылар арасында чат жоқ', 'ЖИ тек оқу туралы жауап береді', 'Сатып алу жоқ: тиын тек оқу үшін'],
+    },
   },
   faq: {
     title: 'Жиі қойылатын сұрақтар',
     items: [
       { q: 'LEGO жиынтығы керек пе?', a: 'Жоқ. Негізгі жол виртуалды роботта өтеді. SPIKE Prime жиынтығы бонус тапсырмалар мен құрастыру үшін керек.' },
       { q: 'Нешеден бастап?', a: 'Сабақтар 9–16 жасқа арналған, бірақ ересек жаңадан бастаушыларға да жарайды.' },
-      { q: 'Бұл тегін бе?', a: 'Иә, тегін және тіркелусіз оқуға болады.' },
+      { q: 'Бұл тегін бе?', a: 'Иә, тегін және тіркелусіз оқуға болады. Тиын сатылмайды — оны оқумен табады.' },
+      { q: 'Мұғалім керек пе?', a: 'Жоқ. Бәрі өз бетіңше оқуға арналған: тапсырмалар өзі тексеріледі, ал тәлімгер кеңес береді.' },
       { q: 'Мен бағдарламалай аламын. Нөлден бастау керек пе?', a: 'Жоқ — кіру тестін тапсыр, біз қай сабақтан бастау керегін айтамыз.' },
       { q: 'Бұл LEGO-ның ресми өнімі ме?', a: 'Жоқ. RoboEasy — тәуелсіз жоба, LEGO Group және FIRST-пен байланысы жоқ.' },
     ],

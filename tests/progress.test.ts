@@ -4,15 +4,23 @@ import { ACHIEVEMENTS, earnedAchievements, newAchievements } from '@/lib/learn/a
 import { CHALLENGES } from '@/lib/learn/challenge'
 import { runChecks } from '@/lib/learn/checks'
 import { COURSE, practiceItems, readLesson, spread } from '@/lib/learn/content'
-import { COSMETICS, isUnlocked } from '@/lib/learn/cosmetics'
 import { PLACEMENT, PLACEMENT_ITEMS, placementResult } from '@/lib/learn/placement'
+import { SHOP, isUnlocked } from '@/lib/learn/shop'
 import { dueSkills, lessonStates, nextLesson, skillMemory, skillRadar, trackProgress, trackUnlocked } from '@/lib/learn/progress'
 import { EMPTY_STATE, type NewEvent, appendEvents, completedLessons } from '@/lib/learn/state'
 
 const DAY = 86400_000
 const track = (id: string) => COURSE.tracks.find((t) => t.id === id)!
 const done = (...ids: string[]) => new Set(ids)
-const lessonDone = (id: string, at: number, trackId = 'start'): NewEvent => ({ kind: 'lesson_done', lesson: id, track: trackId, unit: 'u', project: false, seconds: 60, at })
+const lessonDone = (id: string, at: number, trackId = 'start'): NewEvent => ({
+  kind: 'lesson_done',
+  lesson: id,
+  track: trackId,
+  unit: 'u',
+  project: false,
+  seconds: 60,
+  at,
+})
 
 describe('unlocking', () => {
   it('starts with the first lesson of Start and nothing else', () => {
@@ -55,8 +63,7 @@ describe('unlocking', () => {
 describe('skills', () => {
   it('lists every lesson ref skill as in the lesson file', () => {
     for (const t of COURSE.tracks)
-      for (const u of t.units)
-        for (const l of u.lessons) if (l.status === 'ready') expect(l.skills, l.id).toEqual(readLesson(l.id)!.skills)
+      for (const u of t.units) for (const l of u.lessons) if (l.status === 'ready') expect(l.skills, l.id).toEqual(readLesson(l.id)!.skills)
   })
 
   it('fills the radar as lessons get done', () => {
@@ -134,12 +141,15 @@ describe('achievements', () => {
     expect(new Set(ACHIEVEMENTS.map((a) => a.id)).size).toBe(ACHIEVEMENTS.length)
   })
 
-  it('unlocks cosmetics only through existing achievements or levels', () => {
+  it('unlocks shop items only through existing achievements, levels or coins', () => {
     const ids = new Set(ACHIEVEMENTS.map((a) => a.id))
-    for (const c of COSMETICS) if (c.unlock && 'achievement' in c.unlock) expect(ids.has(c.unlock.achievement), c.id).toBe(true)
-    const sky = COSMETICS.find((c) => c.id === 'leaf')!
-    expect(isUnlocked(sky, 0, new Set())).toBe(false)
-    expect(isUnlocked(sky, 1, new Set())).toBe(true)
+    for (const c of SHOP) if (c.unlock && 'achievement' in c.unlock) expect(ids.has(c.unlock.achievement), c.id).toBe(true)
+    const leaf = SHOP.find((c) => c.id === 'leaf')!
+    expect(isUnlocked(leaf, 0, new Set(), new Set())).toBe(false)
+    expect(isUnlocked(leaf, 1, new Set(), new Set())).toBe(true)
+    const cap = SHOP.find((c) => c.kind === 'hat' && c.id === 'cap')!
+    expect(isUnlocked(cap, 9, new Set(), new Set())).toBe(false)
+    expect(isUnlocked(cap, 0, new Set(), new Set(['hat:cap']))).toBe(true)
   })
 })
 
@@ -147,8 +157,22 @@ describe('answer order', () => {
   it('does not show the right answer in the same place every time', async () => {
     const { shuffled } = await import('@/components/learn/steps/quiz-step')
     const positions = practiceItems().flatMap(({ step }) => {
-      if (step.type === 'quiz' && step.kind === 'choice') return [shuffled(step.options.map((_, i) => i), `${step.id}:options`, true).indexOf(step.correct[0])]
-      if (step.type === 'predict') return [shuffled(step.options.map((_, i) => i), `${step.id}:options`, true).indexOf(step.correct)]
+      if (step.type === 'quiz' && step.kind === 'choice')
+        return [
+          shuffled(
+            step.options.map((_, i) => i),
+            `${step.id}:options`,
+            true,
+          ).indexOf(step.correct[0]),
+        ]
+      if (step.type === 'predict')
+        return [
+          shuffled(
+            step.options.map((_, i) => i),
+            `${step.id}:options`,
+            true,
+          ).indexOf(step.correct),
+        ]
       return []
     })
     const first = positions.filter((p) => p === 0).length
@@ -198,8 +222,22 @@ describe('bundled data without runtime parsing', () => {
 
   it('state schema (zod/mini) fills defaults and rejects bad data', async () => {
     const { profileSchema } = await import('@/lib/learn/state')
-    const p = profileSchema.parse({ nickname: '  Robo  ', ageRange: '10-12', timezone: 'UTC', goal: { kind: 'lessons', n: 1 }, createdAt: 1, anonId: 'anon_12345678' })
-    expect(p).toMatchObject({ nickname: 'Robo', skipWeekends: false, parentConsent: false, reminders: { enabled: false }, cosmetics: { color: 'sun' } })
+    const p = profileSchema.parse({
+      nickname: '  Robo  ',
+      ageRange: '10-12',
+      timezone: 'UTC',
+      goal: { kind: 'lessons', n: 1 },
+      createdAt: 1,
+      anonId: 'anon_12345678',
+    })
+    expect(p).toMatchObject({
+      nickname: 'Robo',
+      skipWeekends: false,
+      parentConsent: false,
+      reminders: { enabled: false },
+      cosmetics: { color: 'sun', hat: 'none', eyes: 'round' },
+      buddy: { model: 'rover', name: '' },
+    })
     expect(profileSchema.safeParse({ ...p, goal: { kind: 'lessons', n: 3 } }).success).toBe(false)
     expect(profileSchema.safeParse({ ...p, nickname: 'x'.repeat(30) }).success).toBe(false)
   })

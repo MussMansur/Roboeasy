@@ -6,7 +6,7 @@ Status: **draft for legal review.** Items marked `TODO(legal)` must be checked b
 
 1. **Collect as little as possible.** A learner is a nickname, an age range, a time zone and a daily goal. No real names, email, phone, photos, voice, location or contacts.
 2. **Local first.** Until accounts exist, all progress lives in the browser's `localStorage` (`roboeasy.learn.v1`). Nothing about the learner is sent to our server except what a feature needs at that moment (see below).
-3. **No public social features.** No chat between learners, no public profiles, no comments. Leaderboards (with the database) will exist only inside a class or between invited friends, and show nicknames only.
+3. **No public social features.** No chat between learners, no public profiles, no comments, no leaderboards. RoboEasy is for learning on your own; there are no classes or teacher accounts.
 4. **Children's AI is constrained.** The mentor gives hints, never full solutions, stays on the lesson's topic and refuses personal questions (`lib/learn/mentor.ts`). Its answers are filtered on the server (`sanitizeHint`).
 5. **The learner and their parents control the data.** Export, import and delete are one click in the profile.
 
@@ -26,7 +26,7 @@ Status: **draft for legal review.** Items marked `TODO(legal)` must be checked b
 ## Children and parental consent
 
 - Learners pick an age range at onboarding: under 10, 10–12, 13–15, 16+.
-- **Under 16**: onboarding requires a grown-up (parent or teacher) to tick a consent box after reading a short explanation, with a link to `/parents`. The flag is stored as `parentConsent` in the profile.
+- **Under 16**: onboarding requires a grown-up (a parent or guardian) to tick a consent box after reading a short explanation, with a link to `/parents`. The flag is stored as `parentConsent` in the profile.
 - Reminders are **off by default** for everyone and, for under-16s, the settings say that a grown-up turns them on. Reminders are a calendar file (`.ics`) the family adds to its own calendar; we never send notifications or messages.
 
 ### Legal bases to check — `TODO(legal)`
@@ -50,11 +50,12 @@ Status: **draft for legal review.** Items marked `TODO(legal)` must be checked b
 - Limits: 6 requests per minute and 30 per day per client; after that, lesson hints still work.
 - The learner can always use the lesson's own staged hints without the AI.
 
-## Teachers and classes (database phase) — `TODO(db)`
+## Coins, the garage and games
 
-- A teacher sees nicknames, progress, stuck points and submitted programs of their class only.
-- Photos of real robots (real_robot steps) are optional, visible only to the class teacher, stripped of EXIF metadata before upload, and deleted with the class.
-- Joining a class uses a short code from the teacher; there is no search for learners.
+- Coins and XP are virtual and earned only by learning (lessons, daily quests, practice games, streak days, achievements). They cannot be bought, sold, transferred or exchanged for anything outside the app; there are no in-app purchases and no ads.
+- Upgrades bought with coins only change in-app rewards (more coins or XP, extra streak freezes, game hints). Nothing is random: there are no loot boxes.
+- Daily quests and streaks have no pressure mechanics: missing a day costs nothing but the streak, and freezes cover missed days.
+- The robot buddy (model, colour, accessories, name) is stored in the profile like the other settings. Its name is free text up to 16 characters and is never shown to other users. `TODO(legal)`: check whether a free-text robot name needs moderation once anything becomes visible to others.
 
 ## Contact
 

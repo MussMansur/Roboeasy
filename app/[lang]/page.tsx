@@ -8,6 +8,7 @@ import { SiteHeader } from '@/components/site-header'
 import { getDictionary, isLocale } from '@/lib/i18n'
 import { getLearnText } from '@/lib/i18n/learn'
 import { getLearnLanding } from '@/lib/i18n/learn-landing'
+import { getPlayText } from '@/lib/i18n/play'
 
 type Params = { params: Promise<{ lang: string }> }
 
@@ -26,7 +27,7 @@ export default async function HomePage({ params }: Params) {
   const nav = getLearnText(lang).nav
   return (
     <>
-      <SiteHeader lang={lang} t={dict.nav} sections={nav} variant="app" />
+      <SiteHeader lang={lang} t={dict.nav} sections={nav} coinsLabel={getPlayText(lang).coinsLabel} variant="app" />
       <main id="main">
         <LearnLanding lang={lang} t={getLearnLanding(lang)} />
       </main>

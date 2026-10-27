@@ -4,22 +4,40 @@ import { useId, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Gauge, Rocket, ShieldCheck } from 'lucide-react'
 
+import { Buddy } from '@/components/learn/buddy'
 import { buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import type { LearnAppText } from '@/lib/i18n/learn-app'
-import { AGE_RANGES, type AgeRange, type Profile, randomId } from '@/lib/learn/state'
+import type { PlayText } from '@/lib/i18n/play'
+import { ROBOTS } from '@/lib/learn/shop'
+import { AGE_RANGES, type AgeRange, DEFAULT_COSMETICS, type Profile, randomId } from '@/lib/learn/state'
 import { setProfile } from '@/lib/learn/store'
 import { deviceTimeZone } from '@/lib/learn/streak'
 import { cn } from '@/lib/utils'
 
 type Lang = 'ru' | 'kk' | 'en'
-const GOALS = { l1: { kind: 'lessons', n: 1 }, l2: { kind: 'lessons', n: 2 }, m15: { kind: 'minutes', n: 15 } } as const satisfies Record<string, Profile['goal']>
+const GOALS = { l1: { kind: 'lessons', n: 1 }, l2: { kind: 'lessons', n: 2 }, m15: { kind: 'minutes', n: 15 } } as const satisfies Record<
+  string,
+  Profile['goal']
+>
 
 export function needsConsent(age: AgeRange | null) {
   return age !== null && age !== '16-plus'
 }
 
-function Choice<T extends string>({ name, value, options, onChange, labels }: { name: string; value: T | null; options: readonly T[]; onChange: (v: T) => void; labels: Record<T, string> }) {
+function Choice<T extends string>({
+  name,
+  value,
+  options,
+  onChange,
+  labels,
+}: {
+  name: string
+  value: T | null
+  options: readonly T[]
+  onChange: (v: T) => void
+  labels: Record<T, string>
+}) {
   return (
     <div className="flex flex-wrap gap-2">
       {options.map((o) => (
@@ -38,11 +56,37 @@ function Choice<T extends string>({ name, value, options, onChange, labels }: { 
   )
 }
 
-/** First visit: nickname, age range, daily goal and, under 16, a grown-up's consent. Then: from scratch or placement. */
-export function Onboarding({ lang, app, onSaved, onDone }: { lang: Lang; app: LearnAppText; onSaved: () => void; onDone: () => void }) {
+const FREE_ROBOTS = ROBOTS.filter((r) => !r.unlock)
+
+/** The four free robots as big radio cards. */
+function RobotPicker({ name, value, onChange, lang }: { name: string; value: string; onChange: (v: string) => void; lang: Lang }) {
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {FREE_ROBOTS.map((r) => (
+        <label
+          key={r.id}
+          className={cn(
+            'grid cursor-pointer justify-items-center gap-1 rounded-(--radius-md) border-(length:--stroke) border-outline bg-card p-3 text-center shadow-(--shadow-press) has-focus-visible:ring-3 has-focus-visible:ring-(--focus)',
+            value === r.id && 'bg-primary text-primary-foreground',
+          )}
+        >
+          <input type="radio" name={name} value={r.id} checked={value === r.id} onChange={() => onChange(r.id)} className="sr-only" />
+          <Buddy model={r.id} color={value === r.id ? 'sky' : 'sun'} className="w-24" />
+          <span className="font-display font-extrabold">{r.title[lang]}</span>
+          <span className="text-xs leading-snug opacity-80">{r.description?.[lang]}</span>
+        </label>
+      ))}
+    </div>
+  )
+}
+
+/** First visit: nickname, robot buddy, age range, daily goal and, under 16, a grown-up's consent. Then: from scratch or placement. */
+export function Onboarding({ lang, app, play, onSaved, onDone }: { lang: Lang; app: LearnAppText; play: PlayText; onSaved: () => void; onDone: () => void }) {
   const id = useId()
   const t = app.onboarding
   const [nickname, setNickname] = useState('')
+  const [model, setModel] = useState('rover')
+  const [botName, setBotName] = useState('')
   const [age, setAge] = useState<AgeRange | null>(null)
   const [goal, setGoal] = useState<keyof typeof GOALS>('l1')
   const [consent, setConsent] = useState(false)
@@ -60,7 +104,8 @@ export function Onboarding({ lang, app, onSaved, onDone }: { lang: Lang; app: Le
       goal: GOALS[goal],
       skipWeekends: false,
       reminders: { enabled: false, time: '18:00' },
-      cosmetics: { color: 'sun', sticker: 'none', wheels: 'classic', sound: 'beep' },
+      cosmetics: DEFAULT_COSMETICS,
+      buddy: { model, name: botName.trim().slice(0, 16) },
       parentConsent: needsConsent(age) ? consent : false,
       createdAt: Date.now(),
       anonId: randomId('anon'),
@@ -127,6 +172,25 @@ export function Onboarding({ lang, app, onSaved, onDone }: { lang: Lang; app: Le
               {t.nicknameHint}
             </p>
           </div>
+
+          <fieldset className="m-0 grid gap-2 border-0 p-0">
+            <legend className="mb-1 p-0 font-display text-lg font-bold">{play.buddy.pickTitle}</legend>
+            <p className="m-0 mb-1 text-sm text-muted-foreground">{play.buddy.pickLead}</p>
+            <RobotPicker name={`${id}-robot`} value={model} onChange={setModel} lang={lang} />
+            <p className="m-0 text-sm text-muted-foreground">{play.buddy.more}</p>
+            <label htmlFor={`${id}-bot`} className="mt-2 font-bold">
+              {play.buddy.name}
+            </label>
+            <input
+              id={`${id}-bot`}
+              className="input max-w-sm"
+              value={botName}
+              maxLength={16}
+              autoComplete="off"
+              placeholder={play.buddy.namePlaceholder}
+              onChange={(e) => setBotName(e.target.value)}
+            />
+          </fieldset>
 
           <fieldset className="m-0 grid gap-2 border-0 p-0">
             <legend className="mb-2 p-0 font-display text-lg font-bold">{t.age}</legend>

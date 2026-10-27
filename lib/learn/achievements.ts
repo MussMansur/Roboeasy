@@ -8,7 +8,9 @@ import type { Course } from './schema'
 import { type LearnState, completedLessons } from './state'
 import { trackComplete } from './progress'
 import { streakInfo } from './streak'
-import { levelFor, totalXp } from './xp'
+import { credits, ledger, totalXp } from './economy'
+import { bestStarsOf, MAZE_LEVELS } from './games/maze'
+import { levelFor } from './xp'
 
 type L = { ru: string; kk: string; en: string }
 
@@ -49,8 +51,13 @@ const DEFS: (Achievement & { earned: (c: Ctx) => boolean })[] = [
     icon: '🎯',
     hidden: false,
     title: { ru: 'Снайпер', kk: 'Мерген', en: 'Sharpshooter' },
-    description: { ru: 'Реши 5 заданий с кодом с первой попытки и без подсказок.', kk: '5 код тапсырмасын бірінші әрекеттен, кеңессіз шеш.', en: 'Solve 5 coding tasks on the first try without hints.' },
-    earned: (c) => c.state.events.filter((e) => e.kind === 'step_done' && e.firstTry && e.hints === 0 && ['code', 'debug', 'project'].includes(e.stepType)).length >= 5,
+    description: {
+      ru: 'Реши 5 заданий с кодом с первой попытки и без подсказок.',
+      kk: '5 код тапсырмасын бірінші әрекеттен, кеңессіз шеш.',
+      en: 'Solve 5 coding tasks on the first try without hints.',
+    },
+    earned: (c) =>
+      c.state.events.filter((e) => e.kind === 'step_done' && e.firstTry && e.hints === 0 && ['code', 'debug', 'project'].includes(e.stepType)).length >= 5,
   },
   {
     id: 'first-project',
@@ -127,21 +134,81 @@ const DEFS: (Achievement & { earned: (c: Ctx) => boolean })[] = [
     description: { ru: 'Дойди до второго уровня.', kk: 'Екінші деңгейге жет.', en: 'Reach level 2.' },
     earned: (c) => levelFor(totalXp(c.state)).index >= 1,
   },
+  {
+    id: 'first-buy',
+    icon: '🛒',
+    hidden: false,
+    title: { ru: 'Первая покупка', kk: 'Алғашқы сатып алу', en: 'First purchase' },
+    description: {
+      ru: 'Купи что-нибудь своему роботу в гараже.',
+      kk: 'Гараждан роботыңа бірдеңе сатып ал.',
+      en: 'Buy something for your robot in the garage.',
+    },
+    earned: (c) => ledger(c.state).owned.size > 0,
+  },
+  {
+    id: 'upgraded',
+    icon: '⚙️',
+    hidden: false,
+    title: { ru: 'Прокачка', kk: 'Жетілдіру', en: 'Upgraded' },
+    description: { ru: 'Поставь роботу первое улучшение.', kk: 'Роботқа алғашқы жақсартуды орнат.', en: 'Give your robot its first upgrade.' },
+    earned: (c) => [...ledger(c.state).owned].some((k) => k.startsWith('upgrade:')),
+  },
+  {
+    id: 'gamer',
+    icon: '🎮',
+    hidden: false,
+    title: { ru: 'Игроман', kk: 'Ойыншы', en: 'Gamer' },
+    description: { ru: 'Сыграй 10 раундов в играх.', kk: 'Ойындарда 10 раунд ойна.', en: 'Play 10 game rounds.' },
+    earned: (c) => c.state.events.filter((e) => e.kind === 'game_done').length >= 10,
+  },
+  {
+    id: 'chest',
+    icon: '🎁',
+    hidden: false,
+    title: { ru: 'Сундук дня', kk: 'Күн сандығы', en: 'Daily chest' },
+    description: { ru: 'Выполни все три задания дня.', kk: 'Күннің үш тапсырмасын да орында.', en: 'Complete all three daily quests.' },
+    earned: (c) => credits(c.state).some((x) => x.source === 'chest'),
+  },
+  {
+    id: 'maze-master',
+    icon: '🧭',
+    hidden: false,
+    title: { ru: 'Мастер лабиринтов', kk: 'Лабиринт шебері', en: 'Maze master' },
+    description: {
+      ru: 'Пройди все уровни лабиринта на три звезды.',
+      kk: 'Лабиринттің барлық деңгейін үш жұлдызға өт.',
+      en: 'Clear every maze level with three stars.',
+    },
+    earned: (c) => {
+      const best = bestStarsOf(c.state)
+      return MAZE_LEVELS.every((l) => (best.get(l.id) ?? 0) >= 3)
+    },
+  },
   // Hidden
   {
     id: 'shorter',
     icon: '✂️',
     hidden: true,
     title: { ru: 'Короче нашего', kk: 'Біздікінен қысқа', en: 'Shorter than ours' },
-    description: { ru: 'Реши задание меньшим числом блоков, чем в нашем решении.', kk: 'Тапсырманы біздің шешімнен азырақ блокпен шеш.', en: 'Solve a task with fewer blocks than our solution.' },
-    earned: (c) => c.state.events.some((e) => e.kind === 'step_done' && e.blocks !== undefined && e.referenceBlocks !== undefined && e.blocks < e.referenceBlocks),
+    description: {
+      ru: 'Реши задание меньшим числом блоков, чем в нашем решении.',
+      kk: 'Тапсырманы біздің шешімнен азырақ блокпен шеш.',
+      en: 'Solve a task with fewer blocks than our solution.',
+    },
+    earned: (c) =>
+      c.state.events.some((e) => e.kind === 'step_done' && e.blocks !== undefined && e.referenceBlocks !== undefined && e.blocks < e.referenceBlocks),
   },
   {
     id: 'clean-project',
     icon: '💎',
     hidden: true,
     title: { ru: 'Чистая работа', kk: 'Таза жұмыс', en: 'Clean job' },
-    description: { ru: 'Сделай проект с первой попытки и без подсказок.', kk: 'Жобаны бірінші әрекеттен, кеңессіз жаса.', en: 'Finish a project on the first try without hints.' },
+    description: {
+      ru: 'Сделай проект с первой попытки и без подсказок.',
+      kk: 'Жобаны бірінші әрекеттен, кеңессіз жаса.',
+      en: 'Finish a project on the first try without hints.',
+    },
     earned: (c) => c.state.events.some((e) => e.kind === 'step_done' && e.stepType === 'project' && e.firstTry && e.hints === 0),
   },
   {
@@ -149,7 +216,11 @@ const DEFS: (Achievement & { earned: (c: Ctx) => boolean })[] = [
     icon: '👋',
     hidden: true,
     title: { ru: 'С возвращением', kk: 'Қайта оралуың құтты болсын', en: 'Welcome back' },
-    description: { ru: 'Вернись к урокам после перерыва в неделю.', kk: 'Бір апталық үзілістен кейін сабаққа орал.', en: 'Come back to lessons after a week-long break.' },
+    description: {
+      ru: 'Вернись к урокам после перерыва в неделю.',
+      kk: 'Бір апталық үзілістен кейін сабаққа орал.',
+      en: 'Come back to lessons after a week-long break.',
+    },
     earned: (c) => {
       const times = c.state.events.filter((e) => e.kind === 'lesson_done').map((e) => e.at)
       return times.some((t, i) => i > 0 && t - times[i - 1] >= 7 * 24 * 3600 * 1000)
@@ -160,7 +231,11 @@ const DEFS: (Achievement & { earned: (c: Ctx) => boolean })[] = [
     icon: '🦘',
     hidden: true,
     title: { ru: 'Я это знаю!', kk: 'Мен мұны білемін!', en: 'I know this!' },
-    description: { ru: 'Пропусти раздел, сдав тест «Я уже это знаю».', kk: '«Мен мұны білемін» тестін тапсырып, бөлімді өткізіп жібер.', en: 'Skip a unit by passing an “I already know this” test.' },
+    description: {
+      ru: 'Пропусти раздел, сдав тест «Я уже это знаю».',
+      kk: '«Мен мұны білемін» тестін тапсырып, бөлімді өткізіп жібер.',
+      en: 'Skip a unit by passing an “I already know this” test.',
+    },
     earned: (c) => c.state.events.some((e) => e.kind === 'known' && e.lessons.length > 0),
   },
 ]

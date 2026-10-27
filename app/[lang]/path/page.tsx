@@ -6,6 +6,7 @@ import { PathHome } from '@/components/learn/path-home'
 import { isLocale } from '@/lib/i18n'
 import { getLearnText } from '@/lib/i18n/learn'
 import { getLearnAppText } from '@/lib/i18n/learn-app'
+import { getPlayText } from '@/lib/i18n/play'
 import { CHALLENGES } from '@/lib/learn/challenge'
 
 type Params = { params: Promise<{ lang: string }> }
@@ -21,7 +22,7 @@ export default async function PathPage({ params }: Params) {
   if (!isLocale(lang)) notFound()
   return (
     <AppShell lang={lang}>
-      <PathHome lang={lang} app={getLearnAppText(lang)} challengeTitles={CHALLENGES.map((c) => c.title[lang])} />
+      <PathHome lang={lang} app={getLearnAppText(lang)} play={getPlayText(lang)} challengeTitles={CHALLENGES.map((c) => c.title[lang])} />
     </AppShell>
   )
 }
